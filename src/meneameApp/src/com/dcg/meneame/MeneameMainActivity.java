@@ -1,6 +1,5 @@
 package com.dcg.meneame;
 
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
