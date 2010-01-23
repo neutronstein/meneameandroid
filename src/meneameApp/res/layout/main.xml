@@ -6,28 +6,7 @@
 	<ImageButton
 		android:id="@+id/applogo" 
 		
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content" 
-		
-		android:layout_marginLeft="20px"
-		android:layout_alignParentTop="true"
-    	android:layout_alignParentLeft="true" 
-		
-		style="@style/Style.app_logo" />
-		
-	<TextView
-		android:id="@+id/infolabel" 
-		style="@style/Style.infolabel"
-		
-    	android:layout_width="fill_parent" 
-    	android:layout_height="wrap_content"
-    	
-    	android:layout_alignParentRight="true"
-    	android:layout_alignParentLeft="true"   	
-    	android:layout_below="@+id/applogo"
-    	
-    	android:ellipsize="marquee" 
-    	android:text="@string/hello" />
+		style="@style/Style.app_logo" />		
     	
 	<TabHost
 		android:id="@android:id/tabhost"
@@ -37,7 +16,7 @@
 		
 		android:layout_alignParentRight="true"
     	android:layout_alignParentLeft="true"   	
-    	android:layout_below="@+id/infolabel" >
+    	android:layout_below="@+id/applogo" >
 		
 		<LinearLayout
 			android:orientation="vertical"
