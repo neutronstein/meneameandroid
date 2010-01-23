@@ -16,6 +16,9 @@ public class MeneameCommentsActivity extends ListActivity {
 	    "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
 	    "Cote d'Ivoire", "Cambodia", "Cameroon", "Canada", "Cape Verde",
 		};
+	
+	static final int LIST_MENU_OPEN = 0;
+	static final int LIST_MENU_VOTE = 1;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -36,9 +39,9 @@ public class MeneameCommentsActivity extends ListActivity {
 		listView.setOnCreateContextMenuListener( 
 				new View.OnCreateContextMenuListener() {
 					public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
-						AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
-						menu.add(0, 0, 0, "Open");
-						menu.add(0, 0, 0, "Vote");
+						//AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
+						menu.add(0, LIST_MENU_OPEN, 0, "Open");
+						menu.add(0, LIST_MENU_VOTE, 0, "Vote");
 					}
 	
 				});
