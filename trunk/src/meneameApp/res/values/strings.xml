@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Welcome to menéame!</string>
+    <string name="app_name">meneame App</string>
+<string name="main_tab_news">News</string>
+<string name="main_tab_queue">Queue</string>
+<string name="main_tab_comments">All Comments</string>
+<string name="empty_list">List is empty</string>
+</resources>
