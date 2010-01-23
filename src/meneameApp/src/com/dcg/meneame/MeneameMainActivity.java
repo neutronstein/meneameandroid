@@ -18,6 +18,8 @@ public class MeneameMainActivity extends TabActivity  {
 
         mTabHost = getTabHost();
         
+        // Todo, make custom tabs: http://ezmobile.wordpress.com/2009/02/02/customized-android-tabs/
+        
         // Add news tab
         TabSpec newsTab = mTabHost.newTabSpec("last_news_tab"); 
         newsTab.setContent(new Intent(this, MeneameNewsActivity.class)); 
