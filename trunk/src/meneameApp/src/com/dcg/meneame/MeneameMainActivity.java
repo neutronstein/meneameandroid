@@ -1,18 +1,38 @@
 package com.dcg.meneame;
 
+import java.util.prefs.Preferences;
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
 public class MeneameMainActivity extends TabActivity  {
-    private TabHost mTabHost;
+	
+	/** Main app TabHost*/
+	private TabHost mTabHost;
+	
+	/** Refresh menu item id */
+	private static final int MENU_REFRESH = 0;
+	
+	/** Settings menu item id */
+    private static final int MENU_SETTINGS = 1;
+    
+    /** Main animation */
+    private Animation mMainAnimation = null;
 
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
+        
         setContentView(R.layout.main);
 
         mTabHost = getTabHost();
@@ -39,5 +59,38 @@ public class MeneameMainActivity extends TabActivity  {
         
         // Set news tab as visible one
         mTabHost.setCurrentTab(0);
+    }
+    
+    /** After the activity get's visible to the user */
+    protected void onResume() {
+    	super.onResume();
+    	mTabHost.startAnimation(mMainAnimation);    	
+    }
+    
+    /* Creates the menu items */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
+        menu.add(0, MENU_SETTINGS, 0, R.string.main_menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
+        return true;
+    }
+    
+    /* Handles item selections */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_REFRESH:
+            // Refresh currently selected tab content
+            return true;
+        case MENU_SETTINGS:
+            // Open settitngs screen
+        	openSettingsScreen();
+            return true;
+        }
+        return false;
+    }
+    
+    /* Open settings screen */
+    public void openSettingsScreen() {
+    	Intent settingsActivity = new Intent( this, MeneamePreferences.class);
+    	startActivity(settingsActivity);
     }
 }
