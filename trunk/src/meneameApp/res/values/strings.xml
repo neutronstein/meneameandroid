@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_pref_name">Preferences</string>
+    <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
+    <string name="pref_account_apikey">API Key</string>
+    <string name="pref_account_user_summary">menéame username</string>    
+    <string name="pref_account_user">Username</string>
+    <string name="pref_account">Account</string>
     <string name="hello">Welcome to menéame!</string>
     <string name="app_name">menéame</string>
-<string name="main_tab_news">News</string>
-<string name="main_tab_queue">Queue</string>
-<string name="main_tab_comments">All Comments</string>
-<string name="empty_list">List is empty</string>
+	<string name="main_tab_news">News</string>
+	<string name="main_tab_queue">Queue</string>
+	<string name="main_tab_comments">All Comments</string>
+	<string name="empty_list">List is empty</string>
+	<string name="meneo_item_open">Open</string>
+	<string name="meneo_item_vote">Vote</string>
+	<string name="main_menu_refresh">Refresh</string>
+	<string name="main_menu_settings">Settings</string>
 </resources>

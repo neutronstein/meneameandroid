@@ -4,6 +4,10 @@
 		<item name="android:windowBackground">@color/Color.orange</item>
         <item name="android:windowNoTitle">true</item>
 	</style>
+	<style name="Theme.mnm_prefs" parent="android:Theme">
+		<item name="android:windowBackground">@color/Color.black</item>
+        <item name="android:windowNoTitle">true</item>
+	</style>
 	<style name="Style.infolabel" parent="android:Theme">
 	    <item name="android:textSize">18sp</item>
 	    <item name="android:textColor">#FFF</item>
