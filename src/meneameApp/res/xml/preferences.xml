@@ -12,4 +12,13 @@
 			android:key="pref_account_apikey"
 			android:summary="@string/pref_account_apikey_summary" />
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_app">
+		<ListPreference 
+			android:key="pref_app_mainanimation" 
+			android:summary="@string/pref_app_mainanimation_summary" 
+			android:title="@string/pref_app_mainanimation" 
+			android:entries="@array/animationListEntries" 
+			android:entryValues="@array/animationListValues" 
+			android:defaultValue="0" />
+	</PreferenceCategory>
 </PreferenceScreen>
