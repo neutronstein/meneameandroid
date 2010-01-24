@@ -1,10 +1,10 @@
 package com.dcg.meneame;
 
-import java.util.prefs.Preferences;
-
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
@@ -31,7 +31,17 @@ public class MeneameMainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        
+        String mainAnim = prefs.getString("pref_app_mainanimation", "None");
+        if ( mainAnim.compareTo("Fade-in") == 0 )
+        {
+        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.fadein );
+        }
+        else if ( mainAnim.compareTo("Slide-in") == 0 )
+        {
+        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
+        }
         
         setContentView(R.layout.main);
 
@@ -61,10 +71,31 @@ public class MeneameMainActivity extends TabActivity  {
         mTabHost.setCurrentTab(0);
     }
     
+    /** Refreshs the animation we will use for the tab page */
+    private void initAnim() {
+    	
+    }
+    
     /** After the activity get's visible to the user */
     protected void onResume() {
     	super.onResume();
-    	mTabHost.startAnimation(mMainAnimation);    	
+    	
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        
+        String mainAnim = prefs.getString("pref_app_mainanimation", "None");
+        if ( mainAnim.compareTo("Fade-in") == 0 )
+        {
+        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.fadein );
+        }
+        else if ( mainAnim.compareTo("Slide-in") == 0 )
+        {
+        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
+        }
+        
+    	if ( mMainAnimation != null )
+    	{
+    		mTabHost.startAnimation(mMainAnimation);
+    	}
     }
     
     /* Creates the menu items */

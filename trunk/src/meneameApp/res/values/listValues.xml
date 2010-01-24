@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="animationListEntries">
+	<item>None</item>
+	<item>Fade-in</item>
+	<item>Slide-in</item>
+</string-array>
+<string-array name="animationListValues">
+	<item>None</item>
+	<item>Fade-in</item>
+	<item>Slide-in</item>
+</string-array>
+</resources>
