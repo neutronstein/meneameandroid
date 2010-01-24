@@ -37,8 +37,8 @@ public class MeneameNewsActivity extends ListActivity {
 				new View.OnCreateContextMenuListener() {
 					public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
 						AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
-						menu.add(0, 0, 0, "Open");
-						menu.add(0, 0, 0, "Vote");
+						menu.add(0, 0, 0, R.string.meneo_item_open);
+						menu.add(0, 0, 0, R.string.meneo_item_vote);
 					}
 	
 				});
