@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.mnm" parent="android:Theme">
-		<item name="android:windowBackground">@color/Color.orange</item>
-        <item name="android:windowNoTitle">true</item>
-	</style>
-	<style name="Theme.mnm_prefs" parent="android:Theme">
-		<item name="android:windowBackground">@color/Color.black</item>
-        <item name="android:windowNoTitle">true</item>
-	</style>
 	<style name="Style.infolabel" parent="android:Theme">
 	    <item name="android:textSize">18sp</item>
 	    <item name="android:textColor">#FFF</item>
@@ -37,10 +29,15 @@
 	<style name="Style.white_bg" parent="android:Theme">
 	    <item name="android:background">@color/Color.white</item>
 	</style>
-	<color name="Color.grey">#CCC</color>
-	<color name="Color.dark_grey">#777</color>
-	<color name="Color.white">#EEE</color>
-	<color name="Color.black">#000</color>
-	<color name="Color.orange">#FF6400</color>
-	<color name="Color.dark_blue">#202C8A</color>
+	
+	<style name="MNM.Prefs.TextView.ListSeparator" parent="android:Theme">
+        <item name="android:background">@color/Color.orange</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">25dip</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/Color.white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5sp</item>
+    </style>
 </resources>

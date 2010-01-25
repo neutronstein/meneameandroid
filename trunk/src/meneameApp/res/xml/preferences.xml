@@ -4,13 +4,15 @@
 		<EditTextPreference
 			android:name="pref_account_user"
 			android:title="@string/pref_account_user" 
-			android:summary="@string/pref_account_user_summary" 
+			android:summary="@string/pref_account_user_summary"
+			android:defaultValue="" 
 			android:key="pref_account_user"/>
 		<EditTextPreference
 			android:name="pref_account_apikey"
 			android:title="@string/pref_account_apikey"
 			android:key="pref_account_apikey"
-			android:summary="@string/pref_account_apikey_summary" />
+			android:summary="@string/pref_account_apikey_summary"
+			android:defaultValue="" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
 		<ListPreference 
@@ -19,6 +21,6 @@
 			android:title="@string/pref_app_mainanimation" 
 			android:entries="@array/animationListEntries" 
 			android:entryValues="@array/animationListValues" 
-			android:defaultValue="0" />
+			android:defaultValue="None" />
 	</PreferenceCategory>
 </PreferenceScreen>
