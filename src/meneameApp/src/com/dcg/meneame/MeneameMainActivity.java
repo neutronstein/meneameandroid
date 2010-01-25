@@ -31,18 +31,6 @@ public class MeneameMainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        
-        String mainAnim = prefs.getString("pref_app_mainanimation", "None");
-        if ( mainAnim.compareTo("Fade-in") == 0 )
-        {
-        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.fadein );
-        }
-        else if ( mainAnim.compareTo("Slide-in") == 0 )
-        {
-        	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
-        }
-        
         setContentView(R.layout.main);
 
         mTabHost = getTabHost();
@@ -73,15 +61,10 @@ public class MeneameMainActivity extends TabActivity  {
     
     /** Refreshs the animation we will use for the tab page */
     private void initAnim() {
+    	// By default we do not use any animation
+    	mMainAnimation = null;
     	
-    }
-    
-    /** After the activity get's visible to the user */
-    protected void onResume() {
-    	super.onResume();
-    	
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
         String mainAnim = prefs.getString("pref_app_mainanimation", "None");
         if ( mainAnim.compareTo("Fade-in") == 0 )
         {
@@ -91,6 +74,14 @@ public class MeneameMainActivity extends TabActivity  {
         {
         	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.slide_bottom );
         }
+    }
+    
+    /** After the activity get's visible to the user */
+    protected void onResume() {
+    	super.onResume();
+    	
+    	// Start animation stuff
+    	initAnim();
         
     	if ( mMainAnimation != null )
     	{
