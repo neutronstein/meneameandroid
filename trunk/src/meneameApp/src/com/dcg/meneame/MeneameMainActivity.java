@@ -20,8 +20,11 @@ public class MeneameMainActivity extends TabActivity  {
 	/** Refresh menu item id */
 	private static final int MENU_REFRESH = 0;
 	
-	/** Settings menu item id */
-    private static final int MENU_SETTINGS = 1;
+	/** Nótame menu item id */
+    private static final int MENU_NOTAME = 1;
+    
+    /** Settings menu item id */
+    private static final int MENU_SETTINGS = 2;
     
     /** Main animation */
     private Animation mMainAnimation = null;
@@ -92,6 +95,7 @@ public class MeneameMainActivity extends TabActivity  {
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
+        menu.add(0, MENU_NOTAME, 0, R.string.main_menu_notame).setIcon(android.R.drawable.ic_menu_send);
         menu.add(0, MENU_SETTINGS, 0, R.string.main_menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
         return true;
     }
@@ -101,6 +105,9 @@ public class MeneameMainActivity extends TabActivity  {
         switch (item.getItemId()) {
         case MENU_REFRESH:
             // Refresh currently selected tab content
+            return true;
+        case MENU_NOTAME:
+            // Open Notame Activity
             return true;
         case MENU_SETTINGS:
             // Open settitngs screen
