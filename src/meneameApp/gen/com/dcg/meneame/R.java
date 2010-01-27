@@ -51,6 +51,28 @@ public final class R {
         public static final int meneo_listitem=0x7f030002;
     }
     public static final class string {
+<<<<<<< .mine
+        public static final int app_name=0x7f08000a;
+        public static final int app_pref_name=0x7f080003;
+        public static final int empty_list=0x7f08000e;
+        public static final int hello=0x7f080009;
+        public static final int main_menu_notame=0x7f080012;
+        public static final int main_menu_refresh=0x7f080011;
+        public static final int main_menu_settings=0x7f080013;
+        public static final int main_tab_comments=0x7f08000d;
+        public static final int main_tab_news=0x7f08000b;
+        public static final int main_tab_queue=0x7f08000c;
+        public static final int meneo_item_open=0x7f08000f;
+        public static final int meneo_item_vote=0x7f080010;
+        public static final int pref_account=0x7f080008;
+        public static final int pref_account_apikey=0x7f080005;
+        public static final int pref_account_apikey_summary=0x7f080004;
+        public static final int pref_account_user=0x7f080007;
+        public static final int pref_account_user_summary=0x7f080006;
+        public static final int pref_app=0x7f080002;
+        public static final int pref_app_mainanimation=0x7f080001;
+        public static final int pref_app_mainanimation_summary=0x7f080000;
+=======
         public static final int app_name=0x7f07000a;
         public static final int app_pref_name=0x7f070003;
         public static final int empty_list=0x7f07000e;
@@ -70,6 +92,7 @@ public final class R {
         public static final int pref_app=0x7f070002;
         public static final int pref_app_mainanimation=0x7f070001;
         public static final int pref_app_mainanimation_summary=0x7f070000;
+>>>>>>> .r15
     }
     public static final class style {
         public static final int Style_app_logo=0x7f080004;
