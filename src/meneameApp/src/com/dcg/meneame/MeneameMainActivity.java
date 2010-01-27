@@ -7,12 +7,17 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TabHost.TabSpec;
 
 public class MeneameMainActivity extends TabActivity  {
+	
+	/** Class tag used for it's logs */
+	private static final String tag = "MeneameMainActivity";
 	
 	/** Main app TabHost*/
 	private TabHost mTabHost;
@@ -26,6 +31,9 @@ public class MeneameMainActivity extends TabActivity  {
     /** Settings menu item id */
     private static final int MENU_SETTINGS = 2;
     
+    /** Settings activity result ID */
+    private static final int SUB_ACT_SETTINGS_ID = 0;
+    
     /** Main animation */
     private Animation mMainAnimation = null;
 
@@ -35,10 +43,9 @@ public class MeneameMainActivity extends TabActivity  {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.main);
-
-        mTabHost = getTabHost();
         
-        // Todo, make custom tabs: http://ezmobile.wordpress.com/2009/02/02/customized-android-tabs/
+        // Get some global stuff
+        mTabHost = getTabHost();
         
         // Add news tab
         TabSpec newsTab = mTabHost.newTabSpec("last_news_tab"); 
@@ -64,7 +71,6 @@ public class MeneameMainActivity extends TabActivity  {
     
     /** Refreshs the animation we will use for the tab page */
     private void initAnim() {
-    	// By default we do not use any animation
     	mMainAnimation = null;
     	
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
@@ -120,6 +126,8 @@ public class MeneameMainActivity extends TabActivity  {
     /* Open settings screen */
     public void openSettingsScreen() {
     	Intent settingsActivity = new Intent( this, MeneamePreferences.class);
-    	startActivity(settingsActivity);
+    	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
+    	
+    	// TODO: Catch result!
     }
 }

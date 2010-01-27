@@ -11,5 +11,10 @@ public class MeneamePreferences extends PreferenceActivity {
 		// Add prefs from xml
 		addPreferencesFromResource(R.xml.preferences);
 	}
+	
+	public void  onContentChanged()
+	{
+		super.onContentChanged();
+	}
 
 }
