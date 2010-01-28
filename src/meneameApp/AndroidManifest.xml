@@ -6,9 +6,8 @@
     <application android:icon="@drawable/icon" 
     	android:label="@string/app_name" 
     	android:theme="@style/Theme.mnm" 
-    	android:debuggable="true" android:name="MeneameAppContext">
-        <activity android:name=".MeneameMainActivity"
-                  android:label="@string/app_name">
+    	android:debuggable="true">
+        <activity android:label="@string/app_name" android:name="MeneameMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
