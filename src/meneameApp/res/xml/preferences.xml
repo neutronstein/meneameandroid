@@ -15,10 +15,17 @@
 			android:defaultValue="" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
+		<CheckBoxPreference
+			android:key="pref_app_refreshonlaunch"
+			android:title="@string/pref_app_refreshonlaunch"
+			android:summary="@string/pref_app_refreshonlaunch_summary"
+			android:defaultValue="false" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_style">
 		<ListPreference 
-			android:key="pref_app_mainanimation" 
-			android:summary="@string/pref_app_mainanimation_summary" 
-			android:title="@string/pref_app_mainanimation" 
+			android:key="pref_style_mainanimation" 
+			android:summary="@string/pref_style_mainanimation_summary" 
+			android:title="@string/pref_style_mainanimation" 
 			android:entries="@array/animationListEntries" 
 			android:entryValues="@array/animationListValues" 
 			android:defaultValue="None" />

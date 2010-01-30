@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_app_mainanimation_summary">Animation used by the appliction</string>
-    <string name="pref_app_mainanimation">App animation</string>
-    <string name="pref_app">Style</string>
+    <string name="pref_style_mainanimation_summary">Animation used by the appliction</string>
+    <string name="pref_style_mainanimation">App animation</string>
+    <string name="pref_style">Style</string>
+    <string name="pref_app">App</string>
+    <string name="pref_app_refreshonlaunch">Refresh on launch</string>
+    <string name="pref_app_refreshonlaunch_summary">Should we refresh the news feeds when they get active?</string>
     <string name="app_pref_name">Preferences</string>
     <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
     <string name="pref_account_apikey">API Key</string>
