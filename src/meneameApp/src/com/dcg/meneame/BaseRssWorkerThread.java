@@ -17,7 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-public class RssWorkerThread extends Thread {
+public class BaseRssWorkerThread extends Thread {
 	
 	/** Definitions of a completed message */
 	public static String COMPLETED_KEY = "completed";
@@ -49,9 +49,20 @@ public class RssWorkerThread extends Thread {
 	 * 
 	 * @param Activity ParentActivity, holds the semaphore to make this thread save
 	 */
-	public RssWorkerThread( ApplicationMNM globalApp, Handler handler, String feedURL, Semaphore threadSemaphore ) {
+	public BaseRssWorkerThread() {
 		super();
 		
+		
+	}
+	
+	/**
+	 * Setup all data this class needs, we can not use it's constructor because we invoke this class!
+	 * @param globalApp
+	 * @param handler
+	 * @param feedURL
+	 * @param threadSemaphore
+	 */
+	public void setupWorker( ApplicationMNM globalApp, Handler handler, String feedURL, Semaphore threadSemaphore ) {
 		mFeedURL = feedURL;
 		mSemaphore = threadSemaphore;
 		mApp = globalApp;
@@ -122,13 +133,18 @@ public class RssWorkerThread extends Thread {
 				in.close();
 				String page = sb.toString();
 				
+				// Start parsing the feed and 
+				data.putAll( parseResult(page) );
+				
+				//System.out.println(page);
+				
 				Log.d(TAG, "Finished!");				
 				data.putInt(COMPLETED_KEY, COMPLETED_OK);
 			}
 			else
 			{
 				Log.d(TAG, "Failed!");
-				data.putInt(COMPLETED_KEY, COMPLETED_FAILED);		
+				data.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
 			}
 			
 			// Send final message
@@ -152,5 +168,14 @@ public class RssWorkerThread extends Thread {
 				}
 			}
 		}
+	}
+	
+	private Bundle parseResult( String page )
+	{
+		Bundle data = new Bundle();
+		
+		// By default this is just empty
+		
+		return data;
 	}
 }
