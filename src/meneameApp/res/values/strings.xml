@@ -1,26 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_style_mainanimation_summary">Animation used by the appliction</string>
-    <string name="pref_style_mainanimation">App animation</string>
-    <string name="pref_style">Style</string>
-    <string name="pref_app">App</string>
-    <string name="pref_app_refreshonlaunch">Refresh on launch</string>
-    <string name="pref_app_refreshonlaunch_summary">Should we refresh the news feeds when they get active?</string>
-    <string name="app_pref_name">Preferences</string>
-    <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
-    <string name="pref_account_apikey">API Key</string>
-    <string name="pref_account_user_summary">menéame username</string>    
-    <string name="pref_account_user">Username</string>
-    <string name="pref_account">Account</string>
-    <string name="hello">Welcome to menéame!</string>
+	<!-- 
+    ================================================================
+    UI Elements
+    ================================================================
+    -->
+    
+    <!-- Main Activity -->
+    
     <string name="app_name">menéame</string>
-	<string name="main_tab_news">News</string>
+    <string name="hello">Welcome to menéame!</string>
+    
+    <!-- Tab Pages -->
+    
+    <string name="main_tab_news">News</string>
 	<string name="main_tab_queue">Queue</string>
 	<string name="main_tab_comments">All Comments</string>
-	<string name="empty_list">List is empty</string>
+	
+	<!-- UI Lsts -->
+	
+	<string name="empty_list">List is empty... please refresh...</string>
 	<string name="meneo_item_open">Open</string>
 	<string name="meneo_item_vote">Vote</string>
+	
+	<!-- Menu -->
+	
 	<string name="main_menu_refresh">Refresh</string>
 	<string name="main_menu_notame">Nótame</string>
 	<string name="main_menu_settings">Settings</string>
+    
+	<!-- 
+    ================================================================
+    Preference
+    ================================================================
+    -->
+    
+    <string name="app_pref_name">Preferences</string>
+    
+    <!-- Account Settings -->
+    
+    <string name="pref_account">Account</string>
+    <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
+    <string name="pref_account_apikey">API Key</string>
+    <string name="pref_account_user_summary">menéame username</string>    
+    <string name="pref_account_user">Username</string>    
+    
+	<!-- Style customizations -->
+	
+	<string name="pref_style">Style</string>
+	<string name="pref_style_mainanimation">App animation</string>
+    <string name="pref_style_mainanimation_summary">Animation used by the appliction</string>    
+    <string name="pref_style_mainanimation_none">None</string>
+    <string name="pref_style_mainanimation_fadein">Fade-In</string>
+    <string name="pref_style_mainanimation_slidein">Slide-In</string>
+    
+    <!-- Application settings -->
+    
+    <string name="pref_app">App</string>
+    <string name="pref_app_refreshonlaunch">Refresh on launch</string>
+    <string name="pref_app_refreshonlaunch_summary">Refresh feeds when app launches?</string>
+    <string name="pref_app_storage">Prefered storage method</string>
+    <string name="pref_app_storage_summary">Method used to store cached rss feeds</string>
+    <string name="pref_app_storage_none">None</string>
+    <string name="pref_app_storage_internal">Internal</string>
+    <string name="pref_app_storage_sdcard">SD-Card</string>
 </resources>
