@@ -1,6 +1,10 @@
 package com.dcg.meneame;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Semaphore;
 
 import org.apache.http.HttpResponse;
@@ -24,7 +28,7 @@ public class RssWorkerThread extends Thread {
 	private ApplicationMNM mApp = null;
 	
 	/** log tag for this class */
-	private static final String TAG = "ApplicationMNM";
+	private static final String TAG = "RssWorkerThread";
 	
 	/** if true we requested a stop, so do not handle any request stuff */
 	private boolean mbStopRequested = false;
@@ -37,6 +41,9 @@ public class RssWorkerThread extends Thread {
 	
 	/** Handler used to send messages to the activity that will handle our work */
 	private Handler mHandler;
+	
+	/** Read buffer used to catch our content */
+	private BufferedReader in = null;
 	
 	/**
 	 * 
@@ -64,6 +71,7 @@ public class RssWorkerThread extends Thread {
 		if ( mApp != null ) {
 			try {
 				try {
+					Log.d(TAG, "Aquirering semaphore " + mSemaphore.toString());
 					mSemaphore.acquire();
 				} catch (InterruptedException e) {
 						return;
@@ -72,6 +80,7 @@ public class RssWorkerThread extends Thread {
 			} catch (InterruptedException e) {
 				// fall thru and exit normally
 			} finally {
+				Log.d(TAG, "Releasing semaphore " + mSemaphore.toString());
 				mSemaphore.release();
 			}
 		}
@@ -85,7 +94,10 @@ public class RssWorkerThread extends Thread {
 		try {
 			HttpClient client = mApp.getHttpClient();
 			HttpGet request = new HttpGet();
-			request.setURI(new URI("http://feeds.feedburner.com/MeneamePublicadas?format=xml"));
+			
+			request.setURI(new URI(mFeedURL));
+			Log.d(TAG, "Starting request " + request.toString());
+			
 			HttpResponse response = client.execute(request);
 			
 			// We stopped!
@@ -97,27 +109,32 @@ public class RssWorkerThread extends Thread {
 			
 			if ( response != null )
 			{
+				in = new BufferedReader( new InputStreamReader(response.getEntity().getContent()));
+				
+				StringBuffer sb = new StringBuffer("");
+				String line = "";
+				String NL = System.getProperty("line.separator");
+				
+				while ((line = in.readLine()) != null) {
+					sb.append(line + NL);
+				}
+				
+				in.close();
+				String page = sb.toString();
+				
 				Log.d(TAG, "Finished!");				
 				data.putInt(COMPLETED_KEY, COMPLETED_OK);
 			}
 			else
 			{
 				Log.d(TAG, "Failed!");
-				data.putInt(COMPLETED_KEY, COMPLETED_FAILED);				
+				data.putInt(COMPLETED_KEY, COMPLETED_FAILED);		
 			}
 			
 			// Send final message
 			msg.setData(data);
 			mHandler.sendMessage(msg);
-			
-//			if ( !mbStopRequested )
-//			{			
-//				String page=EntityUtils.toString(response.getEntity());
-//				System.out.println(page.toString());
-//			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			
 			// Build and send failed message
@@ -126,6 +143,14 @@ public class RssWorkerThread extends Thread {
 			data.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 			msg.setData(data);
 			mHandler.sendMessage(msg);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();					
+				}
+			}
 		}
 	}
 }

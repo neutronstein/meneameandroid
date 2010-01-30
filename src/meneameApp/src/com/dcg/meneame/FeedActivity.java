@@ -6,10 +6,14 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 abstract public class FeedActivity extends ListActivity {
 	
+	/** Log tag */
+	private static final String TAG = "FeedActivity";
+
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
 	
@@ -55,11 +59,13 @@ abstract public class FeedActivity extends ListActivity {
 		Toast toast = null;
 		if ( data.getInt( RssWorkerThread.COMPLETED_KEY) == RssWorkerThread.COMPLETED_OK )
 		{
-			toast = Toast.makeText(getBaseContext(), "Finished", Toast.LENGTH_SHORT);
+			toast = Toast.makeText(getBaseContext(), "Completed", Toast.LENGTH_SHORT);
+			Log.d(TAG,"Worker thread posted a completed message: OK");
 		}
 		else
 		{
 			toast = Toast.makeText(getBaseContext(), "Failed!", Toast.LENGTH_SHORT);
+			Log.d(TAG,"Worker thread posted a completed message: FAILED");
 		}
 		
 		// Show
@@ -100,12 +106,14 @@ abstract public class FeedActivity extends ListActivity {
 		// Start thread if not started or not alive
 		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
+			Log.d(TAG, "Staring worker thread");
 			toast = Toast.makeText(getBaseContext(), "Refreshing: " + getFeedURL(), Toast.LENGTH_SHORT);
 			mRssThread = new RssWorkerThread(mApp, mHandler, getFeedURL(), mSemaphore );
 			mRssThread.start();
 		}
 		else
 		{
+			Log.d(TAG, "Worker thread already alive");
 			toast = Toast.makeText(getBaseContext(), "Already refreshing... please wait...", Toast.LENGTH_SHORT);
 		}
 		toast.show();
