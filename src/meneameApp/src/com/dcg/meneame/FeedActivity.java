@@ -15,7 +15,7 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.RssWorkerThread";
+	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.BaseRSSWorkerThread";
 
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
@@ -27,7 +27,7 @@ abstract public class FeedActivity extends ListActivity {
 	private Semaphore mSemaphore = new Semaphore(1);
 	
 	/** Worker thread which will do the async operations */
-	private BaseRssWorkerThread mRssThread = null;
+	private BaseRSSWorkerThread mRssThread = null;
 	
 	/** Handler used to communicate with our worker thread*/
 	protected Handler mHandler = null;
@@ -59,7 +59,7 @@ abstract public class FeedActivity extends ListActivity {
 		Bundle data = msg.getData();
 		
 		// Check if it completed ok or not
-		if ( data.getInt( BaseRssWorkerThread.COMPLETED_KEY) == BaseRssWorkerThread.COMPLETED_OK )
+		if ( data.getInt( BaseRSSWorkerThread.COMPLETED_KEY) == BaseRSSWorkerThread.COMPLETED_OK )
 		{
 			ShowToast("Completed");
 			Log.d(TAG,"Worker thread posted a completed message: OK");
@@ -114,7 +114,7 @@ abstract public class FeedActivity extends ListActivity {
 			try {
 				Log.d(TAG, "Staring worker thread");
 				ShowToast("Refreshing: " + getFeedURL());
-				mRssThread = (BaseRssWorkerThread) Class.forName( mRssWorkerThreadClass ).newInstance();
+				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClass ).newInstance();
 				mRssThread.setupWorker( mApp, mHandler, getFeedURL(), mSemaphore );
 				mRssThread.start();
 			} catch (IllegalAccessException e) {
