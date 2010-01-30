@@ -14,7 +14,7 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TabHost.TabSpec;
 
-public class MeneameMainActivity extends TabActivity  {
+public class MainActivity extends TabActivity  {
 	
 	/** Class tag used for it's logs */
 	private static final String tag = "MeneameMainActivity";
@@ -49,19 +49,19 @@ public class MeneameMainActivity extends TabActivity  {
         
         // Add news tab
         TabSpec newsTab = mTabHost.newTabSpec("last_news_tab"); 
-        newsTab.setContent(new Intent(this, MeneameNewsActivity.class)); 
+        newsTab.setContent(new Intent(this, NewsActivity.class)); 
         newsTab.setIndicator( getResources().getString(R.string.main_tab_news) ); 
         mTabHost.addTab(newsTab);
         
         // Add queue tab
         TabSpec queueTab = mTabHost.newTabSpec("in_que_tab"); 
-        queueTab.setContent(new Intent(this, MeneameQueueActivity.class)); 
+        queueTab.setContent(new Intent(this, QueueActivity.class)); 
         queueTab.setIndicator( getResources().getString(R.string.main_tab_queue) ); 
         mTabHost.addTab(queueTab);
         
         // Add comments tab
         TabSpec commentsTab = mTabHost.newTabSpec("comments_tab"); 
-        commentsTab.setContent(new Intent(this, MeneameCommentsActivity.class)); 
+        commentsTab.setContent(new Intent(this, CommentsActivity.class)); 
         commentsTab.setIndicator( getResources().getString(R.string.main_tab_comments) ); 
         mTabHost.addTab(commentsTab);
         
@@ -74,7 +74,7 @@ public class MeneameMainActivity extends TabActivity  {
     	mMainAnimation = null;
     	
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-        String mainAnim = prefs.getString("pref_app_mainanimation", "None");
+        String mainAnim = prefs.getString("pref_style_mainanimation", "None");
         if ( mainAnim.compareTo("Fade-in") == 0 )
         {
         	mMainAnimation = AnimationUtils.loadAnimation( this, R.anim.fadein );
@@ -125,7 +125,7 @@ public class MeneameMainActivity extends TabActivity  {
     
     /* Open settings screen */
     public void openSettingsScreen() {
-    	Intent settingsActivity = new Intent( this, MeneamePreferences.class);
+    	Intent settingsActivity = new Intent( this, Preferences.class);
     	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
     	
     	// TODO: Catch result!

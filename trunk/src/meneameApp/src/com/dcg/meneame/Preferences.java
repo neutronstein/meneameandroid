@@ -3,7 +3,7 @@ package com.dcg.meneame;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-public class MeneamePreferences extends PreferenceActivity {
+public class Preferences extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

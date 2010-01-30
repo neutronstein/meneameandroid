@@ -8,17 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class MeneameCommentsActivity extends ListActivity {
+public class QueueActivity extends ListActivity {
 	
 	static final String[] COUNTRIES = new String[] {
-		"Belize", "Benin", "Bermuda", "Bhutan", "Bolivia",
-	    "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory",
-	    "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
-	    "Cote d'Ivoire", "Cambodia", "Cameroon", "Canada", "Cape Verde",
+		"Estonia", "Ethiopia", "Faeroe Islands", "Falkland Islands", "Fiji", "Finland",
+	    "Former Yugoslav Republic of Macedonia", "France", "French Guiana", "French Polynesia",
+	    "French Southern Territories", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar",
+	    "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau",
+	    "Guyana", "Haiti", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary",
 		};
-	
-	static final int LIST_MENU_OPEN = 0;
-	static final int LIST_MENU_VOTE = 1;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -39,9 +37,9 @@ public class MeneameCommentsActivity extends ListActivity {
 		listView.setOnCreateContextMenuListener( 
 				new View.OnCreateContextMenuListener() {
 					public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
-						//AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
-						menu.add(0, LIST_MENU_OPEN, 0, "Open");
-						menu.add(0, LIST_MENU_VOTE, 0, "Vote");
+						AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
+						menu.add(0, 0, 0, "Open");
+						menu.add(0, 0, 0, "Vote");
 					}
 	
 				});
