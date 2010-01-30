@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
+import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends TabActivity  {
@@ -100,11 +101,6 @@ public class MainActivity extends TabActivity  {
     @Override
     protected void onStop() {
     	super.onStop();
-    	
-    	if ( mApp != null )
-    	{
-    		mApp.clearTabActivityRecord();
-    	}
     }
     
     /** After the activity get's visible to the user */
@@ -120,6 +116,14 @@ public class MainActivity extends TabActivity  {
     	}
     }
     
+    /**
+	 * Shows a toast message, will hide any already shown message
+	 * @param msg
+	 */
+	protected void ShowToast( String msg ) {
+		if ( mApp != null ) mApp.ShowToast(msg);
+	}
+    
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
@@ -133,12 +137,10 @@ public class MainActivity extends TabActivity  {
         switch (item.getItemId()) 
         {
         case MENU_REFRESH:
-            // Refresh currently selected tab content
-        	
+            // Refresh currently selected tab content        	
         	FeedActivity currentActivity = (FeedActivity)mApp.getTabActivity(mTabHost.getCurrentTabTag());
         	if ( currentActivity != null )
         	{
-        		Log.d(TAG, ">>>> " + currentActivity.toString() + " " + currentActivity.getFeedURL());
         		currentActivity.RefreshFeed();
         	}
         	else
@@ -148,6 +150,7 @@ public class MainActivity extends TabActivity  {
             return true;
         case MENU_NOTAME:
         	// Open notame activity
+        	ShowToast("NO IMPLEMENTED YET");
         	return true;
         case MENU_SETTINGS:
             // Open settitngs screen

@@ -56,20 +56,24 @@ abstract public class FeedActivity extends ListActivity {
 		Bundle data = msg.getData();
 		
 		// Check if it completed ok or not
-		Toast toast = null;
 		if ( data.getInt( RssWorkerThread.COMPLETED_KEY) == RssWorkerThread.COMPLETED_OK )
 		{
-			toast = Toast.makeText(getBaseContext(), "Completed", Toast.LENGTH_SHORT);
+			ShowToast("Completed");
 			Log.d(TAG,"Worker thread posted a completed message: OK");
 		}
 		else
 		{
-			toast = Toast.makeText(getBaseContext(), "Failed!", Toast.LENGTH_SHORT);
+			ShowToast("Failed!");
 			Log.d(TAG,"Worker thread posted a completed message: FAILED");
 		}
-		
-		// Show
-		toast.show();
+	}
+	
+	/**
+	 * Shows a toast message, will hide any already shown message
+	 * @param msg
+	 */
+	protected void ShowToast( String msg ) {
+		if ( mApp != null ) mApp.ShowToast(msg);
 	}
 	
 	/**
@@ -99,23 +103,19 @@ abstract public class FeedActivity extends ListActivity {
 	/**
 	 * Will refresh the current feed
 	 */
-	public void RefreshFeed() {
-		Toast toast = null;
-		
-		
+	public void RefreshFeed() {		
 		// Start thread if not started or not alive
 		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
 			Log.d(TAG, "Staring worker thread");
-			toast = Toast.makeText(getBaseContext(), "Refreshing: " + getFeedURL(), Toast.LENGTH_SHORT);
+			ShowToast("Refreshing: " + getFeedURL());
 			mRssThread = new RssWorkerThread(mApp, mHandler, getFeedURL(), mSemaphore );
 			mRssThread.start();
 		}
 		else
 		{
 			Log.d(TAG, "Worker thread already alive");
-			toast = Toast.makeText(getBaseContext(), "Already refreshing... please wait...", Toast.LENGTH_SHORT);
+			ShowToast("Already refreshing... please wait...");
 		}
-		toast.show();
 	}
 }
