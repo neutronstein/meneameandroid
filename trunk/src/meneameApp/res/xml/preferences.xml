@@ -20,14 +20,21 @@
 			android:title="@string/pref_app_refreshonlaunch"
 			android:summary="@string/pref_app_refreshonlaunch_summary"
 			android:defaultValue="false" />
+		<ListPreference
+			android:key="pref_app_storage" 
+			android:summary="@string/pref_app_storage_summary" 
+			android:title="@string/pref_app_storage" 
+			android:entries="@array/pref_app_storage_entries" 
+			android:entryValues="@array/pref_app_storage_values" 
+			android:defaultValue="Internal" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_style">
 		<ListPreference 
 			android:key="pref_style_mainanimation" 
 			android:summary="@string/pref_style_mainanimation_summary" 
 			android:title="@string/pref_style_mainanimation" 
-			android:entries="@array/animationListEntries" 
-			android:entryValues="@array/animationListValues" 
+			android:entries="@array/pref_style_mainanimation_entries" 
+			android:entryValues="@array/pref_style_mainanimation_values" 
 			android:defaultValue="None" />
 	</PreferenceCategory>
 </PreferenceScreen>
