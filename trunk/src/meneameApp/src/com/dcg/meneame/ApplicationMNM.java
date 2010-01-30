@@ -172,6 +172,7 @@ public class ApplicationMNM extends Application {
 	{
 		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
 		{
+			Log.d(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
 		}
 	}
