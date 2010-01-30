@@ -4,6 +4,8 @@ import java.util.concurrent.Semaphore;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.Toast;
 
 abstract public class FeedActivity extends ListActivity {
@@ -20,6 +22,9 @@ abstract public class FeedActivity extends ListActivity {
 	/** Worker thread which will do the async operations */
 	private RssWorkerThread mRssThread = null;
 	
+	/** Handler used to communicate with our worker thread*/
+	protected Handler mHandler = null;
+	
 	public FeedActivity() {
 		super();
 	}
@@ -34,6 +39,31 @@ abstract public class FeedActivity extends ListActivity {
 		} catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		mHandler = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				handleThreadMessage( msg );
+			}
+		};
+	}
+	
+	protected void handleThreadMessage(Message msg) {
+		Bundle data = msg.getData();
+		
+		// Check if it completed ok or not
+		Toast toast = null;
+		if ( data.getInt( RssWorkerThread.COMPLETED_KEY) == RssWorkerThread.COMPLETED_OK )
+		{
+			toast = Toast.makeText(getBaseContext(), "Finished", Toast.LENGTH_SHORT);
+		}
+		else
+		{
+			toast = Toast.makeText(getBaseContext(), "Failed!", Toast.LENGTH_SHORT);
+		}
+		
+		// Show
+		toast.show();
 	}
 	
 	/**
@@ -64,11 +94,20 @@ abstract public class FeedActivity extends ListActivity {
 	 * Will refresh the current feed
 	 */
 	public void RefreshFeed() {
-		Toast toast = Toast.makeText(getBaseContext(), "Refreshing: " + getFeedURL(), Toast.LENGTH_SHORT);
-		toast.show();
+		Toast toast = null;
 		
-		// Start thread, normally we should build a handler and so
-		mRssThread = new RssWorkerThread(mApp, getFeedURL(), mSemaphore);
-		mRssThread.start();
+		
+		// Start thread if not started or not alive
+		if ( mRssThread == null || !mRssThread.isAlive() )
+		{
+			toast = Toast.makeText(getBaseContext(), "Refreshing: " + getFeedURL(), Toast.LENGTH_SHORT);
+			mRssThread = new RssWorkerThread(mApp, mHandler, getFeedURL(), mSemaphore );
+			mRssThread.start();
+		}
+		else
+		{
+			toast = Toast.makeText(getBaseContext(), "Already refreshing... please wait...", Toast.LENGTH_SHORT);
+		}
+		toast.show();
 	}
 }
