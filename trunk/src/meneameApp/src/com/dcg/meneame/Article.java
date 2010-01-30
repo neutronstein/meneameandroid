@@ -1,5 +1,6 @@
 package com.dcg.meneame;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Article extends Object {
@@ -10,8 +11,8 @@ public class Article extends Object {
 	// RSS Item data
 	public String mTitle;
 	public String mDescription;
-	public String mMeneameLink;
-	public String mLink;
+	public URL mMeneameLink;
+	public URL mLink;
 	public String mCreator;
 	public String mPubDate;
 	public ArrayList<String> mTags;
