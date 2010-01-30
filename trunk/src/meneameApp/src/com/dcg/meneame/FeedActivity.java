@@ -13,6 +13,9 @@ abstract public class FeedActivity extends ListActivity {
 	
 	/** Log tag */
 	private static final String TAG = "FeedActivity";
+	
+	/** Our RssWorkerThread class so subclasses will be able to call another one */
+	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.RssWorkerThread";
 
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
@@ -24,7 +27,7 @@ abstract public class FeedActivity extends ListActivity {
 	private Semaphore mSemaphore = new Semaphore(1);
 	
 	/** Worker thread which will do the async operations */
-	private RssWorkerThread mRssThread = null;
+	private BaseRssWorkerThread mRssThread = null;
 	
 	/** Handler used to communicate with our worker thread*/
 	protected Handler mHandler = null;
@@ -56,7 +59,7 @@ abstract public class FeedActivity extends ListActivity {
 		Bundle data = msg.getData();
 		
 		// Check if it completed ok or not
-		if ( data.getInt( RssWorkerThread.COMPLETED_KEY) == RssWorkerThread.COMPLETED_OK )
+		if ( data.getInt( BaseRssWorkerThread.COMPLETED_KEY) == BaseRssWorkerThread.COMPLETED_OK )
 		{
 			ShowToast("Completed");
 			Log.d(TAG,"Worker thread posted a completed message: OK");
@@ -107,10 +110,27 @@ abstract public class FeedActivity extends ListActivity {
 		// Start thread if not started or not alive
 		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
-			Log.d(TAG, "Staring worker thread");
-			ShowToast("Refreshing: " + getFeedURL());
-			mRssThread = new RssWorkerThread(mApp, mHandler, getFeedURL(), mSemaphore );
-			mRssThread.start();
+			String Error = "";
+			try {
+				Log.d(TAG, "Staring worker thread");
+				ShowToast("Refreshing: " + getFeedURL());
+				mRssThread = (BaseRssWorkerThread) Class.forName( mRssWorkerThreadClass ).newInstance();
+				mRssThread.setupWorker( mApp, mHandler, getFeedURL(), mSemaphore );
+				mRssThread.start();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Error = e.toString();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Error = e.toString();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Error = e.toString();
+			}
+			if ( Error.length() > 0 ) ShowToast("Ups... failed to refresh: " + Error);
 		}
 		else
 		{
