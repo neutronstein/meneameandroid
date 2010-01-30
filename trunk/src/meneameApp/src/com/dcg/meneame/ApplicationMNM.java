@@ -22,20 +22,20 @@ import android.util.Log;
 public class ApplicationMNM extends Application {
 	
 	/** log tag for this class */
-	private static final String TAG = "Application";
+	private static final String TAG = "ApplicationMNM";
 	
 	/** Semaphore used by our rss worker thread */
 	private final Semaphore mRssSemaphore = new Semaphore(1);
 	
 	/** Shared HttpClient used by our application */
-	private final HttpClient httpClient = null;
+	private HttpClient mHttpClient = null;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		
 		// Create shared HttpClient
-		createHttpClient();
+		mHttpClient = createHttpClient();
 	}
 	
 	/**
@@ -90,7 +90,7 @@ public class ApplicationMNM extends Application {
 	 * @return HttpClient
 	 */
 	public HttpClient getHttpClient() {
-		return httpClient;
+		return mHttpClient;
 	}
 	
 	/**
@@ -98,9 +98,9 @@ public class ApplicationMNM extends Application {
 	 */
 	private void shutdownHttpClient()
 	{
-		if(httpClient!=null && httpClient.getConnectionManager()!=null)
+		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
 		{
-				httpClient.getConnectionManager().shutdown();
+			mHttpClient.getConnectionManager().shutdown();
 		}
 	}
 }
