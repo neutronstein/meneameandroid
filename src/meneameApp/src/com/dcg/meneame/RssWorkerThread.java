@@ -1,15 +1,14 @@
 package com.dcg.meneame;
 
 import java.net.URI;
+import java.util.concurrent.Semaphore;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 public class RssWorkerThread extends Thread {
 	
@@ -22,19 +21,22 @@ public class RssWorkerThread extends Thread {
 	/** if true we requested a stop, so do not handle any request stuff */
 	private boolean mbStopRequested = false;
 	
+	/** Semaphore used when the thread starts working*/
+	private Semaphore mSemaphore = null;
+	
+	/** Feed URL */
+	private String mFeedURL = "";
+	
 	/**
 	 * 
 	 * @param Activity ParentActivity, holds the semaphore to make this thread save
 	 */
-	public RssWorkerThread( Activity PrentActivity ) {
+	public RssWorkerThread( ApplicationMNM globalApp, String feedURL, Semaphore threadSemaphore ) {
 		super();
 		
-		// Cache app
-		try {
-			mApp = (ApplicationMNM)PrentActivity.getApplication();
-		} catch(Exception e){
-			e.printStackTrace();
-		}
+		mFeedURL = feedURL;
+		mSemaphore = threadSemaphore;
+		mApp = globalApp;
 	}
 	
 	/**
@@ -50,7 +52,7 @@ public class RssWorkerThread extends Thread {
 		if ( mApp != null ) {
 			try {
 				try {
-					mApp.acquireRssSemaphore();
+					mSemaphore.acquire();
 				} catch (InterruptedException e) {
 						return;
 				}
@@ -58,7 +60,7 @@ public class RssWorkerThread extends Thread {
 			} catch (InterruptedException e) {
 				// fall thru and exit normally
 			} finally {
-				mApp.releaseRssSemaphore();
+				mSemaphore.release();
 			}
 		}
 		else {
@@ -71,7 +73,7 @@ public class RssWorkerThread extends Thread {
 		try {
 			HttpClient client = mApp.getHttpClient();
 			HttpGet request = new HttpGet();
-			request.setURI(new URI("http://www.google.com/"));
+			request.setURI(new URI("http://feeds.feedburner.com/MeneamePublicadas?format=xml"));
 			HttpResponse response = client.execute(request);
 			
 			if ( !mbStopRequested )

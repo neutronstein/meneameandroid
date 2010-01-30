@@ -1,14 +1,12 @@
 package com.dcg.meneame;
 
-import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class CommentsActivity extends ListActivity {
+public class CommentsActivity extends FeedActivity {
 	
 	static final String[] COUNTRIES = new String[] {
 		"Belize", "Benin", "Bermuda", "Bhutan", "Bolivia",
@@ -19,11 +17,24 @@ public class CommentsActivity extends ListActivity {
 	
 	static final int LIST_MENU_OPEN = 0;
 	static final int LIST_MENU_VOTE = 1;
+	
+	public CommentsActivity() {
+		super();
+		
+		// Set feed
+		mFeedURL = "http://www.meneame.net/comments_rss2.php";
+	}
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Register our self
+		if ( getTabActivityTag().length() > 0 )
+		{
+			mApp.addTabActivity( getTabActivityTag(), this);
+		}
 		
 		setContentView(R.layout.meneo_list);
 		
@@ -45,5 +56,21 @@ public class CommentsActivity extends ListActivity {
 					}
 	
 				});
+	}
+
+	/**
+	 * Returns the tag this activity will hold in the main TabWidget
+	 * @return String - TabTag
+	 */
+	public static String getTabActivityTag() {
+		return "comments_tab";
+	}
+	
+	/**
+	 * String id used for the tab indicator
+	 * @return
+	 */
+	public static int getIndicatorStringID() {
+		return R.string.main_tab_comments;
 	}
 }

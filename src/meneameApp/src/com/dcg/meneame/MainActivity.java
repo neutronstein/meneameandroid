@@ -5,20 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
-import android.widget.TabWidget;
-import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends TabActivity  {
 	
 	/** Class tag used for it's logs */
-	private static final String tag = "MeneameMainActivity";
+	private static final String TAG = "MeneameMainActivity";
 	
 	/** Main app TabHost*/
 	private TabHost mTabHost;
@@ -46,6 +44,8 @@ public class MainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        Log.d(TAG, "Starting...");
+        
         setContentView(R.layout.main);
         
         // Cache app
@@ -59,28 +59,29 @@ public class MainActivity extends TabActivity  {
         mTabHost = getTabHost();
         
         // Add news tab
-        TabSpec newsTab = mTabHost.newTabSpec("last_news_tab"); 
+        TabSpec newsTab = mTabHost.newTabSpec(NewsActivity.getTabActivityTag()); 
         newsTab.setContent(new Intent(this, NewsActivity.class)); 
-        newsTab.setIndicator( getResources().getString(R.string.main_tab_news) ); 
+        newsTab.setIndicator( getResources().getString(NewsActivity.getIndicatorStringID()) ); 
         mTabHost.addTab(newsTab);
         
         // Add queue tab
-        TabSpec queueTab = mTabHost.newTabSpec("in_que_tab"); 
+        TabSpec queueTab = mTabHost.newTabSpec(QueueActivity.getTabActivityTag()); 
         queueTab.setContent(new Intent(this, QueueActivity.class)); 
-        queueTab.setIndicator( getResources().getString(R.string.main_tab_queue) ); 
+        queueTab.setIndicator( getResources().getString(QueueActivity.getIndicatorStringID()) ); 
         mTabHost.addTab(queueTab);
+
         
         // Add comments tab
-        TabSpec commentsTab = mTabHost.newTabSpec("comments_tab"); 
+        TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity.getTabActivityTag()); 
         commentsTab.setContent(new Intent(this, CommentsActivity.class)); 
-        commentsTab.setIndicator( getResources().getString(R.string.main_tab_comments) ); 
+        commentsTab.setIndicator( getResources().getString(CommentsActivity.getIndicatorStringID()) ); 
         mTabHost.addTab(commentsTab);
         
         // Set news tab as visible one
         mTabHost.setCurrentTab(0);
     }
     
-    /** Refreshs the animation we will use for the tab page */
+    /** Refresh the animation we will use for the tab page */
     private void initAnim() {
     	mMainAnimation = null;
     	
@@ -102,7 +103,7 @@ public class MainActivity extends TabActivity  {
     	
     	if ( mApp != null )
     	{
-    		mApp.stopRssWorkerThread();
+    		mApp.clearTabActivityRecord();
     	}
     }
     
@@ -133,14 +134,17 @@ public class MainActivity extends TabActivity  {
         {
         case MENU_REFRESH:
             // Refresh currently selected tab content
-        	Toast toast = Toast.makeText(getBaseContext(), "Fetching Feed...", Toast.LENGTH_SHORT);
-        	toast.show();
-        	RssWorkerThread RssTest = new RssWorkerThread( this );
-        	if ( mApp != null )
+        	
+        	FeedActivity currentActivity = (FeedActivity)mApp.getTabActivity(mTabHost.getCurrentTabTag());
+        	if ( currentActivity != null )
         	{
-        		mApp.registerRssWorkerThread(RssTest);
+        		Log.d(TAG, ">>>> " + currentActivity.toString() + " " + currentActivity.getFeedURL());
+        		currentActivity.RefreshFeed();
         	}
-        	RssTest.start();
+        	else
+        	{
+        		Log.w(TAG, "No activity registered with tag " + mTabHost.getCurrentTabTag());
+        	} 
             return true;
         case MENU_NOTAME:
         	// Open notame activity

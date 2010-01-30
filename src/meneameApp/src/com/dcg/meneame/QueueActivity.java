@@ -1,14 +1,12 @@
 package com.dcg.meneame;
 
-import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class QueueActivity extends ListActivity {
+public class QueueActivity extends FeedActivity {
 	
 	static final String[] COUNTRIES = new String[] {
 		"Estonia", "Ethiopia", "Faeroe Islands", "Falkland Islands", "Fiji", "Finland",
@@ -17,11 +15,24 @@ public class QueueActivity extends ListActivity {
 	    "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau",
 	    "Guyana", "Haiti", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary",
 		};
-
+	
+	public QueueActivity() {
+		super();
+		
+		// Set feed
+		mFeedURL = "http://feeds.feedburner.com/MeneameEnCola?format=xml";
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Register our self
+		if ( getTabActivityTag().length() > 0 )
+		{
+			mApp.addTabActivity( getTabActivityTag(), this);
+		}
 		
 		setContentView(R.layout.meneo_list);
 		
@@ -37,11 +48,26 @@ public class QueueActivity extends ListActivity {
 		listView.setOnCreateContextMenuListener( 
 				new View.OnCreateContextMenuListener() {
 					public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
-						AdapterContextMenuInfo ContextMenu =(AdapterContextMenuInfo) menuInfo;
 						menu.add(0, 0, 0, "Open");
 						menu.add(0, 0, 0, "Vote");
 					}
 	
 				});
+	}
+	
+	/**
+	 * Returns the tag this activity will hold in the main TabWidget
+	 * @return String - TabTag
+	 */
+	public static String getTabActivityTag() {
+		return "in_que_tab";
+	}
+	
+	/**
+	 * String id used for the tab indicator
+	 * @return
+	 */
+	public static int getIndicatorStringID() {
+		return R.string.main_tab_queue;
 	}
 }

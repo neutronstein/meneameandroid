@@ -1,6 +1,7 @@
 package com.dcg.meneame;
 
-import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -16,6 +17,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
+import android.app.Activity;
 import android.app.Application;
 import android.util.Log;
 
@@ -24,58 +26,102 @@ public class ApplicationMNM extends Application {
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
 	
-	/** Semaphore used by our rss worker thread */
-	private final Semaphore mRssSemaphore = new Semaphore(1);
-	
+	/** The actual record of activity records */
+	private ArrayList<TabActivityRecord> mTabActivityRecord = new ArrayList<TabActivityRecord>();
+
 	/** Shared HttpClient used by our application */
 	private HttpClient mHttpClient = null;
-	
-	/** Current Rss thread */
-	private RssWorkerThread mRssThread = null;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		
 		// Create shared HttpClient
-		mHttpClient = createHttpClient();
+		mHttpClient = createHttpClient();		
 	}
 	
-	public void registerRssWorkerThread( RssWorkerThread newThread ) {
-		mRssThread = newThread;
-		Log.d(TAG,"registerRssWorkerThread() > " + mRssThread.toString() + " registered");
-	}
-	
-	public void stopRssWorkerThread() {
-		Log.d(TAG,"stopRssWorkerThread()");
-		if ( mRssThread != null ) 
+	/**
+	 * Add a new activity we use in our main tab to the global registry
+	 * @param String - tag
+	 * @param Activity - activity
+	 */
+	public void addTabActivity( String tag, Activity activity ) {
+		if ( !isTabActivityRegistered( tag ) )
 		{
-			Log.d(TAG,"stopRssWorkerThread() > " + mRssThread.toString() + " stopped");
-			if ( mRssThread.isAlive() )
+			mTabActivityRecord.add(new TabActivityRecord( tag, activity ));
+		}
+	}
+	
+	/**
+	 * Removes the activity linked to a tag
+	 * @param tag
+	 */
+	public void removeTabActivity( String tag ) {
+		int index = getTabActivityIndex(tag);
+		if ( index != -1 )
+		{
+			mTabActivityRecord.remove( index );
+		}
+	}
+	
+	/**
+	 * Returns an iterator to navigate through the list of registered tab activities
+	 * @return Iterator of TabActivityRecords
+	 */
+	public Iterator<TabActivityRecord> getTabActivityRecordIterator() {
+		return (Iterator<TabActivityRecord>)mTabActivityRecord.iterator();
+	}
+	
+	/**
+	 * Will return the Activity linked to a tag
+	 * @param tag
+	 * @return Activity
+	 */
+	public Activity getTabActivity( String tag ) {
+		if ( isTabActivityRegistered( tag ) )
+		{
+			return mTabActivityRecord.get( getTabActivityIndex( tag ) ).getTabActivity();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the index of the tab activity registered with a sepcifc tag
+	 * @param tag
+	 * @return int - index
+	 */
+	public int getTabActivityIndex( String tag ) {
+		// Iterate through the list
+		Iterator<TabActivityRecord> it = getTabActivityRecordIterator();
+		int i = 0;
+		
+		while(it.hasNext())
+		{
+			TabActivityRecord tabRecord = it.next();
+			if ( tabRecord.getTabTag().compareTo( tag ) == 0 )
 			{
-				mRssThread.requestStop();
+				return i;
 			}
-			mRssThread = null;
+			i++;
 		}
-		else
-		{
-			Log.d(TAG,"stopRssWorkerThread() > no worker thread registered");
-		}
+		return -1;
 	}
 	
 	/**
-	 * Aquire Rss Semaphore
-	 * @throws InterruptedException
+	 * 
+	 * @param tag
+	 * @return true if an activity with the same tag is already registred
 	 */
-	public void acquireRssSemaphore() throws InterruptedException {
-		mRssSemaphore.acquire();
+	public boolean isTabActivityRegistered( String tag ) {
+		return getTabActivityIndex( tag ) != -1;
 	}
 	
 	/**
-	 * Release Rss Semaphore
+	 * Clears all registered activities
 	 */
-	public void releaseRssSemaphore() {
-		mRssSemaphore.release();
+	public void clearTabActivityRecord() {
+		mTabActivityRecord.clear();
+		Log.d(TAG, "Clearing TabActivityRecord...");
 	}
 	
 	@Override
@@ -83,7 +129,6 @@ public class ApplicationMNM extends Application {
 	{
 		super.onLowMemory();
 		shutdownHttpClient();
-		stopRssWorkerThread();
 	}
 	
 	@Override
@@ -91,7 +136,7 @@ public class ApplicationMNM extends Application {
 	{
 		super.onTerminate();
 		shutdownHttpClient();
-		stopRssWorkerThread();
+		clearTabActivityRecord();
 	}
 	
 	private HttpClient createHttpClient()
