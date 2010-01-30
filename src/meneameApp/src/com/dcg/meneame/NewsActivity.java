@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class MeneameNewsActivity extends ListActivity {
+public class NewsActivity extends ListActivity {
 	
 	static final String[] COUNTRIES = new String[] {
 			"Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
