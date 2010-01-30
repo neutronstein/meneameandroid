@@ -30,12 +30,37 @@ public class ApplicationMNM extends Application {
 	/** Shared HttpClient used by our application */
 	private HttpClient mHttpClient = null;
 	
+	/** Current Rss thread */
+	private RssWorkerThread mRssThread = null;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
+	}
+	
+	public void registerRssWorkerThread( RssWorkerThread newThread ) {
+		mRssThread = newThread;
+		Log.d(TAG,"registerRssWorkerThread() > " + mRssThread.toString() + " registered");
+	}
+	
+	public void stopRssWorkerThread() {
+		Log.d(TAG,"stopRssWorkerThread()");
+		if ( mRssThread != null ) 
+		{
+			Log.d(TAG,"stopRssWorkerThread() > " + mRssThread.toString() + " stopped");
+			if ( mRssThread.isAlive() )
+			{
+				mRssThread.requestStop();
+			}
+			mRssThread = null;
+		}
+		else
+		{
+			Log.d(TAG,"stopRssWorkerThread() > no worker thread registered");
+		}
 	}
 	
 	/**
@@ -58,6 +83,7 @@ public class ApplicationMNM extends Application {
 	{
 		super.onLowMemory();
 		shutdownHttpClient();
+		stopRssWorkerThread();
 	}
 	
 	@Override
@@ -65,6 +91,7 @@ public class ApplicationMNM extends Application {
 	{
 		super.onTerminate();
 		shutdownHttpClient();
+		stopRssWorkerThread();
 	}
 	
 	private HttpClient createHttpClient()
