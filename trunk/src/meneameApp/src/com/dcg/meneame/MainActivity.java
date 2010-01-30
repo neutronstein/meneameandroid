@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends TabActivity  {
@@ -36,6 +37,9 @@ public class MainActivity extends TabActivity  {
     
     /** Main animation */
     private Animation mMainAnimation = null;
+    
+    /** Global Application */
+	private ApplicationMNM mApp = null;
 
 	/** Called when the activity is first created. */
     @Override
@@ -43,6 +47,13 @@ public class MainActivity extends TabActivity  {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.main);
+        
+        // Cache app
+		try {
+			mApp = (ApplicationMNM)getApplication();
+		} catch(Exception e){
+			e.printStackTrace();
+		}
         
         // Get some global stuff
         mTabHost = getTabHost();
@@ -85,6 +96,16 @@ public class MainActivity extends TabActivity  {
         }
     }
     
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	
+    	if ( mApp != null )
+    	{
+    		mApp.stopRssWorkerThread();
+    	}
+    }
+    
     /** After the activity get's visible to the user */
     protected void onResume() {
     	super.onResume();
@@ -108,9 +129,18 @@ public class MainActivity extends TabActivity  {
     
     /* Handles item selections */
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        switch (item.getItemId()) 
+        {
         case MENU_REFRESH:
             // Refresh currently selected tab content
+        	Toast toast = Toast.makeText(getBaseContext(), "Fetching Feed...", Toast.LENGTH_SHORT);
+        	toast.show();
+        	RssWorkerThread RssTest = new RssWorkerThread( this );
+        	if ( mApp != null )
+        	{
+        		mApp.registerRssWorkerThread(RssTest);
+        	}
+        	RssTest.start();
             return true;
         case MENU_NOTAME:
         	// Open notame activity

@@ -9,14 +9,18 @@ import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 public class RssWorkerThread extends Thread {
 	
-	/** activity used to access global application data */
-	private ApplicationMNM mApp;
+	/** Global Application */
+	private ApplicationMNM mApp = null;
 	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
+	
+	/** if true we requested a stop, so do not handle any request stuff */
+	private boolean mbStopRequested = false;
 	
 	/**
 	 * 
@@ -33,8 +37,16 @@ public class RssWorkerThread extends Thread {
 		}
 	}
 	
+	/**
+	 * Request this thread to stop what it's doing
+	 */
+	public void requestStop() {
+		mbStopRequested = true;
+	}
+	
 	@Override
 	public void run() {
+		mbStopRequested = false;
 		if ( mApp != null ) {
 			try {
 				try {
@@ -61,8 +73,12 @@ public class RssWorkerThread extends Thread {
 			HttpGet request = new HttpGet();
 			request.setURI(new URI("http://www.google.com/"));
 			HttpResponse response = client.execute(request);
-			String page=EntityUtils.toString(response.getEntity());
-			System.out.println(page);
+			
+			if ( !mbStopRequested )
+			{			
+				String page=EntityUtils.toString(response.getEntity());
+				System.out.println(page.toString());
+			}
 		}
 		catch (Exception e)
 		{
