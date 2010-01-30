@@ -20,6 +20,7 @@ import org.apache.http.protocol.HTTP;
 import android.app.Activity;
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 public class ApplicationMNM extends Application {
 	
@@ -31,6 +32,9 @@ public class ApplicationMNM extends Application {
 
 	/** Shared HttpClient used by our application */
 	private HttpClient mHttpClient = null;
+	
+	/** Toast message handler */
+	protected Toast mToast = null;
 	
 	@Override
 	public void onCreate() {
@@ -175,5 +179,22 @@ public class ApplicationMNM extends Application {
 			Log.d(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
 		}
+	}
+	
+	/**
+	 * Shows a toast message, will hide any already shown message
+	 * @param msg
+	 */
+	protected void ShowToast( String msg ) {
+		if ( mToast == null )
+		{
+			mToast = Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT);
+		}
+		else
+		{
+			mToast.cancel();
+			mToast.setText( msg );
+		}
+		mToast.show();
 	}
 }
