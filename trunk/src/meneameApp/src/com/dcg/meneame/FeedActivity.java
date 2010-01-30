@@ -15,7 +15,7 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.BaseRSSWorkerThread";
+	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.DefaultRSSWorkerThread";
 
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
