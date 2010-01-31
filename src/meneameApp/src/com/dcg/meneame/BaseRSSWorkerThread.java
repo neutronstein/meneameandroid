@@ -1,9 +1,7 @@
 package com.dcg.meneame;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -14,7 +12,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -26,11 +23,18 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public static int COMPLETED_OK = 0;
 	public static int COMPLETED_FAILED = -1;
 	
+	/** Key which defines any state when caching a feed */
+	public static String CACHE_FEED_RESULT = "cache_feed_result";
+	public static int CACHE_FEED_OK = 0;
+	public static int CACHE_FEED_RESULT_RSS_FAILED_UNKOWN = 1;
+	public static int CACHE_FEED_RESULT_RSS_FAILED_SD_NOTWRITEABLE = 2;
+	public static int CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY = 3;	
+	
 	/** Global Application */
 	private ApplicationMNM mApp = null;
 	
 	/** log tag for this class */
-	private static final String TAG = "RssWorkerThread";
+	private static final String TAG = "BaseRSSWorkerThread";
 	
 	/** if true we requested a stop, so do not handle any request stuff */
 	private boolean mbStopRequested = false;
@@ -135,7 +139,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				in.close();
 				String page = sb.toString();
 				
-				// Start parsing the feed and 
+				// Start parsing and caching the feed
 				data.putAll( parseResult(page) );
 				
 				//System.out.println(page);
@@ -179,7 +183,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	/**
 	 * Prepares the SDCard with all we need
 	 */
-	private void prepareSDCard() {
+	protected void prepareSDCard( Bundle data ) {
 		// Create app dir in SDCard if possible
 		File path = new File("/sdcard/com.dcg.meneame/cache/");
 		if(! path.isDirectory()) {
@@ -189,42 +193,21 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			}
 			else
 			{
+				data.putInt(CACHE_FEED_RESULT, CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY);
 				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
 			}
 		}
 	}
 	
 	/**
-	 * Will parse the incomming data and save it into a Bundle
+	 * Will parse the incoming data and save it into a Bundle
 	 * @param page
 	 * @return
 	 */
 	protected Bundle parseResult( String page )
 	{
 		Bundle data = new Bundle();
-		
-		// By default this is just empty
-		try {
-			// Prepare process
-			prepareSDCard();
-			
-		    File root = Environment.getExternalStorageDirectory();
-		    if (root.canWrite()){
-		        File gpxfile = new File("/sdcard/com.dcg.meneame/cache/feed.rss");
-		        FileWriter gpxwriter = new FileWriter(gpxfile);
-		        BufferedWriter out = new BufferedWriter(gpxwriter);
-		        out.write(page);
-		        out.close();
-		        Log.d(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
-		    }
-		    else
-		    {
-		    	Log.w(TAG, "Could not write file, SD Card not writeable.");
-		    }
-		} catch (IOException e) {
-		    Log.w(TAG, "Could not write file " + e.getMessage());
-		}
-		
+
 		return data;
 	}
 }

@@ -60,7 +60,23 @@ abstract public class FeedActivity extends ListActivity {
 		// Check if it completed ok or not
 		if ( data.getInt( BaseRSSWorkerThread.COMPLETED_KEY) == BaseRSSWorkerThread.COMPLETED_OK )
 		{
-			ShowToast("Completed");
+			if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY )
+			{
+				ShowToast("Can not cache feed: Can not create cache directory in SD card!");
+			}
+			else if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_SD_NOTWRITEABLE )
+			{
+				ShowToast("Can not cache feed: SD card not writeable!");
+			}
+			else if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_UNKOWN )
+			{
+				ShowToast("Can not cache feed: Unkown error!");
+			}
+			else
+			{
+				// no error or no cache mode :P
+				ShowToast("Completed!");
+			}
 			Log.d(TAG,"Worker thread posted a completed message: OK");
 		}
 		else
