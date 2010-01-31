@@ -9,6 +9,7 @@
 	    <item name="android:textSize">18sp</item>
 	    <item name="android:textColor">@color/Color.orange</item>
 		<item name="android:gravity">center</item>
+		<item name="android:padding">10px</item>
 	</style>
 	<style name="Style.app_logo" parent="android:Theme">
 	    <item name="android:background">@drawable/logo</item>
@@ -27,6 +28,14 @@
 	    <item name="android:background">@color/Color.grey</item>
 	</style>
 	<style name="Style.white_bg" parent="android:Theme">
+	    <item name="android:background">@color/Color.white</item>
+	</style>
+	
+	<style name="Style.feed_list" parent="android:Theme">
+	    <item name="android:cacheColorHint">#EEE</item>
+	</style>
+	
+	<style name="Style.main_framelayout_style" parent="android:Theme">
 	    <item name="android:background">@color/Color.white</item>
 	</style>
 	

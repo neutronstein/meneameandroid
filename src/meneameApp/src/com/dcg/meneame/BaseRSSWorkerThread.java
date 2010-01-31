@@ -10,6 +10,7 @@ import java.util.concurrent.Semaphore;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,11 +25,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public static int COMPLETED_FAILED = -1;
 	
 	/** Key which defines any state when caching a feed */
-	public static String CACHE_FEED_RESULT = "cache_feed_result";
-	public static int CACHE_FEED_OK = 0;
-	public static int CACHE_FEED_RESULT_RSS_FAILED_UNKOWN = 1;
-	public static int CACHE_FEED_RESULT_RSS_FAILED_SD_NOTWRITEABLE = 2;
-	public static int CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY = 3;	
+	public static String ERROR_KEY = "error";
+	public static int ERROR_SUCCESSFULL = 0;
+	public static int ERROR_FAILED = -1;
+	public static String ERROR_MESSAGE_KEY = "error_msg";
 	
 	/** Global Application */
 	private ApplicationMNM mApp = null;
@@ -51,14 +51,23 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	/** Read buffer used to catch our content */
 	private BufferedReader in = null;
 	
+	/** class that handles the caching process */
+	protected String mFeedCacherClassName = "";
+	
+	/** class we use to parse the feed */
+	protected String mFeedParserClassName = "com.dcg.meneame.RSSParser";
+	
+	/** Default handler we use to parse the current feed */
+	private RSSParser mFeedParser = null;
+	
+	protected Bundle mDdata = new Bundle();
+	
 	/**
 	 * 
 	 * @param Activity ParentActivity, holds the semaphore to make this thread save
 	 */
 	public BaseRSSWorkerThread() {
 		super();
-		
-		
 	}
 	
 	/**
@@ -122,39 +131,52 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			
 			// Build message body
 			Message msg = mHandler.obtainMessage();
-			Bundle data = new Bundle();
+			mDdata = new Bundle();
 			
 			if ( response != null )
 			{
-				in = new BufferedReader( new InputStreamReader(response.getEntity().getContent()));
+//				in = new BufferedReader( new InputStreamReader(response.getEntity().getContent()));
+//				
+//				StringBuffer sb = new StringBuffer("");
+//				String line = "";
+//				String NL = System.getProperty("line.separator");
+//				
+//				while ((line = in.readLine()) != null) {
+//					sb.append(line + NL);
+//				}
+//				
+//				in.close();
+//				String page = sb.toString();
+//				
+//				// Start parsing and caching the feed
+//				processResult(page);
 				
-				StringBuffer sb = new StringBuffer("");
-				String line = "";
-				String NL = System.getProperty("line.separator");
+				// Start processing the RSS file
+				processResult( new InputStreamReader(response.getEntity().getContent()) );
 				
-				while ((line = in.readLine()) != null) {
-					sb.append(line + NL);
+				
+				// look for any error
+				if ( isDataValid() )
+				{
+					// All fine
+					Log.d(TAG, "Finished!");				
+					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
+				}
+				else
+				{
+					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 				}
 				
-				in.close();
-				String page = sb.toString();
-				
-				// Start parsing and caching the feed
-				data.putAll( parseResult(page) );
-				
-				//System.out.println(page);
-				
-				Log.d(TAG, "Finished!");				
-				data.putInt(COMPLETED_KEY, COMPLETED_OK);
+				//System.out.println(page);				
 			}
 			else
 			{
 				Log.d(TAG, "Failed!");
-				data.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
+				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
 			}
 			
 			// Send final message
-			msg.setData(data);
+			msg.setData(mDdata);
 			mHandler.sendMessage(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -176,38 +198,97 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		}
 	}
 	
+	/**
+	 * Checks if the Bundle has any error set or not
+	 * @return 
+	 */
+	protected boolean isDataValid() {
+		return mDdata.getInt(ERROR_KEY) == ERROR_SUCCESSFULL;
+	}
+	
+	/**
+	 * Returns the current error message registered with the Bundle
+	 * @return
+	 */
+	protected String getErrorMessage() {
+		return mDdata.getString(ERROR_MESSAGE_KEY);
+	}
+	
+	/**
+	 * Set a new error message into our current data Bundle
+	 * @param error
+	 */
+	protected void setErrorMessage( String error ) {
+		mDdata.putInt(ERROR_KEY, ERROR_FAILED);
+		mDdata.putString(ERROR_MESSAGE_KEY, error);
+	}
+	
 	// TODO: Make all SDCard access globally and configurable using always:
 	//  - Environment.getExternalStorageDirectory()
 	//  - File.separator
 	
-	/**
-	 * Prepares the SDCard with all we need
-	 */
-	protected void prepareSDCard( Bundle data ) {
-		// Create app dir in SDCard if possible
-		File path = new File("/sdcard/com.dcg.meneame/cache/");
-		if(! path.isDirectory()) {
-			if ( path.mkdirs() )
-			{
-				Log.d(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
-			}
-			else
-			{
-				data.putInt(CACHE_FEED_RESULT, CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY);
-				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
-			}
+//	/**
+//	 * Prepares the SDCard with all we need
+//	 */
+//	protected void prepareSDCard( Bundle data ) {
+//		// Create app dir in SDCard if possible
+//		File path = new File("/sdcard/com.dcg.meneame/cache/");
+//		if(! path.isDirectory()) {
+//			if ( path.mkdirs() )
+//			{
+//				Log.d(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
+//			}
+//			else
+//			{
+//				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
+//			}
+//		}
+//	}
+	
+	private void createRSSHandler() {
+		// Try to create the RSS handler
+		try {
+			mFeedParser = (RSSParser)Class.forName(this.mFeedParserClassName).newInstance();
+			Log.d(TAG, "RSS-Parser created: " + mFeedParser.toString());
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			setErrorMessage(e.toString());
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			setErrorMessage(e.toString());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			setErrorMessage(e.toString());
 		}
 	}
 	
 	/**
 	 * Will parse the incoming data and save it into a Bundle
 	 * @param page
+	 * @return 
 	 * @return
 	 */
-	protected Bundle parseResult( String page )
+	private void processResult( InputStreamReader inputStreamReader )
 	{
-		Bundle data = new Bundle();
-
-		return data;
+		// Create rss handler
+		createRSSHandler();
+		
+		// Check if we got a valid parser
+		if ( mFeedParser == null )
+		{
+			// Set error message and return
+			setErrorMessage("Could not create parser of class " + mFeedParserClassName);
+			return;
+		}
+		
+		// Setup parser and parse!
+		mFeedParser.setInputStream( inputStreamReader );
+		mFeedParser.setWorkerThread(this);
+		// TODO: Get config value for max items!
+		mFeedParser.setMaxItems(10);
+		mFeedParser.parse();
 	}
 }

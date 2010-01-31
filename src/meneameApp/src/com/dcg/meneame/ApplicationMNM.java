@@ -1,6 +1,7 @@
 package com.dcg.meneame;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 
 import org.apache.http.HttpVersion;
@@ -28,7 +29,7 @@ public class ApplicationMNM extends Application {
 	private static final String TAG = "ApplicationMNM";
 	
 	/** The actual record of activity records */
-	private ArrayList<TabActivityRecord> mTabActivityRecord = new ArrayList<TabActivityRecord>();
+	private List<TabActivityRecord> mTabActivityRecord = new ArrayList<TabActivityRecord>();
 
 	/** Shared HttpClient used by our application */
 	private HttpClient mHttpClient = null;

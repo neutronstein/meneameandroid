@@ -15,6 +15,13 @@
 			android:defaultValue="" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
+		<ListPreference
+			android:key="pref_app_maxarticles" 
+			android:summary="@string/pref_app_maxarticles_summary" 
+			android:title="@string/pref_app_maxarticles" 
+			android:entries="@array/pref_app_maxarticles_entries" 
+			android:entryValues="@array/pref_app_maxarticles_values" 
+			android:defaultValue="-1" />
 		<CheckBoxPreference
 			android:key="pref_app_refreshonlaunch"
 			android:title="@string/pref_app_refreshonlaunch"
@@ -27,7 +34,11 @@
 			android:entries="@array/pref_app_storage_entries" 
 			android:entryValues="@array/pref_app_storage_values" 
 			android:defaultValue="Internal" />
-	</PreferenceCategory>
+		<Preference 
+			android:key="pref_app_clearcache"
+			android:title="@string/pref_app_clearcache"
+			android:summary="@string/pref_app_clearcache_summary" />
+</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_style">
 		<ListPreference 
 			android:key="pref_style_mainanimation" 
