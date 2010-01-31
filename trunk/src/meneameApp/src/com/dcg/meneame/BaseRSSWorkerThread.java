@@ -1,6 +1,9 @@
 package com.dcg.meneame;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -11,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -168,11 +172,58 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		}
 	}
 	
-	private Bundle parseResult( String page )
+	// TODO: Make all SDCard access globally and configurable using always:
+	//  - Environment.getExternalStorageDirectory()
+	//  - File.separator
+	
+	/**
+	 * Prepares the SDCard with all we need
+	 */
+	private void prepareSDCard() {
+		// Create app dir in SDCard if possible
+		File path = new File("/sdcard/com.dcg.meneame/cache/");
+		if(! path.isDirectory()) {
+			if ( path.mkdirs() )
+			{
+				Log.d(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
+			}
+			else
+			{
+				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
+			}
+		}
+	}
+	
+	/**
+	 * Will parse the incomming data and save it into a Bundle
+	 * @param page
+	 * @return
+	 */
+	protected Bundle parseResult( String page )
 	{
 		Bundle data = new Bundle();
 		
 		// By default this is just empty
+		try {
+			// Prepare process
+			prepareSDCard();
+			
+		    File root = Environment.getExternalStorageDirectory();
+		    if (root.canWrite()){
+		        File gpxfile = new File("/sdcard/com.dcg.meneame/cache/feed.rss");
+		        FileWriter gpxwriter = new FileWriter(gpxfile);
+		        BufferedWriter out = new BufferedWriter(gpxwriter);
+		        out.write(page);
+		        out.close();
+		        Log.d(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
+		    }
+		    else
+		    {
+		    	Log.w(TAG, "Could not write file, SD Card not writeable.");
+		    }
+		} catch (IOException e) {
+		    Log.w(TAG, "Could not write file " + e.getMessage());
+		}
 		
 		return data;
 	}
