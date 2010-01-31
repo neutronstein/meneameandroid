@@ -15,10 +15,14 @@ public final class R {
         public static final int slide_right=0x7f040003;
     }
     public static final class array {
-        public static final int pref_app_storage_entries=0x7f060000;
-        public static final int pref_app_storage_values=0x7f060001;
-        public static final int pref_style_mainanimation_entries=0x7f060002;
-        public static final int pref_style_mainanimation_values=0x7f060003;
+        public static final int pref_app_maxarticles_entries=0x7f060000;
+        /**  -1 means all 
+         */
+        public static final int pref_app_maxarticles_values=0x7f060001;
+        public static final int pref_app_storage_entries=0x7f060002;
+        public static final int pref_app_storage_values=0x7f060003;
+        public static final int pref_style_mainanimation_entries=0x7f060004;
+        public static final int pref_style_mainanimation_values=0x7f060005;
     }
     public static final class attr {
     }
@@ -99,13 +103,21 @@ public final class R {
         /**  Application settings 
          */
         public static final int pref_app=0x7f080017;
+        public static final int pref_app_clearcache=0x7f08001a;
+        public static final int pref_app_clearcache_summary=0x7f08001b;
+        public static final int pref_app_maxarticles=0x7f080021;
+        public static final int pref_app_maxarticles_10=0x7f080023;
+        public static final int pref_app_maxarticles_20=0x7f080024;
+        public static final int pref_app_maxarticles_40=0x7f080025;
+        public static final int pref_app_maxarticles_ALL=0x7f080026;
+        public static final int pref_app_maxarticles_summary=0x7f080022;
         public static final int pref_app_refreshonlaunch=0x7f080018;
         public static final int pref_app_refreshonlaunch_summary=0x7f080019;
-        public static final int pref_app_storage=0x7f08001a;
-        public static final int pref_app_storage_internal=0x7f08001d;
-        public static final int pref_app_storage_none=0x7f08001c;
-        public static final int pref_app_storage_sdcard=0x7f08001e;
-        public static final int pref_app_storage_summary=0x7f08001b;
+        public static final int pref_app_storage=0x7f08001c;
+        public static final int pref_app_storage_internal=0x7f08001f;
+        public static final int pref_app_storage_none=0x7f08001e;
+        public static final int pref_app_storage_sdcard=0x7f080020;
+        public static final int pref_app_storage_summary=0x7f08001d;
         /**  Style customizations 
          */
         public static final int pref_style=0x7f080011;
@@ -116,17 +128,19 @@ public final class R {
         public static final int pref_style_mainanimation_summary=0x7f080013;
     }
     public static final class style {
-        public static final int MNM_Prefs_TextView_ListSeparator=0x7f090006;
-        public static final int MNM_TextAppearance_Widget_TabWidget=0x7f090008;
-        public static final int MNM_Widget_TabWidget=0x7f090007;
+        public static final int MNM_Prefs_TextView_ListSeparator=0x7f090008;
+        public static final int MNM_TextAppearance_Widget_TabWidget=0x7f09000a;
+        public static final int MNM_Widget_TabWidget=0x7f090009;
         public static final int Style_app_logo=0x7f090002;
+        public static final int Style_feed_list=0x7f090006;
         public static final int Style_grey_bg=0x7f090004;
         public static final int Style_infolabel=0x7f090000;
         public static final int Style_infolabel_orange=0x7f090001;
+        public static final int Style_main_framelayout_style=0x7f090007;
         public static final int Style_orange_bg=0x7f090003;
         public static final int Style_white_bg=0x7f090005;
-        public static final int Theme_mnm=0x7f090009;
-        public static final int Theme_mnm_prefs=0x7f09000a;
+        public static final int Theme_mnm=0x7f09000b;
+        public static final int Theme_mnm_prefs=0x7f09000c;
     }
     public static final class xml {
         public static final int preferences=0x7f050000;

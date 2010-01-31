@@ -14,7 +14,7 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static final String mRssWorkerThreadClass = "com.dcg.meneame.DefaultRSSWorkerThread";
+	protected static final String mRssWorkerThreadClassName = "com.dcg.meneame.DefaultRSSWorkerThread";
 
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
@@ -60,23 +60,7 @@ abstract public class FeedActivity extends ListActivity {
 		// Check if it completed ok or not
 		if ( data.getInt( BaseRSSWorkerThread.COMPLETED_KEY) == BaseRSSWorkerThread.COMPLETED_OK )
 		{
-			if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_SD_CANNOTCREATEDRECTORY )
-			{
-				ShowToast("Can not cache feed: Can not create cache directory in SD card!");
-			}
-			else if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_SD_NOTWRITEABLE )
-			{
-				ShowToast("Can not cache feed: SD card not writeable!");
-			}
-			else if ( data.getInt(BaseRSSWorkerThread.CACHE_FEED_RESULT) == BaseRSSWorkerThread.CACHE_FEED_RESULT_RSS_FAILED_UNKOWN )
-			{
-				ShowToast("Can not cache feed: Unkown error!");
-			}
-			else
-			{
-				// no error or no cache mode :P
-				ShowToast("Completed!");
-			}
+			ShowToast("Completed!");
 			Log.d(TAG,"Worker thread posted a completed message: OK");
 		}
 		else
@@ -119,6 +103,13 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * Setup all basic data our worker thread needs to work well
+	 */
+	protected void setupWorkerThread() {
+		mRssThread.setupWorker( mApp, mHandler, getFeedURL(), mSemaphore );
+	}
+	
+	/**
 	 * Will refresh the current feed
 	 */
 	public void RefreshFeed() {		
@@ -129,8 +120,11 @@ abstract public class FeedActivity extends ListActivity {
 			try {
 				Log.d(TAG, "Staring worker thread");
 				ShowToast("Refreshing: " + getFeedURL());
-				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClass ).newInstance();
-				mRssThread.setupWorker( mApp, mHandler, getFeedURL(), mSemaphore );
+				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClassName ).newInstance();
+				
+				// Give our childs a chance to setup the thread
+				setupWorkerThread();
+				
 				mRssThread.start();
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
