@@ -149,7 +149,7 @@ public class MainActivity extends TabActivity  {
             return true;
         case MENU_NOTAME:
         	// Open notame activity
-        	ShowToast("NO IMPLEMENTED YET");
+        	ShowToast("NOT YET IMPLEMENTED");
         	return true;
         case MENU_SETTINGS:
             // Open settitngs screen
