@@ -290,5 +290,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		// TODO: Get config value for max items!
 		mFeedParser.setMaxItems(10);
 		mFeedParser.parse();
+		
+		Log.d(TAG,"Feed: " + mFeedParser.toString());
 	}
 }

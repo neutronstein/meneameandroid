@@ -1,5 +1,8 @@
 package com.dcg.meneame;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -25,6 +28,9 @@ public class RSSParser extends DefaultHandler {
 	/** Our feed object where we store our parsed data */
 	private Feed mFeed = null;
 	
+	/** Current article we are parsing */
+	private Article mCurrentArticle = null;
+	
 	/** Global Application */
 	private ApplicationMNM mApp = null;
 	
@@ -34,8 +40,17 @@ public class RSSParser extends DefaultHandler {
 	/** number of items we want to parse as max */
 	private int mMaxItems;
 	
+	/** Count items */
+	private int mItemCount;
+	
 	/** RSS worker thread that invoked us */
 	private BaseRSSWorkerThread mParentThread;
+	
+	/** If true we are parsing channel data and we have not reached any item */
+	private boolean mbParsingChannel;
+	
+	/** Current tag we are in */
+	private String mCurrentTag;
 	
 	/**
 	 * Create a RSSParser passing along a RSS RawData
@@ -45,6 +60,7 @@ public class RSSParser extends DefaultHandler {
     {
         this.mText = new StringBuilder();
         this.mFeed = new Feed();
+        this.mItemCount = 0;
     }
 	
 	/**
@@ -101,7 +117,10 @@ public class RSSParser extends DefaultHandler {
 			if (spf != null)
 			{
 				sp = spf.newSAXParser();				
-				sp.parse( new InputSource(this.mInputStreamReader), this);				
+				sp.parse( new InputSource(this.mInputStreamReader), this);
+				
+				// We should add the last article to the feed
+				_addArticle();
 			}
 			
 		} catch (SAXException e) {
@@ -120,6 +139,8 @@ public class RSSParser extends DefaultHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			setErrorMessage(e.toString());
+		} finally {
+			// Nothing
 		}
 	}
 	
@@ -130,33 +151,75 @@ public class RSSParser extends DefaultHandler {
 		this.mText.append(ch, start, length);
     }
 	
-	public void startElement(String uri, String localName, String qName, Attributes attributes) {
-		if ( localName.length() > 0 )
-		{		
-			Log.d(TAG, "[RSS] startElement -----------------------------------");
-			Log.d(TAG, "URI: " + uri.toString());
-			Log.d(TAG, "localName: " + localName.toString());
-			Log.d(TAG, "qName: " + qName.toString());
-			Log.d(TAG, "body: " + this.mText.toString());
+	/** Adds the current article to the feed and clears the refernce 
+	 * @return */
+	private void _addArticle() {
+		if ( this.mCurrentArticle != null )
+			this.mFeed.addArticle(this.mCurrentArticle);
+		this.mCurrentArticle = null;
+	}
+	public void startElement(String uri, String name, String qName, Attributes atts) {
+		if ( name.length() > 0 )
+		{
+			//Log.d(TAG, "[START] localName: " + name.toString());
 			
-			Log.d(TAG, "attributes:");
-			int numAttribs = attributes.getLength();
-			for ( int i = 0; i < numAttribs; i++ )
+			// Set some global states
+			if (name.trim().equals("channel")) 
 			{
-				Log.d(TAG, " [" + i + "] " + attributes.getQName(i));
+				Log.d(TAG, "Getting channel data...");
+				this.mbParsingChannel = true;
 			}
+			else if (name.trim().equals("item")) 
+			{
+				mItemCount++;
+				Log.d(TAG, "Item Found ["+this.mItemCount+"]");
+				this.mbParsingChannel = false;
+				
+				// Add previus article
+				_addArticle();
+				
+				// Create new article to be hold
+				this.mCurrentArticle = new Article();
+			}
+			
+			// Register current tag
+			mCurrentTag = name;
 		}
 		
 		// Reset string builder
 		this.mText.setLength(0);
 	}
 	
-	public void endElement(String uri, String localName, String qName) {
-		if ( localName.length() <= 0) return;
-		
-		Log.d(TAG, "[RSS] endElement -----------------------------------");
-		Log.d(TAG, "URI: " + uri.toString());
-		Log.d(TAG, "localName: " + localName.toString());
-		Log.d(TAG, "qName: " + qName.toString());
+	public void endElement(String uri, String name, String qName) {
+		if ( name.length() > 0 )
+		{
+			if ( this.mbParsingChannel )
+			{
+				if ( mCurrentTag.trim().equals("pubDate") )
+				{
+					this.mFeed.mPubDate = mText.toString();
+				}
+			}
+			else
+			{
+				//Log.d(TAG, " - " + mCurrentTag + ": " + mText.toString());
+				if ( mCurrentTag.trim().equals("user") )
+				{
+					this.mCurrentArticle.mUser = mText.toString();
+				}
+				else if ( mCurrentTag.trim().equals("votes") )
+				{
+					this.mCurrentArticle.mVotes = mText.toString();
+				}
+				else if ( mCurrentTag.trim().equals("negatives") )
+				{
+					this.mCurrentArticle.mNegatives = mText.toString();
+				}
+				else if ( mCurrentTag.trim().equals("title") )
+				{
+					this.mCurrentArticle.mTitle = mText.toString();
+				}
+			}
+		}
 	}
 }
