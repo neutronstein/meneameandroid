@@ -3,7 +3,12 @@ package com.dcg.meneame;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 public class Feed extends Object {
+	
+	/** log tag for this class */
+	private static final String TAG = "Feed";
 	
 	/** List of articles */
 	private List<Article> mArticles=new ArrayList<Article>();
@@ -11,26 +16,19 @@ public class Feed extends Object {
 	/** Unique name of this feed, used by our caching process */
 	private String nName;
 	
-	/**
-	 * @return the nName
-	 */
-	public String getName() {
-		return nName;
+	/** Publis date */
+	public String mPubDate;
+	
+	public Feed() {
+		super();
+		
+		// empty constructor
 	}
-
-	/**
-	 * @param nName the nName to set
-	 */
-	public void setName(String nName) {
-		this.nName = nName;
-	}
-
-	/**
-	 * Returns a list of articles
-	 * @return List
-	 */
-	public List<Article> getArticles() {
-		return mArticles;
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "<FEED:nName:"+this.nName+";>";
 	}
 	
 	/**
@@ -38,7 +36,10 @@ public class Feed extends Object {
 	 * @param article
 	 */
 	public void addArticle( Article article ) {
-		mArticles.add(0, article);
+		if ( article != null )
+		{
+			Log.d(TAG, "Adding article: " + article);
+			mArticles.add(0, article);
+		}
 	}
-
 }

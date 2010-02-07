@@ -65,8 +65,17 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		else
 		{
-			ShowToast("Failed!");
-			Log.d(TAG,"Worker thread posted a completed message: FAILED");
+			if ( data.getInt(BaseRSSWorkerThread.ERROR_KEY) == BaseRSSWorkerThread.ERROR_FAILED )
+			{
+				String errorString = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
+				ShowToast("Failed: " + errorString);
+				Log.d(TAG,"Worker thread failed with error:" + errorString);
+			}
+			else
+			{
+				ShowToast("Failed: Unkown!");
+				Log.d(TAG,"Failed: Unkown!");
+			}
 		}
 	}
 	
