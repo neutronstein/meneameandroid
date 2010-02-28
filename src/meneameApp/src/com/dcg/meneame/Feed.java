@@ -11,7 +11,7 @@ public class Feed extends Object {
 	private static final String TAG = "Feed";
 	
 	/** List of articles */
-	private List<Article> mArticles=new ArrayList<Article>();
+	private List<FeedItem> mArticles=new ArrayList<FeedItem>();
 	
 	/** Unique name of this feed, used by our caching process */
 	private String nName;
@@ -35,7 +35,7 @@ public class Feed extends Object {
 	 * Adds a new article int the feed
 	 * @param article
 	 */
-	public void addArticle( Article article ) {
+	public void addItem( FeedItem article ) {
 		if ( article != null )
 		{
 			Log.d(TAG, "Adding article: " + article);
