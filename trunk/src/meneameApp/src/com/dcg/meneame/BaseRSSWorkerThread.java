@@ -1,7 +1,6 @@
 package com.dcg.meneame;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -10,7 +9,6 @@ import java.util.concurrent.Semaphore;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 import android.os.Handler;
