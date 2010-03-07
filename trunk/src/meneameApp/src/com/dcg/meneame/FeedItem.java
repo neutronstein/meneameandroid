@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import android.util.Log;
-
 /**
  * 
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  *
  */
-public class FeedItem extends Object {
+abstract public class FeedItem extends Object {
 	
 	/** log tag for this class */
 	private static final String TAG = "FeedItem";
@@ -29,6 +27,8 @@ public class FeedItem extends Object {
 	 */
 	public FeedItem() {
 		super();
+		
+		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	/**
@@ -118,12 +118,12 @@ public class FeedItem extends Object {
 		try {
 			// Make us tread safe!
 			acquireSemaphore();
-			Log.d(TAG,"setStringValue::("+ key +") value("+ value +")");
+			ApplicationMNM.LogCat(TAG,"setStringValue::("+ key +") value("+ value +")");
 			setKeyValue(key, value);
 			bResult = true;
 		} catch( Exception e) {
 			// fall thru and exit normally
-			Log.d(TAG,"(setStringValue) Can not set key("+ key +") value("+ value +")");
+			ApplicationMNM.LogCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ value +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();
@@ -169,13 +169,13 @@ public class FeedItem extends Object {
 			// Update item
 			if ( itemList != null )
 			{
-				Log.d(TAG,"setListItemValue::("+ key +") value("+ value +")");
+				ApplicationMNM.LogCat(TAG,"setListItemValue::("+ key +") value("+ value +")");
 				setKeyValue(key,itemList);
 				bResult = true;
 			}
 		} catch( Exception e) {
 			// fall thru and exit normally
-			Log.d(TAG,"(setListItemValue) Can not set key("+ key +") value("+ value +")");
+			ApplicationMNM.LogCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ value +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();
