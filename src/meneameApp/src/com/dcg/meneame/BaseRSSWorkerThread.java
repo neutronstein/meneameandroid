@@ -66,6 +66,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 */
 	public BaseRSSWorkerThread() {
 		super();
+		
+		//ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	/**
@@ -95,7 +97,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		if ( mApp != null ) {
 			try {
 				try {
-					Log.d(TAG, "Aquirering semaphore " + mSemaphore.toString());
+					ApplicationMNM.LogCat(TAG, "Aquirering semaphore " + mSemaphore.toString());
 					mSemaphore.acquire();
 				} catch (InterruptedException e) {
 						return;
@@ -104,7 +106,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			} catch (InterruptedException e) {
 				// fall thru and exit normally
 			} finally {
-				Log.d(TAG, "Releasing semaphore " + mSemaphore.toString());
+				ApplicationMNM.LogCat(TAG, "Releasing semaphore " + mSemaphore.toString());
 				mSemaphore.release();
 			}
 		}
@@ -120,7 +122,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			HttpGet request = new HttpGet();
 			
 			request.setURI(new URI(mFeedURL));
-			Log.d(TAG, "Starting request " + request.toString());
+			ApplicationMNM.LogCat(TAG, "Starting request " + request.toString());
 			
 			HttpResponse response = client.execute(request);
 			
@@ -132,40 +134,21 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			mDdata = new Bundle();
 			
 			if ( response != null )
-			{
-//				in = new BufferedReader( new InputStreamReader(response.getEntity().getContent()));
-//				
-//				StringBuffer sb = new StringBuffer("");
-//				String line = "";
-//				String NL = System.getProperty("line.separator");
-//				
-//				while ((line = in.readLine()) != null) {
-//					sb.append(line + NL);
-//				}
-//				
-//				in.close();
-//				String page = sb.toString();
-//				
-//				// Start parsing and caching the feed
-//				processResult(page);
-				
+			{				
 				// Start processing the RSS file
-				processResult( new InputStreamReader(response.getEntity().getContent()) );
-				
+				processResult( new InputStreamReader(response.getEntity().getContent()) );				
 				
 				// look for any error
 				if ( isDataValid() )
 				{
 					// All fine
-					Log.d(TAG, "Finished!");				
+					ApplicationMNM.LogCat(TAG, "Finished!");				
 					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
 				}
 				else
 				{
 					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-				}
-				
-				//System.out.println(page);				
+				}		
 			}
 			else
 			{
@@ -221,33 +204,11 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mDdata.putString(ERROR_MESSAGE_KEY, error);
 	}
 	
-	// TODO: Make all SDCard access globally and configurable using always:
-	//  - Environment.getExternalStorageDirectory()
-	//  - File.separator
-	
-//	/**
-//	 * Prepares the SDCard with all we need
-//	 */
-//	protected void prepareSDCard( Bundle data ) {
-//		// Create app dir in SDCard if possible
-//		File path = new File("/sdcard/com.dcg.meneame/cache/");
-//		if(! path.isDirectory()) {
-//			if ( path.mkdirs() )
-//			{
-//				Log.d(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
-//			}
-//			else
-//			{
-//				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
-//			}
-//		}
-//	}
-	
 	private void createRSSHandler() {
 		// Try to create the RSS handler
 		try {
 			mFeedParser = (RSSParser)Class.forName(this.mFeedParserClassName).newInstance();
-			Log.d(TAG, "RSS-Parser created: " + mFeedParser.toString());
+			ApplicationMNM.LogCat(TAG, "RSS-Parser created: " + mFeedParser.toString());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -286,9 +247,20 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mFeedParser.setInputStream( inputStreamReader );
 		mFeedParser.setWorkerThread(this);
 		// TODO: Get config value for max items!
-		mFeedParser.setMaxItems(10);
+		mFeedParser.setMaxItems(50);
 		mFeedParser.parse();
 		
-		Log.d(TAG,"Feed: " + mFeedParser.toString());
+		// We finished to inform subclasses
+		feedParsingFinished(mFeedParser.getFeed());
+		
+		ApplicationMNM.LogCat(TAG,"Feed: " + mFeedParser.toString());
+	}
+	
+	/**
+	 * Will be called once the feed has been parsed
+	 * @param parsedFeed
+	 */
+	protected void feedParsingFinished( Feed parsedFeed ) {
+		// The feed we just resolved
 	}
 }

@@ -44,7 +44,9 @@ public class MainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        Log.d(TAG, "Starting...");
+        //ApplicationMNM.AddLogCat(TAG);
+        
+        ApplicationMNM.LogCat(TAG, "Starting...");
         
         setContentView(R.layout.main);
         
