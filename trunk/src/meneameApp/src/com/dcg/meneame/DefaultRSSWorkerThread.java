@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
@@ -24,7 +26,31 @@ public class DefaultRSSWorkerThread extends BaseRSSWorkerThread {
 	 * @param Activity ParentActivity, holds the semaphore to make this thread save
 	 */
 	public DefaultRSSWorkerThread() {
-		super();		
+		super();	
+		
+		ApplicationMNM.AddLogCat(TAG);
+	}
+	
+	// TODO: Make all SDCard access globally and configurable using always:
+	//  - Environment.getExternalStorageDirectory()
+	//  - File.separator
+	
+	/**
+	 * Prepares the SDCard with all we need
+	 */
+	protected void prepareSDCard( Bundle data ) {
+		// Create app dir in SDCard if possible
+		File path = new File("/sdcard/com.dcg.meneame/cache/");
+		if(! path.isDirectory()) {
+			if ( path.mkdirs() )
+			{
+				ApplicationMNM.LogCat(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
+			}
+			else
+			{
+				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
+			}
+		}
 	}
 	
 	/**
@@ -48,7 +74,7 @@ public class DefaultRSSWorkerThread extends BaseRSSWorkerThread {
 		        BufferedWriter out = new BufferedWriter(gpxwriter);
 		        out.write(page);
 		        out.close();
-		        Log.d(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
+		        ApplicationMNM.LogCat(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
 		    }
 		    else
 		    {
@@ -57,5 +83,18 @@ public class DefaultRSSWorkerThread extends BaseRSSWorkerThread {
 		} catch (IOException e) {
 			Log.w(TAG, "Could not write file " + e.getMessage());
 		}
+	}
+	
+	/**
+	 * Will be called once the feed has been parsed
+	 * @param parsedFeed
+	 */
+	protected void feedParsingFinished( Feed parsedFeed ) {
+		
+		List<FeedItem> articleList = parsedFeed.getArticleList();
+		
+		// The feed we just resolved
+		ApplicationMNM.LogCat(TAG,"Feed Parsed: " + parsedFeed.getKeyData("title"));
+		ApplicationMNM.LogCat(TAG,"  Articles: " + articleList.size());
 	}
 }

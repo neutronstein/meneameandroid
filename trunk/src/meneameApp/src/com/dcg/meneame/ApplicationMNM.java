@@ -45,7 +45,9 @@ public class ApplicationMNM extends Application {
 		super.onCreate();
 		
 		// Create shared HttpClient
-		mHttpClient = createHttpClient();		
+		mHttpClient = createHttpClient();
+		
+		//ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	/**
@@ -163,7 +165,7 @@ public class ApplicationMNM extends Application {
 	 */
 	public void clearTabActivityRecord() {
 		mTabActivityRecord.clear();
-		Log.d(TAG, "Clearing TabActivityRecord...");
+		ApplicationMNM.LogCat(TAG, "Clearing TabActivityRecord...");
 	}
 	
 	@Override
@@ -183,7 +185,7 @@ public class ApplicationMNM extends Application {
 	
 	private HttpClient createHttpClient()
 	{
-		Log.d(TAG,"createHttpClient()");
+		ApplicationMNM.LogCat(TAG,"createHttpClient()");
 		
 		HttpParams params = new BasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -214,7 +216,7 @@ public class ApplicationMNM extends Application {
 	{
 		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
 		{
-			Log.d(TAG, "Shutting current HttpClient down");
+			ApplicationMNM.LogCat(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
 		}
 	}

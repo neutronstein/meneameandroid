@@ -12,6 +12,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.util.Log;
+
 public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */
@@ -61,7 +63,7 @@ public class RSSParser extends DefaultHandler {
         this.mFeedItemClassName = "com.dcg.meneame.ArticleFeedItem";
         
         // Add our tag to the category log (so it will be printed out)
-        ApplicationMNM.AddLogCat(TAG);
+        //ApplicationMNM.AddLogCat(TAG);
     }
 	
 	/**
@@ -175,7 +177,10 @@ public class RSSParser extends DefaultHandler {
 				sp = spf.newSAXParser();				
 				sp.parse( new InputSource(this.mInputStreamReader), this);
 			}
-			
+		
+		} catch (RSSParserMaxElements e) {
+			// Not a real 'error' heheh
+			ApplicationMNM.LogCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -235,7 +240,7 @@ public class RSSParser extends DefaultHandler {
 				
 				// Check if we reached the max articles permitted
 				// NOTE: The last article will be added by the parser 'always!'
-				if ( this.mMaxItems > 0 && this.mItemCount > this.mMaxItems )
+				if ( this.mMaxItems > 0 && this.mItemCount >= this.mMaxItems )
 				{
 					throw new RSSParserMaxElements("MAX ELEMENTS REACHED: " + mItemCount, null);
 				}
