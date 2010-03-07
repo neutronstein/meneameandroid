@@ -12,8 +12,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
-
 public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */
@@ -61,6 +59,9 @@ public class RSSParser extends DefaultHandler {
         
         // Set our default feed item class name, sublcasses can change it at will
         this.mFeedItemClassName = "com.dcg.meneame.ArticleFeedItem";
+        
+        // Add our tag to the category log (so it will be printed out)
+        ApplicationMNM.AddLogCat(TAG);
     }
 	
 	/**
@@ -112,7 +113,7 @@ public class RSSParser extends DefaultHandler {
 		// Try to create the RSS handler
 		try {
 			this.mFeedItem = (FeedItem)Class.forName(this.mFeedItemClassName).newInstance();
-			Log.d(TAG, "FeedItem created: " + this.mFeedItem.toString());
+			ApplicationMNM.LogCat(TAG, "FeedItem created: " + this.mFeedItem.toString());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -133,11 +134,25 @@ public class RSSParser extends DefaultHandler {
 	 * @param key
 	 * @param value
 	 */
-	private boolean setValue( String key, Object value )
+	private boolean setItemValue( String key, Object value )
 	{
 		if ( this.mFeedItem != null )
 		{
 			return this.mFeedItem.setValue(key, value);
+		}
+		return false;
+	}
+	
+	/**
+	 * Sets new data to the current feed
+	 * @param key
+	 * @param value
+	 */
+	private boolean setFeedValue( String key, Object value )
+	{
+		if ( this.mFeed != null )
+		{
+			return this.mFeed.setValue(key, value);
 		}
 		return false;
 	}
@@ -159,9 +174,6 @@ public class RSSParser extends DefaultHandler {
 				
 				sp = spf.newSAXParser();				
 				sp.parse( new InputSource(this.mInputStreamReader), this);
-				
-				// We should add the last article to the feed
-				_addArticle();
 			}
 			
 		} catch (SAXException e) {
@@ -181,7 +193,8 @@ public class RSSParser extends DefaultHandler {
 			e.printStackTrace();
 			setErrorMessage(e.toString());
 		} finally {
-			// Nothing
+			// We should add the last article to the feed (if it exists)
+			_addArticle();
 		}
 	}
 	
@@ -196,29 +209,36 @@ public class RSSParser extends DefaultHandler {
 	 * @return */
 	private void _addArticle() {
 		if ( this.mFeedItem != null )
-			this.mFeed.addItem(this.mFeedItem);
+			this.mFeed.addArticle(this.mFeedItem);
 		this.mFeedItem = null;
 	}
 	
 	/**
 	 * [XML-PARSING] We found a start element
 	 */
-	public void startElement(String uri, String name, String qName, Attributes atts) {
+	public void startElement(String uri, String name, String qName, Attributes atts) throws RSSParserMaxElements {
 		if ( name.length() > 0 )
 		{
-			//Log.d(TAG, "[START] localName: " + name.toString());
+			//ApplicationMNM.LogCat(TAG, "[START] localName: " + name.toString());
 			
 			// Set some global states
 			if (name.trim().equals("channel")) 
 			{
-				Log.d(TAG, "Getting channel data...");
+				ApplicationMNM.LogCat(TAG, "Getting channel data...");
 				this.mbParsingChannel = true;
 			}
 			else if (name.trim().equals("item")) 
 			{
-				mItemCount++;
-				Log.d(TAG, "Item Found ["+this.mItemCount+"]");
+				this.mItemCount++;
+				ApplicationMNM.LogCat(TAG, "Item Found ["+this.mItemCount+"]");
 				this.mbParsingChannel = false;
+				
+				// Check if we reached the max articles permitted
+				// NOTE: The last article will be added by the parser 'always!'
+				if ( this.mMaxItems > 0 && this.mItemCount > this.mMaxItems )
+				{
+					throw new RSSParserMaxElements("MAX ELEMENTS REACHED: " + mItemCount, null);
+				}
 				
 				// Add previus article
 				_addArticle();
@@ -243,16 +263,16 @@ public class RSSParser extends DefaultHandler {
 		{
 			if ( this.mbParsingChannel )
 			{
-				if ( mCurrentTag.trim().equals("pubDate") )
+				if ( setFeedValue(mCurrentTag.trim(), mText.toString()) )
 				{
-					this.mFeed.mPubDate = mText.toString();
+					ApplicationMNM.LogCat(TAG, " [feed] " + mCurrentTag + ": " + mText.toString());
 				}
 			}
 			else
 			{				
-				if ( setValue(mCurrentTag.trim(), mText.toString()) )
+				if ( setItemValue(mCurrentTag.trim(), mText.toString()) )
 				{
-					Log.d(TAG, " - " + mCurrentTag + ": " + mText.toString());
+					ApplicationMNM.LogCat(TAG, " - " + mCurrentTag + ": " + mText.toString());
 				}
 			}
 		}

@@ -37,6 +37,9 @@ public class ApplicationMNM extends Application {
 	/** Toast message handler */
 	protected Toast mToast = null;
 	
+	/** Category used to filter the category list */
+	private static List<String> mLogCatList = new ArrayList<String>();
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -46,11 +49,45 @@ public class ApplicationMNM extends Application {
 	}
 	
 	/**
+	 * Add a new category to the category log
+	 * @param cat
+	 */
+	public static void AddLogCat( String cat ) {
+		if ( !mLogCatList.contains(cat) )
+		{
+			mLogCatList.add(cat);
+		}
+	}
+	
+	/**
+	 * Remove a category from the log
+	 * @param cat
+	 */
+	public static void RemoveLogCat( String cat ) {
+		if ( mLogCatList.contains(cat) )
+		{
+			mLogCatList.remove(cat);
+		}
+	}
+	
+	/**
+	 * Print a log with a specific category
+	 * @param msg
+	 * @param cat
+	 */
+	public static void LogCat( String cat, String msg ) {
+		if ( mLogCatList.contains(cat) )
+		{
+			Log.d(cat, msg);
+		}
+	}
+	
+	/**
 	 * Add a new activity we use in our main tab to the global registry
 	 * @param String - tag
 	 * @param Activity - activity
 	 */
-	public void addTabActivity( String tag, Activity activity ) {
+	public void addTabActivity( String  tag, Activity activity ) {
 		if ( !isTabActivityRegistered( tag ) )
 		{
 			mTabActivityRecord.add(new TabActivityRecord( tag, activity ));
