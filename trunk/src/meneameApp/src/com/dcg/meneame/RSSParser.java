@@ -12,8 +12,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
-
 public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */
@@ -63,7 +61,7 @@ public class RSSParser extends DefaultHandler {
         this.mFeedItemClassName = "com.dcg.meneame.ArticleFeedItem";
         
         // Add our tag to the category log (so it will be printed out)
-        //ApplicationMNM.AddLogCat(TAG);
+        ApplicationMNM.AddLogCat(TAG);
     }
 	
 	/**
