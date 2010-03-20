@@ -10,9 +10,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 abstract public class BaseRSSWorkerThread extends Thread {
@@ -246,8 +248,19 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		// Setup parser and parse!
 		mFeedParser.setInputStream( inputStreamReader );
 		mFeedParser.setWorkerThread(this);
-		// TODO: Get config value for max items!
-		mFeedParser.setMaxItems(50);
+		
+		// Get the max number of items to be shown from our preferences
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp.getBaseContext());        
+        int maxItems = -1;        
+        try
+        {
+        	maxItems = Integer.parseInt(prefs.getString("pref_app_maxarticles", "-1"));
+        }
+        catch( Exception e)
+        {
+        	// Nothing to do here :P
+        }                
+		mFeedParser.setMaxItems(maxItems);
 		mFeedParser.parse();
 		
 		// We finished to inform subclasses

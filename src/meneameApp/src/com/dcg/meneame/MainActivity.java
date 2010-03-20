@@ -44,7 +44,7 @@ public class MainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        //ApplicationMNM.AddLogCat(TAG);
+        ApplicationMNM.AddLogCat(TAG);
         
         ApplicationMNM.LogCat(TAG, "Starting...");
         
