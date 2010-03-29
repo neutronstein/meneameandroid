@@ -19,7 +19,7 @@ public class Feed extends FeedItem {
 	public Feed() {
 		super();
 		
-		//ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	

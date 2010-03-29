@@ -42,14 +42,43 @@ public class ApplicationMNM extends Application {
 	/** Category used to filter the category list */
 	private static List<String> mLogCatList = new ArrayList<String>();
 	
+	/** Ignore category list */
+	private static List<String> mIgnoreCatList = new ArrayList<String>();
+	
+	/** Enable logging or not */
+	private static boolean bEnableLogging = true;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		
+		// Create log ignore list!
+		// Note: To use a log just comment it :D
+		AddIgnoreCat(""); // Yep... empty too ;P
+		AddIgnoreCat("MeneameMainActivity");
+		AddIgnoreCat("ApplicationMNM");
+		AddIgnoreCat("BaseRSSWorkerThread");
+		AddIgnoreCat("DefaultRSSWorkerThread");
+		AddIgnoreCat("FeedItem");
+		AddIgnoreCat("Feed");
+		AddIgnoreCat("BaseRSSWorkerThread");
+		AddIgnoreCat("FeedParser");
+
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
 		
-		//ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.AddLogCat(TAG);
+	}
+	
+	/**
+	 * Add a new category to the category ignore list
+	 * @param cat
+	 */
+	public static void AddIgnoreCat( String cat ) {
+		if ( bEnableLogging && !mIgnoreCatList.contains(cat) )
+		{
+			mIgnoreCatList.add(cat);
+		}
 	}
 	
 	/**
@@ -57,7 +86,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void AddLogCat( String cat ) {
-		if ( !mLogCatList.contains(cat) )
+		if ( bEnableLogging && !mIgnoreCatList.contains(cat) && !mLogCatList.contains(cat) )
 		{
 			mLogCatList.add(cat);
 		}
@@ -68,7 +97,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void RemoveLogCat( String cat ) {
-		if ( mLogCatList.contains(cat) )
+		if ( bEnableLogging && mLogCatList.contains(cat) )
 		{
 			mLogCatList.remove(cat);
 		}
@@ -80,7 +109,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void LogCat( String cat, String msg ) {
-		if ( mLogCatList.contains(cat) )
+		if ( bEnableLogging && mLogCatList.contains(cat) )
 		{
 			Log.d(cat, msg);
 		}

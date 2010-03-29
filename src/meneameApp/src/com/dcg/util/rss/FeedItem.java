@@ -30,7 +30,7 @@ abstract public class FeedItem extends Object {
 	public FeedItem() {
 		super();
 		
-		//ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	/**
