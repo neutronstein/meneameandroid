@@ -71,7 +71,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public BaseRSSWorkerThread() {
 		super();
 		
-		//ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	/**
