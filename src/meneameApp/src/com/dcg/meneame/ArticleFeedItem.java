@@ -1,5 +1,7 @@
 package com.dcg.meneame;
 
+import com.dcg.util.rss.FeedItem;
+
 public class ArticleFeedItem extends FeedItem {
 	
 	/**
