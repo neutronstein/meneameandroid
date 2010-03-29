@@ -153,6 +153,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				// look for any error
 				if ( isDataValid() )
 				{
+					// Cache result if we need to :P
+					
+					
 					// All fine
 					ApplicationMNM.LogCat(TAG, "Finished!");				
 					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);

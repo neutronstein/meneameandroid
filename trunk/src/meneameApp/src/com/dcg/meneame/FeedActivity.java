@@ -132,6 +132,13 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * Will refresh the current feed but taken the data from the cache
+	 */
+	public void buildFromCache() {
+		
+	}
+	
+	/**
 	 * Will refresh the current feed
 	 */
 	public void refreshFeed() {		
