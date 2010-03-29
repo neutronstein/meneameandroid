@@ -22,6 +22,7 @@ import com.dcg.meneame.TabActivityRecord;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class ApplicationMNM extends Application {
 	private HttpClient mHttpClient = null;
 	
 	/** Toast message handler */
-	protected Toast mToast = null;
+	private static Toast mToast = null;
 	
 	/** Category used to filter the category list */
 	private static List<String> mLogCatList = new ArrayList<String>();
@@ -46,11 +47,16 @@ public class ApplicationMNM extends Application {
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
 	
 	/** Enable logging or not */
-	private static boolean bEnableLogging = true;
+	private static boolean mbEnableLogging = true;
+	
+	private static Context mAppContext = null;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		// Cache contentxt
+		mAppContext = getBaseContext();
 		
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
@@ -63,6 +69,7 @@ public class ApplicationMNM extends Application {
 		AddIgnoreCat("Feed");
 		AddIgnoreCat("BaseRSSWorkerThread");
 		AddIgnoreCat("FeedParser");
+		//AddIgnoreCat("FeedActivity");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
@@ -75,7 +82,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void AddIgnoreCat( String cat ) {
-		if ( bEnableLogging && !mIgnoreCatList.contains(cat) )
+		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) )
 		{
 			mIgnoreCatList.add(cat);
 		}
@@ -86,7 +93,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void AddLogCat( String cat ) {
-		if ( bEnableLogging && !mIgnoreCatList.contains(cat) && !mLogCatList.contains(cat) )
+		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) && !mLogCatList.contains(cat) )
 		{
 			mLogCatList.add(cat);
 		}
@@ -97,7 +104,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void RemoveLogCat( String cat ) {
-		if ( bEnableLogging && mLogCatList.contains(cat) )
+		if ( mbEnableLogging && mLogCatList.contains(cat) )
 		{
 			mLogCatList.remove(cat);
 		}
@@ -109,7 +116,7 @@ public class ApplicationMNM extends Application {
 	 * @param cat
 	 */
 	public static void LogCat( String cat, String msg ) {
-		if ( bEnableLogging && mLogCatList.contains(cat) )
+		if ( mbEnableLogging && mLogCatList.contains(cat) )
 		{
 			Log.d(cat, msg);
 		}
@@ -256,16 +263,19 @@ public class ApplicationMNM extends Application {
 	 * Shows a toast message, will hide any already shown message
 	 * @param msg
 	 */
-	public void ShowToast( String msg ) {
-		if ( mToast == null )
+	public static void showToast( String msg ) {
+		if ( mAppContext != null )
 		{
-			mToast = Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT);
+			if ( mToast == null )
+			{
+				mToast = Toast.makeText(mAppContext, msg, Toast.LENGTH_SHORT);
+			}
+			else
+			{
+				mToast.cancel();
+				mToast.setText( msg );
+			}
+			mToast.show();
 		}
-		else
-		{
-			mToast.cancel();
-			mToast.setText( msg );
-		}
-		mToast.show();
 	}
 }

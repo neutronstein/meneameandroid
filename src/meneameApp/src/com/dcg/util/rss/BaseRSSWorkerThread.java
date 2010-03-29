@@ -148,7 +148,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			if ( response != null )
 			{				
 				// Start processing the RSS file
-				processResult( new InputStreamReader(response.getEntity().getContent()) );				
+				processResult( msg, new InputStreamReader(response.getEntity().getContent()) );				
 				
 				// look for any error
 				if ( isDataValid() )
@@ -170,7 +170,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			
 			// Send final message
 			msg.setData(mDdata);
-			mHandler.sendMessage(msg);
+			sendMessage(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			
@@ -179,7 +179,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			Bundle data = new Bundle();
 			data.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 			msg.setData(data);
-			mHandler.sendMessage(msg);
+			sendMessage(msg);
 		} finally {
 			if (in != null) {
 				try {
@@ -189,6 +189,14 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Send a message to our handler
+	 * @param msg
+	 */
+	private void sendMessage( Message msg ) {
+		mHandler.sendMessage(msg);
 	}
 	
 	/**
@@ -238,11 +246,12 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	/**
 	 * Will parse the incoming data and save it into a Bundle
+	 * @param msg 
 	 * @param page
 	 * @return 
 	 * @return
 	 */
-	private void processResult( InputStreamReader inputStreamReader )
+	private void processResult( Message msg, InputStreamReader inputStreamReader )
 	{
 		// Create rss handler
 		createRSSHandler();
@@ -275,6 +284,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		
 		// We finished to inform subclasses
 		feedParsingFinished(mFeedParser.getFeed());
+		
+		msg.obj = mFeedParser.getFeed();
 		
 		ApplicationMNM.LogCat(TAG,"Feed: " + mFeedParser.toString());
 	}
