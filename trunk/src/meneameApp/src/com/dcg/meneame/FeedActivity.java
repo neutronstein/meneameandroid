@@ -2,6 +2,9 @@ package com.dcg.meneame;
 
 import java.util.concurrent.Semaphore;
 
+import com.dcg.app.ApplicationMNM;
+import com.dcg.util.rss.BaseRSSWorkerThread;
+
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +17,7 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static final String mRssWorkerThreadClassName = "com.dcg.meneame.DefaultRSSWorkerThread";
+	protected static final String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
 
 	/** Global Application */
 	protected ApplicationMNM mApp = null;

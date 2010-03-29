@@ -1,5 +1,7 @@
 package com.dcg.meneame;
 
+import com.dcg.app.ApplicationMNM;
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
