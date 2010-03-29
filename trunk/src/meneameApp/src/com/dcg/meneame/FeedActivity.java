@@ -4,12 +4,12 @@ import java.util.concurrent.Semaphore;
 
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.BaseRSSWorkerThread;
+import com.dcg.util.rss.Feed;
 
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 abstract public class FeedActivity extends ListActivity {
 	
@@ -34,8 +34,15 @@ abstract public class FeedActivity extends ListActivity {
 	/** Handler used to communicate with our worker thread*/
 	protected Handler mHandler = null;
 	
+	/** Codes used to inform our activity how we completed */
+	public static final int COMPLETE_SUCCESSFULL = 0;
+	public static final int COMPLETE_ERROR_THREAD_ALIVE = 1;
+	public static final int COMPLETE_ERROR = 2;
+	
 	public FeedActivity() {
 		super();
+		
+		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	@Override
@@ -60,34 +67,37 @@ abstract public class FeedActivity extends ListActivity {
 	protected void handleThreadMessage(Message msg) {
 		Bundle data = msg.getData();
 		
+		String errorMsg = "";
 		// Check if it completed ok or not
 		if ( data.getInt( BaseRSSWorkerThread.COMPLETED_KEY) == BaseRSSWorkerThread.COMPLETED_OK )
 		{
-			ShowToast("Completed!");
-			Log.d(TAG,"Worker thread posted a completed message: OK");
+			try {
+				onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
+			} catch ( ClassCastException e ) {
+				errorMsg = "msg.obj is null!";
+				if ( msg.obj != null )
+				{
+					errorMsg = "msg.obj is not a Feed object "+ msg.obj.toString();
+				}
+			} finally {
+				if ( !errorMsg.equals("") )
+				{
+					onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
+				}
+			}
 		}
 		else
 		{
 			if ( data.getInt(BaseRSSWorkerThread.ERROR_KEY) == BaseRSSWorkerThread.ERROR_FAILED )
 			{
-				String errorString = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
-				ShowToast("Failed: " + errorString);
-				Log.d(TAG,"Worker thread failed with error:" + errorString);
+				errorMsg = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
 			}
 			else
 			{
-				ShowToast("Failed: Unkown!");
-				Log.d(TAG,"Failed: Unkown!");
+				errorMsg = "Unkown!";
 			}
+			onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
 		}
-	}
-	
-	/**
-	 * Shows a toast message, will hide any already shown message
-	 * @param msg
-	 */
-	protected void ShowToast( String msg ) {
-		if ( mApp != null ) mApp.ShowToast(msg);
 	}
 	
 	/**
@@ -124,19 +134,18 @@ abstract public class FeedActivity extends ListActivity {
 	/**
 	 * Will refresh the current feed
 	 */
-	public void RefreshFeed() {		
+	public void refreshFeed() {		
 		// Start thread if not started or not alive
 		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
 			String Error = "";
 			try {
-				Log.d(TAG, "Staring worker thread");
-				ShowToast("Refreshing: " + getFeedURL());
+				ApplicationMNM.LogCat(TAG, "Staring worker thread");
+				ApplicationMNM.showToast("Refreshing: " + getFeedURL());
 				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClassName ).newInstance();
 				
-				// Give our childs a chance to setup the thread
+				// Give our child's a chance to setup the thread
 				setupWorkerThread();
-				
 				mRssThread.start();
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
@@ -151,12 +160,38 @@ abstract public class FeedActivity extends ListActivity {
 				e.printStackTrace();
 				Error = e.toString();
 			}
-			if ( Error.length() > 0 ) ShowToast("Ups... failed to refresh: " + Error);
+			if ( Error.length() > 0 ) onRefreshCompleted(COMPLETE_ERROR,null,null,Error);
 		}
 		else
 		{
-			Log.d(TAG, "Worker thread already alive");
-			ShowToast("Already refreshing... please wait...");
+			onRefreshCompleted(COMPLETE_ERROR_THREAD_ALIVE, null, null, "");
+		}
+	}
+	
+	/**
+	 * Called when we finished to refresh a thread
+	 */
+	private void onRefreshCompleted( int completeCode, Bundle data, Feed parsedFeed, String Error )
+	{
+		String ErrorMsg = "";
+		switch( completeCode )
+		{
+		case COMPLETE_SUCCESSFULL:
+			// We finished successfully!!! Yeah!
+			ApplicationMNM.LogCat(TAG,"Completed!");
+			ApplicationMNM.showToast("Completed!");
+			break;
+		case COMPLETE_ERROR_THREAD_ALIVE:
+			ErrorMsg = "Worker thread still alive!";
+			break;
+		case COMPLETE_ERROR:
+			ErrorMsg = "Failed to refresh feed: "+Error;
+			break;
+		}
+		if ( !ErrorMsg.equals("") )
+		{
+			ApplicationMNM.LogCat(TAG, ErrorMsg);
+			ApplicationMNM.showToast(ErrorMsg);
 		}
 	}
 }

@@ -119,14 +119,6 @@ public class MainActivity extends TabActivity  {
     	}
     }
     
-    /**
-	 * Shows a toast message, will hide any already shown message
-	 * @param msg
-	 */
-	protected void ShowToast( String msg ) {
-		if ( mApp != null ) mApp.ShowToast(msg);
-	}
-    
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
@@ -144,7 +136,7 @@ public class MainActivity extends TabActivity  {
         	FeedActivity currentActivity = (FeedActivity)mApp.getTabActivity(mTabHost.getCurrentTabTag());
         	if ( currentActivity != null )
         	{
-        		currentActivity.RefreshFeed();
+        		currentActivity.refreshFeed();
         	}
         	else
         	{
@@ -153,7 +145,7 @@ public class MainActivity extends TabActivity  {
             return true;
         case MENU_NOTAME:
         	// Open notame activity
-        	ShowToast("NOT YET IMPLEMENTED");
+        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
         	return true;
         case MENU_SETTINGS:
             // Open settitngs screen
