@@ -118,6 +118,14 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			} catch (InterruptedException e) {
 				// fall thru and exit normally
 			} finally {
+				// Set our catched app to null so GC can clean the refernce
+				mApp = null;
+				if ( mFeedParser != null )
+				{
+					// We got all needed data, clear internal references
+					mFeedParser.clearReferences();
+					mFeedParser = null;
+				}
 				ApplicationMNM.LogCat(TAG, "Releasing semaphore " + mSemaphore.toString());
 				mSemaphore.release();
 			}

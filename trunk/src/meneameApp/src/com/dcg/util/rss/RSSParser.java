@@ -17,7 +17,7 @@ import com.dcg.app.ApplicationMNM;
 abstract public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */
-	private static final String TAG = "BaseRSSWorkerThread";
+	private static final String TAG = "RSSParser";
 	
 	/** The stream from where to get our data */
 	private InputStreamReader mInputStreamReader = null;
@@ -162,6 +162,19 @@ abstract public class RSSParser extends DefaultHandler {
 			return this.mFeed.setValue(key, value);
 		}
 		return false;
+	}
+	
+	/**
+	 * This must be called after we parse and got the needed data,
+	 * so we avoid any memory leak we could get
+	 */
+	public void clearReferences()
+	{
+		this.mInputStreamReader = null;		
+		this.mFeed = null;
+		this.mFeedItem = null;
+		this.mText = null;
+		this.mParentThread =null;
 	}
 	
 	/**
