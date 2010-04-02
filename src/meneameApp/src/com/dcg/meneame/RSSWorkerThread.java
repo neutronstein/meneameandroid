@@ -18,7 +18,7 @@ import android.util.Log;
 public class RSSWorkerThread extends BaseRSSWorkerThread {
 	
 	/** log tag for this class */
-	private static final String TAG = "DefaultRSSWorkerThread";
+	private static final String TAG = "RSSWorkerThread";
 	
 	// TODO: Make all SDCard access globally and configurable using always:
 	//  - Environment.getExternalStorageDirectory()

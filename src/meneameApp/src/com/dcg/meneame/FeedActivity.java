@@ -187,6 +187,10 @@ abstract public class FeedActivity extends ListActivity {
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.LogCat(TAG,"Completed!");
 			ApplicationMNM.showToast("Completed!");
+			
+			// Set the new adapter!
+			
+			setListAdapter(new ArticlesAdapter(this, parsedFeed.getArticleList()));
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
 			ErrorMsg = "Worker thread still alive!";

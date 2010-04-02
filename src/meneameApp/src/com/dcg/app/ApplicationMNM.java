@@ -63,13 +63,14 @@ public class ApplicationMNM extends Application {
 		AddIgnoreCat(""); // Yep... empty too ;P
 		AddIgnoreCat("MeneameMainActivity");
 		AddIgnoreCat("ApplicationMNM");
-		AddIgnoreCat("BaseRSSWorkerThread");
-		AddIgnoreCat("DefaultRSSWorkerThread");
+		AddIgnoreCat("RSSParser");
+		AddIgnoreCat("RSSWorkerThread");
 		AddIgnoreCat("FeedItem");
 		AddIgnoreCat("Feed");
 		AddIgnoreCat("BaseRSSWorkerThread");
 		AddIgnoreCat("FeedParser");
-		//AddIgnoreCat("FeedActivity");
+		AddIgnoreCat("FeedActivity");
+		AddIgnoreCat("ArticlesAdapter");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

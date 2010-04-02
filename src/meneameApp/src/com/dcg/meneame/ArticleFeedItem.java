@@ -5,6 +5,36 @@ import com.dcg.util.rss.FeedItem;
 public class ArticleFeedItem extends FeedItem {
 	
 	/**
+	 * tranform the data from a raw value into a valid value
+	 * @param key
+	 * @param rawValue
+	 * @return
+	 */
+	protected String tranformRAWValue( String key, String rawValue )
+	{
+		String value = super.tranformRAWValue(key,rawValue);
+		if( key.equalsIgnoreCase("description") )
+		{
+			int startIdx = rawValue.indexOf("<p>")+3;
+			int endIdx = rawValue.indexOf("</p>");
+			value = value.substring(startIdx, endIdx);
+		}
+		return value;		
+	}
+	
+	/**
+	 * tranform the data from a raw value into a valid value
+	 * @param key
+	 * @param rawValue
+	 * @return
+	 */
+	protected String tranformRAWListValue( String key, String rawValue )
+	{
+		String value = super.tranformRAWListValue(key,rawValue);
+		return value;		
+	}
+	
+	/**
 	 * Decides if a key can be added to the feed item, by default returns true
 	 * @param key
 	 * @return

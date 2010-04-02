@@ -9,9 +9,8 @@ import java.util.concurrent.Semaphore;
 import com.dcg.app.ApplicationMNM;
 
 /**
- * 
+ * Base item our feed parser will return, must be subclassed to own types.
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
- *
  */
 abstract public class FeedItem extends Object {
 	
@@ -108,6 +107,30 @@ abstract public class FeedItem extends Object {
 	}
 	
 	/**
+	 * tranform the data from a raw value into a valid value
+	 * @param key
+	 * @param rawValue
+	 * @return
+	 */
+	protected String tranformRAWValue( String key, String rawValue )
+	{
+		String value = rawValue;
+		return value;		
+	}
+	
+	/**
+	 * tranform the data from a raw value into a valid value
+	 * @param key
+	 * @param rawValue
+	 * @return
+	 */
+	protected String tranformRAWListValue( String key, String rawValue )
+	{
+		String value = rawValue;
+		return value;		
+	}
+	
+	/**
 	 * Set a string value
 	 * @param key
 	 * @param value
@@ -115,17 +138,19 @@ abstract public class FeedItem extends Object {
 	 */
 	protected boolean setStringValue( String key, String value )
 	{
-		boolean bResult;		
+		boolean bResult;
+		String finalValue = value;
 		bResult = false;		
 		try {
 			// Make us tread safe!
 			acquireSemaphore();
 			ApplicationMNM.LogCat(TAG,"setStringValue::("+ key +") value("+ value +")");
-			setKeyValue(key, value);
+			finalValue = tranformRAWValue(key,value);
+			setKeyValue(key, finalValue);
 			bResult = true;
 		} catch( Exception e) {
 			// fall thru and exit normally
-			ApplicationMNM.LogCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ value +")");
+			ApplicationMNM.LogCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ finalValue +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();
@@ -142,11 +167,14 @@ abstract public class FeedItem extends Object {
 	@SuppressWarnings("unchecked")
 	protected boolean setListItemValue( String key, String value )
 	{
-		boolean bResult;		
+		boolean bResult;
+		String finalValue = value;
 		bResult = false;		
 		try {
 			// Make us tread safe!
 			acquireSemaphore();
+			
+			finalValue = tranformRAWValue(key,value);
 			
 			// Create or add a new item
 			List<String> itemList = null;
@@ -156,7 +184,7 @@ abstract public class FeedItem extends Object {
 				itemList = new ArrayList<String>();
 				
 				// Add the new value
-				itemList.add(value);
+				itemList.add(finalValue);
 			}
 			else
 			{
@@ -164,20 +192,20 @@ abstract public class FeedItem extends Object {
 				itemList = (rawValue != null)?(List<String>) rawValue:null;
 				if ( itemList != null )
 				{
-					itemList.add(value);
+					itemList.add(finalValue);
 				}
 			}
 			
 			// Update item
 			if ( itemList != null )
 			{
-				ApplicationMNM.LogCat(TAG,"setListItemValue::("+ key +") value("+ value +")");
+				ApplicationMNM.LogCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
 				setKeyValue(key,itemList);
 				bResult = true;
 			}
 		} catch( Exception e) {
 			// fall thru and exit normally
-			ApplicationMNM.LogCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ value +")");
+			ApplicationMNM.LogCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();
