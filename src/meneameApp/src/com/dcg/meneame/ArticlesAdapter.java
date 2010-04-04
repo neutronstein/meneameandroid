@@ -66,6 +66,7 @@ public class ArticlesAdapter extends BaseAdapter {
 	 * @see android.widget.ListAdapter#getView(int, android.view.View,
 	 *      android.view.ViewGroup)
 	 */
+	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// A ViewHolder keeps references to children views to avoid unnecessary calls
 		// to findViewById() on each row.
@@ -82,6 +83,9 @@ public class ArticlesAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			holder.title = (TextView) convertView.findViewById(R.id.title);
 			holder.description = (TextView) convertView.findViewById(R.id.description);
+			holder.votes = (TextView) convertView.findViewById(R.id.votes);
+			holder.url = (TextView) convertView.findViewById(R.id.source);
+			holder.category = (TextView) convertView.findViewById(R.id.tags_content);
 			
 			convertView.setTag(holder);
 		} else {
@@ -93,6 +97,9 @@ public class ArticlesAdapter extends BaseAdapter {
 		FeedItem feedItem = null;
 		String title = "";
 		String description = "";
+		String votes = "";
+		String url = "";
+		String category = "";
 		try {
 			// Get item
 			feedItem = (FeedItem)getItem(position);
@@ -101,10 +108,28 @@ public class ArticlesAdapter extends BaseAdapter {
 			// TODO: Control null return values!
 			title = (String)feedItem.getKeyData("title");
 			description = (String)feedItem.getKeyData("description");
+			votes = (String)feedItem.getKeyData("votes");
+			url = (String)feedItem.getKeyData("url");
+			
+			ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
+			if ( tags != null )
+			{
+				int tagsNum = tags.size();
+				for (int i = 0; i < tagsNum; i++ )
+				{
+					category += tags.get(i);
+					// Add separator if needed
+					if ( i < tagsNum - 1 )
+					{
+						category += ", ";
+					}
+				}
+			}
+			
 		} catch ( ClassCastException  e )
 		{
 			// What the hell!
-			ApplicationMNM.LogCat(TAG, "Failed to ceate view for item at position ["+position+"]");
+			ApplicationMNM.logCat(TAG, "Failed to ceate view for item at position ["+position+"]");
 			e.printStackTrace();
 		}
 		
@@ -113,6 +138,9 @@ public class ArticlesAdapter extends BaseAdapter {
 			// Bind the data efficiently with the holder.
 			holder.title.setText(title);
 			holder.description.setText(description);
+			holder.votes.setText(votes);
+			holder.url.setText(url);
+			holder.category.setText(category);
 		}
 		return convertView;
 	}
@@ -125,5 +153,8 @@ public class ArticlesAdapter extends BaseAdapter {
 	static class ViewHolder {
         TextView title;
         TextView description;
+        TextView votes;
+        TextView url;
+        TextView category;
     }
 }

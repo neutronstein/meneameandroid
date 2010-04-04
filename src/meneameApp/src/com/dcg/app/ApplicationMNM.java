@@ -60,29 +60,29 @@ public class ApplicationMNM extends Application {
 		
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
-		AddIgnoreCat(""); // Yep... empty too ;P
-		AddIgnoreCat("MeneameMainActivity");
-		AddIgnoreCat("ApplicationMNM");
-		AddIgnoreCat("RSSParser");
-		AddIgnoreCat("RSSWorkerThread");
-		AddIgnoreCat("FeedItem");
-		AddIgnoreCat("Feed");
-		AddIgnoreCat("BaseRSSWorkerThread");
-		AddIgnoreCat("FeedParser");
-		AddIgnoreCat("FeedActivity");
-		AddIgnoreCat("ArticlesAdapter");
+		addIgnoreCat(""); // Yep... empty too ;P
+		addIgnoreCat("MeneameMainActivity");
+		addIgnoreCat("ApplicationMNM");
+		addIgnoreCat("RSSParser");
+		addIgnoreCat("RSSWorkerThread");
+		addIgnoreCat("FeedItem");
+		addIgnoreCat("Feed");
+		addIgnoreCat("BaseRSSWorkerThread");
+		addIgnoreCat("FeedParser");
+		addIgnoreCat("FeedActivity");
+		addIgnoreCat("ArticlesAdapter");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
 		
-		ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.addLogCat(TAG);
 	}
 	
 	/**
 	 * Add a new category to the category ignore list
 	 * @param cat
 	 */
-	public static void AddIgnoreCat( String cat ) {
+	public static void addIgnoreCat( String cat ) {
 		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) )
 		{
 			mIgnoreCatList.add(cat);
@@ -93,7 +93,7 @@ public class ApplicationMNM extends Application {
 	 * Add a new category to the category log
 	 * @param cat
 	 */
-	public static void AddLogCat( String cat ) {
+	public static void addLogCat( String cat ) {
 		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) && !mLogCatList.contains(cat) )
 		{
 			mLogCatList.add(cat);
@@ -104,7 +104,7 @@ public class ApplicationMNM extends Application {
 	 * Remove a category from the log
 	 * @param cat
 	 */
-	public static void RemoveLogCat( String cat ) {
+	public static void removeLogCat( String cat ) {
 		if ( mbEnableLogging && mLogCatList.contains(cat) )
 		{
 			mLogCatList.remove(cat);
@@ -116,11 +116,20 @@ public class ApplicationMNM extends Application {
 	 * @param msg
 	 * @param cat
 	 */
-	public static void LogCat( String cat, String msg ) {
+	public static void logCat( String cat, String msg ) {
 		if ( mbEnableLogging && mLogCatList.contains(cat) )
 		{
 			Log.d(cat, msg);
 		}
+	}
+	
+	/**
+	 * Print a warn with a specific category
+	 * @param msg
+	 * @param cat
+	 */
+	public static void warnCat( String cat, String msg ) {
+		Log.w(cat, msg);
 	}
 	
 	/**
@@ -204,7 +213,7 @@ public class ApplicationMNM extends Application {
 	 */
 	public void clearTabActivityRecord() {
 		mTabActivityRecord.clear();
-		ApplicationMNM.LogCat(TAG, "Clearing TabActivityRecord...");
+		ApplicationMNM.logCat(TAG, "Clearing TabActivityRecord...");
 	}
 	
 	@Override
@@ -224,7 +233,7 @@ public class ApplicationMNM extends Application {
 	
 	private HttpClient createHttpClient()
 	{
-		ApplicationMNM.LogCat(TAG,"createHttpClient()");
+		ApplicationMNM.logCat(TAG,"createHttpClient()");
 		
 		HttpParams params = new BasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -255,7 +264,7 @@ public class ApplicationMNM extends Application {
 	{
 		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
 		{
-			ApplicationMNM.LogCat(TAG, "Shutting current HttpClient down");
+			ApplicationMNM.logCat(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
 		}
 	}

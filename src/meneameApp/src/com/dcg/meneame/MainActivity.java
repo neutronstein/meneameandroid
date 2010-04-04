@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
@@ -22,18 +19,6 @@ public class MainActivity extends TabActivity  {
 	
 	/** Main app TabHost*/
 	private TabHost mTabHost;
-	
-	/** Refresh menu item id */
-	private static final int MENU_REFRESH = 0;
-	
-	/** Notame menu item id */
-    private static final int MENU_NOTAME = 1;
-	
-	/** Settings menu item id */
-    private static final int MENU_SETTINGS = 2;
-    
-    /** Settings activity result ID */
-    private static final int SUB_ACT_SETTINGS_ID = 0;
     
     /** Main animation */
     private Animation mMainAnimation = null;
@@ -46,9 +31,9 @@ public class MainActivity extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        ApplicationMNM.AddLogCat(TAG);
+        ApplicationMNM.addLogCat(TAG);
         
-        ApplicationMNM.LogCat(TAG, "Starting...");
+        ApplicationMNM.logCat(TAG, "Starting...");
         
         setContentView(R.layout.main);
         
@@ -117,49 +102,5 @@ public class MainActivity extends TabActivity  {
     	{
     		mTabHost.startAnimation(mMainAnimation);
     	}
-    }
-    
-    /* Creates the menu items */
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
-        menu.add(0, MENU_NOTAME, 0, R.string.main_menu_notame).setIcon(android.R.drawable.ic_menu_send);
-    	menu.add(0, MENU_SETTINGS, 0, R.string.main_menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
-        return true;
-    }
-    
-    /* Handles item selections */
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) 
-        {
-        case MENU_REFRESH:
-            // Refresh currently selected tab content        	
-        	FeedActivity currentActivity = (FeedActivity)mApp.getTabActivity(mTabHost.getCurrentTabTag());
-        	if ( currentActivity != null )
-        	{
-        		currentActivity.refreshFeed();
-        	}
-        	else
-        	{
-        		Log.w(TAG, "No activity registered with tag " + mTabHost.getCurrentTabTag());
-        	} 
-            return true;
-        case MENU_NOTAME:
-        	// Open notame activity
-        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
-        	return true;
-        case MENU_SETTINGS:
-            // Open settitngs screen
-        	openSettingsScreen();
-            return true;
-        }
-        return false;
-    }
-    
-    /* Open settings screen */
-    public void openSettingsScreen() {
-    	Intent settingsActivity = new Intent( this, Preferences.class);
-    	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
-    	
-    	// TODO: Catch result!
     }
 }

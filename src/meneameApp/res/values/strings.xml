@@ -21,6 +21,7 @@
 	
 	<string name="empty_list">List is empty... please refresh...</string>
 	<string name="meneo_item_open">Open</string>
+	<string name="meneo_item_open_source">Open (Source)</string>
 	<string name="meneo_item_vote">Vote</string>
 	
 	<!-- Menu -->
@@ -28,7 +29,21 @@
 	<string name="main_menu_refresh">Refresh</string>
 	<string name="main_menu_notame">Nótame</string>
 	<string name="main_menu_settings">Settings</string>
+	<string name="main_menu_about">About</string>
+
+    <!-- Messages and Info -->
+    <string name="refreshing_lable">Refreshing...</string>
+    <string name="context_menu_open">Opening menèame.net</string>
+    <string name="context_menu_open_source">Opening source</string>
     
+    <!-- Erros -->
+    <string name="general_unknown">Unkown Error</string>
+    
+    <string name="msg_obj_wrong_type_unknown">msg.obj is not a Feed object</string>
+    <string name="msg_obj_null">msg.obj is null!</string>
+    
+    <string name="refreshing_failed">Failed to refresh feed:</string>
+    <string name="refreshing_thread_still_alive">Worker thread still alive!</string>
 	<!-- 
     ================================================================
     Preference

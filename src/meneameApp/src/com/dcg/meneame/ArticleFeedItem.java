@@ -4,6 +4,17 @@ import com.dcg.util.rss.FeedItem;
 
 public class ArticleFeedItem extends FeedItem {
 	
+	public ArticleFeedItem()
+	{
+		super();
+		
+		mPermittedList.add("title");
+		mPermittedList.add("description");
+		mPermittedList.add("votes");
+		mPermittedList.add("url");
+		mPermittedList.add("category");
+		mPermittedList.add("link");
+	}
 	/**
 	 * tranform the data from a raw value into a valid value
 	 * @param key
@@ -32,31 +43,6 @@ public class ArticleFeedItem extends FeedItem {
 	{
 		String value = super.tranformRAWListValue(key,rawValue);
 		return value;		
-	}
-	
-	/**
-	 * Decides if a key can be added to the feed item, by default returns true
-	 * @param key
-	 * @return
-	 */
-	protected boolean isKeyPermitted( String key )
-	{
-		return super.isKeyPermitted(key);
-	}
-	
-	/**
-	 * Is this a restricted key?
-	 * @param key
-	 * @return
-	 */
-	protected boolean isKeyRestricted( String key )
-	{
-		boolean bResult = false;
-		if ( key.trim().equals("thumbnail") )
-		{
-			bResult = true;
-		}
-		return bResult || super.isKeyRestricted(key);
 	}
 	
 	/**

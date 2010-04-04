@@ -5,11 +5,23 @@ import java.util.concurrent.Semaphore;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.BaseRSSWorkerThread;
 import com.dcg.util.rss.Feed;
+import com.dcg.util.rss.FeedItem;
 
 import android.app.ListActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ListView;
+import android.widget.TextView;
 
 abstract public class FeedActivity extends ListActivity {
 	
@@ -31,6 +43,9 @@ abstract public class FeedActivity extends ListActivity {
 	/** Worker thread which will do the async operations */
 	private BaseRSSWorkerThread mRssThread = null;
 	
+	/** Our cached main list view */
+	private ListView mListView = null;
+	
 	/** Handler used to communicate with our worker thread*/
 	protected Handler mHandler = null;
 	
@@ -39,10 +54,32 @@ abstract public class FeedActivity extends ListActivity {
 	public static final int COMPLETE_ERROR_THREAD_ALIVE = 1;
 	public static final int COMPLETE_ERROR = 2;
 	
+	/** Refresh menu item id */
+	private static final int MENU_REFRESH = 0;
+	
+	/** Notame menu item id */
+    private static final int MENU_NOTAME = 1;
+	
+	/** Settings menu item id */
+    private static final int MENU_SETTINGS = 2;
+    
+    /** About menu item id */
+    private static final int MENU_ABOUT = 3;
+    
+    /** Settings activity result ID */
+    private static final int SUB_ACT_SETTINGS_ID = 0;
+    
+    /** Context menu options */
+    private static final int CONTEXT_MENU_OPEN = 0;
+    private static final int CONTEXT_MENU_OPEN_SOURCE = 1;
+    protected boolean mbEnableOpenSourceContextOption;
+    private static final int CONTEXT_MENU_VOTE = 2;
+	
 	public FeedActivity() {
 		super();
+		ApplicationMNM.addLogCat(TAG);
 		
-		ApplicationMNM.AddLogCat(TAG);
+		mbEnableOpenSourceContextOption = true;
 	}
 	
 	@Override
@@ -62,6 +99,52 @@ abstract public class FeedActivity extends ListActivity {
 				handleThreadMessage( msg );
 			}
 		};
+		
+		// Perpare layout
+		setContentView(R.layout.meneo_list);
+		
+		// Do final stuff
+		seupListView();
+		
+		// Refresh if needed
+		_conditionRefreshFeed();
+	}
+	
+	private void _conditionRefreshFeed() {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        if ( prefs.getBoolean("pref_app_refreshonlaunch", false) )
+        {
+        	refreshFeed();
+        }
+	}
+	
+	/**
+	 * Setup ListView
+	 */
+	protected void seupListView() {
+		mListView = getListView();
+		
+		if ( mListView != null )
+		{
+			// Set basic ListView stuff
+			mListView.setTextFilterEnabled(true);
+			
+			// Add context menu
+			mListView.setOnCreateContextMenuListener( 
+					new View.OnCreateContextMenuListener() {
+						public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
+							menu.add(0, CONTEXT_MENU_OPEN, 0, R.string.meneo_item_open);
+							if ( mbEnableOpenSourceContextOption )
+								menu.add(0, CONTEXT_MENU_OPEN_SOURCE, 0, R.string.meneo_item_open_source);
+							menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);
+						}
+		
+					});
+		}
+		else
+		{
+			ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
+		}
 	}
 	
 	protected void handleThreadMessage(Message msg) {
@@ -74,10 +157,10 @@ abstract public class FeedActivity extends ListActivity {
 			try {
 				onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
 			} catch ( ClassCastException e ) {
-				errorMsg = "msg.obj is null!";
+				errorMsg = getResources().getString(R.string.msg_obj_null);
 				if ( msg.obj != null )
 				{
-					errorMsg = "msg.obj is not a Feed object "+ msg.obj.toString();
+					errorMsg = getResources().getString(R.string.msg_obj_wrong_type_unknown)+" "+ msg.obj.toString();
 				}
 			} finally {
 				if ( !errorMsg.equals("") )
@@ -94,7 +177,7 @@ abstract public class FeedActivity extends ListActivity {
 			}
 			else
 			{
-				errorMsg = "Unkown!";
+				errorMsg = getResources().getString(R.string.general_unknown);
 			}
 			onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
 		}
@@ -147,8 +230,15 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			String Error = "";
 			try {
-				ApplicationMNM.LogCat(TAG, "Staring worker thread");
-				ApplicationMNM.showToast("Refreshing: " + getFeedURL());
+				// Clear the current list adapter!
+				setListAdapter(null);
+
+				// Change empty text so that the user knows when it's all done
+				TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+				emptyTextView.setText(R.string.refreshing_lable);
+				
+				// Start with our task!
+				ApplicationMNM.logCat(TAG, "Staring worker thread");
 				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClassName ).newInstance();
 				
 				// Give our child's a chance to setup the thread
@@ -163,6 +253,10 @@ abstract public class FeedActivity extends ListActivity {
 				e.printStackTrace();
 				Error = e.toString();
 			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Error = e.toString();
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				Error = e.toString();
@@ -185,24 +279,119 @@ abstract public class FeedActivity extends ListActivity {
 		{
 		case COMPLETE_SUCCESSFULL:
 			// We finished successfully!!! Yeah!
-			ApplicationMNM.LogCat(TAG,"Completed!");
-			ApplicationMNM.showToast("Completed!");
-			
-			// Set the new adapter!
-			
+			ApplicationMNM.logCat(TAG,"Completed!");
+
+			// Set the new adapter!			
 			setListAdapter(new ArticlesAdapter(this, parsedFeed.getArticleList()));
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
-			ErrorMsg = "Worker thread still alive!";
+			ErrorMsg = getResources().getString(R.string.refreshing_thread_still_alive);
 			break;
 		case COMPLETE_ERROR:
-			ErrorMsg = "Failed to refresh feed: "+Error;
+			ErrorMsg = getResources().getString(R.string.refreshing_failed)+" "+Error;
 			break;
 		}
 		if ( !ErrorMsg.equals("") )
 		{
-			ApplicationMNM.LogCat(TAG, ErrorMsg);
+			ApplicationMNM.logCat(TAG, ErrorMsg);
 			ApplicationMNM.showToast(ErrorMsg);
 		}
+		
+		// Clear refernce out
+		mRssThread = null;
 	}
+	
+	/* Creates the menu items */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_REFRESH, 0, R.string.main_menu_refresh).setIcon(R.drawable.ic_menu_refresh);
+        menu.add(1, MENU_NOTAME, 0, R.string.main_menu_notame).setIcon(android.R.drawable.ic_menu_send);
+    	menu.add(1, MENU_SETTINGS, 0, R.string.main_menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
+    	menu.add(1, MENU_ABOUT, 0, R.string.main_menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+    	return true;
+    }
+    
+    /** */
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	menu.setGroupEnabled(0, (mRssThread == null || !mRssThread.isAlive()));
+    	return true;
+    }
+    
+    /* Handles item selections */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) 
+        {
+        case MENU_REFRESH:
+            // Refresh !   	
+        	refreshFeed();
+            return true;
+        case MENU_NOTAME:
+        	// Open notame activity
+        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+        	return true;
+        case MENU_SETTINGS:
+            // Open settitngs screen
+        	openSettingsScreen();
+            return true;
+        case MENU_ABOUT:
+        	return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+    	switch (item.getItemId()) 
+        {
+    	case CONTEXT_MENU_OPEN:
+        case CONTEXT_MENU_OPEN_SOURCE:
+        	// Get the real item
+        	if ( mListView != null )
+        	{
+        		FeedItem selecteItem = (FeedItem)mListView.getAdapter().getItem(menuInfo.position);
+        		if ( selecteItem != null )
+        		{
+        			String url = "";
+        			if (item.getItemId() == CONTEXT_MENU_OPEN)
+        			{
+        				url = (String)selecteItem.getKeyData("link");
+        				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
+        			}
+        			else
+        			{
+        				url = (String)selecteItem.getKeyData("url");
+        				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
+        			}
+        			try
+        			{
+        				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        			} catch ( Exception e )
+        			{
+        				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
+        			}
+        		}
+        		else
+        		{
+        			ApplicationMNM.warnCat(TAG,"List item null or not a FeedItem");
+        		}
+        	}
+        	else
+        	{
+        		ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
+        	}
+        	return true;
+    	case CONTEXT_MENU_VOTE:
+    		ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+        	return true;
+        }
+    	return false;
+    }
+    
+    /* Open settings screen */
+    public void openSettingsScreen() {
+    	Intent settingsActivity = new Intent( this, Preferences.class);
+    	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
+    	
+    	// TODO: Catch result!
+    }
 }

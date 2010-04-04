@@ -17,6 +17,6 @@ public class FeedParser extends com.dcg.util.rss.RSSParser {
         this.setmFeedItemClassName("com.dcg.meneame.ArticleFeedItem");
         
         // Add our tag to the category log (so it will be printed out)
-        ApplicationMNM.AddLogCat(TAG);
+        ApplicationMNM.addLogCat(TAG);
     }
 }

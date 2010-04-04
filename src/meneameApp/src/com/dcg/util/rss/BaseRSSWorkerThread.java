@@ -71,7 +71,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public BaseRSSWorkerThread() {
 		super();
 		
-		ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.addLogCat(TAG);
 	}
 	
 	/**
@@ -109,7 +109,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		if ( mApp != null ) {
 			try {
 				try {
-					ApplicationMNM.LogCat(TAG, "Aquirering semaphore " + mSemaphore.toString());
+					ApplicationMNM.logCat(TAG, "Aquirering semaphore " + mSemaphore.toString());
 					mSemaphore.acquire();
 				} catch (InterruptedException e) {
 						return;
@@ -126,7 +126,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					mFeedParser.clearReferences();
 					mFeedParser = null;
 				}
-				ApplicationMNM.LogCat(TAG, "Releasing semaphore " + mSemaphore.toString());
+				ApplicationMNM.logCat(TAG, "Releasing semaphore " + mSemaphore.toString());
 				mSemaphore.release();
 			}
 		}
@@ -137,21 +137,19 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	private void guardedRun() throws InterruptedException {
 		// At this point we are thread safe
+		Message msg = mHandler.obtainMessage();
+		Bundle mDdata = new Bundle();
 		try {
 			HttpClient client = mApp.getHttpClient();
 			HttpGet request = new HttpGet();
 			
 			request.setURI(new URI(mFeedURL));
-			ApplicationMNM.LogCat(TAG, "Starting request " + request.toString());
+			ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
 			
 			HttpResponse response = client.execute(request);
 			
 			// We have stopped!
 			if ( mbStopRequested ) return;
-			
-			// Build message body
-			Message msg = mHandler.obtainMessage();
-			mDdata = new Bundle();
 			
 			if ( response != null )
 			{				
@@ -165,7 +163,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					
 					
 					// All fine
-					ApplicationMNM.LogCat(TAG, "Finished!");				
+					ApplicationMNM.logCat(TAG, "Finished!");				
 					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
 				}
 				else
@@ -178,19 +176,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				Log.d(TAG, "Failed!");
 				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
 			}
-			
-			// Send final message
-			msg.setData(mDdata);
-			sendMessage(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
-			// Build and send failed message
-			Message msg = mHandler.obtainMessage();
-			Bundle data = new Bundle();
-			data.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-			msg.setData(data);
-			sendMessage(msg);
+			mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 		} finally {
 			if (in != null) {
 				try {
@@ -199,6 +187,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					e.printStackTrace();					
 				}
 			}
+			
+			// Send final message
+			msg.setData(mDdata);
+			sendMessage(msg);
 		}
 	}
 	
@@ -239,7 +231,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		// Try to create the RSS handler
 		try {
 			mFeedParser = (RSSParser)Class.forName(this.mFeedParserClassName).newInstance();
-			ApplicationMNM.LogCat(TAG, "RSS-Parser created: " + mFeedParser.toString());
+			ApplicationMNM.logCat(TAG, "RSS-Parser created: " + mFeedParser.toString());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -298,7 +290,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		
 		msg.obj = mFeedParser.getFeed();
 		
-		ApplicationMNM.LogCat(TAG,"Feed: " + mFeedParser.toString());
+		ApplicationMNM.logCat(TAG,"Feed: " + mFeedParser.toString());
 	}
 	
 	/**
