@@ -22,6 +22,12 @@ abstract public class FeedItem extends Object {
 	
 	/** our semaphore to make this class thread safe! */
 	private Semaphore mSemaphore = new Semaphore(1);
+	
+	/** List of keys permitted */
+	protected static List<String> mPermittedList = new ArrayList<String>();
+	
+	/** List of keys restricted */
+	protected static List<String> mRestrictedList = new ArrayList<String>();
 
 	/**
 	 * Empty constructor
@@ -29,7 +35,7 @@ abstract public class FeedItem extends Object {
 	public FeedItem() {
 		super();
 		
-		ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.addLogCat(TAG);
 	}
 	
 	/**
@@ -66,7 +72,7 @@ abstract public class FeedItem extends Object {
 	 */
 	protected boolean isKeyPermitted( String key )
 	{
-		return true;
+		return mPermittedList.contains(key);
 	}
 	
 	/**
@@ -76,7 +82,7 @@ abstract public class FeedItem extends Object {
 	 */
 	protected boolean isKeyRestricted( String key )
 	{
-		return false;
+		return mRestrictedList.contains(key);
 	}
 	
 	/**
@@ -144,13 +150,13 @@ abstract public class FeedItem extends Object {
 		try {
 			// Make us tread safe!
 			acquireSemaphore();
-			ApplicationMNM.LogCat(TAG,"setStringValue::("+ key +") value("+ value +")");
+			ApplicationMNM.logCat(TAG,"setStringValue::("+ key +") value("+ value +")");
 			finalValue = tranformRAWValue(key,value);
 			setKeyValue(key, finalValue);
 			bResult = true;
 		} catch( Exception e) {
 			// fall thru and exit normally
-			ApplicationMNM.LogCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ finalValue +")");
+			ApplicationMNM.warnCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ finalValue +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();
@@ -199,13 +205,13 @@ abstract public class FeedItem extends Object {
 			// Update item
 			if ( itemList != null )
 			{
-				ApplicationMNM.LogCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
+				ApplicationMNM.logCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
 				setKeyValue(key,itemList);
 				bResult = true;
 			}
 		} catch( Exception e) {
 			// fall thru and exit normally
-			ApplicationMNM.LogCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
+			ApplicationMNM.warnCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
 		} finally {
 			// release our semaphore
 			releaseSemaphore();

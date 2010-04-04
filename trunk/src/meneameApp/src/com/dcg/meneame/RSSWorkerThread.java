@@ -32,10 +32,8 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 	 */
 	public RSSWorkerThread() {
 		super();
-		
+		ApplicationMNM.addLogCat(TAG);
 		this.setmFeedParserClassName("com.dcg.meneame.FeedParser");
-		
-		ApplicationMNM.AddLogCat(TAG);
 	}
 	
 	// TODO: Make all SDCard access globally and configurable using always:
@@ -51,7 +49,7 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 		if(! path.isDirectory()) {
 			if ( path.mkdirs() )
 			{
-				ApplicationMNM.LogCat(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
+				ApplicationMNM.logCat(TAG,"Directory created: /sdcard/com.dcg.meneame/cache/");
 			}
 			else
 			{
@@ -81,7 +79,7 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 		        BufferedWriter out = new BufferedWriter(gpxwriter);
 		        out.write(page);
 		        out.close();
-		        ApplicationMNM.LogCat(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
+		        ApplicationMNM.logCat(TAG,"Feed written to: /sdcard/com.dcg.meneame/cache/feed.rss");
 		    }
 		    else
 		    {
@@ -101,7 +99,7 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 		List<FeedItem> articleList = parsedFeed.getArticleList();
 		
 		// The feed we just resolved
-		ApplicationMNM.LogCat(TAG,"Feed Parsed: " + parsedFeed.getKeyData("title"));
-		ApplicationMNM.LogCat(TAG,"  Articles: " + articleList.size());
+		ApplicationMNM.logCat(TAG,"Feed Parsed: " + parsedFeed.getKeyData("title"));
+		ApplicationMNM.logCat(TAG,"  Articles: " + articleList.size());
 	}
 }

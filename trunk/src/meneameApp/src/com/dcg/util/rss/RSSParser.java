@@ -60,7 +60,7 @@ abstract public class RSSParser extends DefaultHandler {
         this.mItemCount = 0;
         
         // Add our tag to the category log (so it will be printed out)
-        ApplicationMNM.AddLogCat(TAG);
+        ApplicationMNM.addLogCat(TAG);
     }
 	
 	public String getmFeedItemClassName() {
@@ -120,7 +120,7 @@ abstract public class RSSParser extends DefaultHandler {
 		// Try to create the RSS handler
 		try {
 			this.mFeedItem = (FeedItem)Class.forName(this.mFeedItemClassName).newInstance();
-			ApplicationMNM.LogCat(TAG, "FeedItem created: " + this.mFeedItem.toString());
+			ApplicationMNM.logCat(TAG, "FeedItem created: " + this.mFeedItem.toString());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,10 +195,12 @@ abstract public class RSSParser extends DefaultHandler {
 				sp = spf.newSAXParser();				
 				sp.parse( new InputSource(this.mInputStreamReader), this);
 			}
-		
+			
+			// This is all right, so get rid of the current feed item
+			this.mFeedItem = null;
 		} catch (RSSParserMaxElements e) {
 			// Not a real 'error' heheh
-			ApplicationMNM.LogCat(TAG, "Finished: " + e.toString());
+			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -247,13 +249,13 @@ abstract public class RSSParser extends DefaultHandler {
 			// Set some global states
 			if (name.trim().equals("channel")) 
 			{
-				ApplicationMNM.LogCat(TAG, "Getting channel data...");
+				ApplicationMNM.logCat(TAG, "Getting channel data...");
 				this.mbParsingChannel = true;
 			}
 			else if (name.trim().equals("item")) 
 			{
 				this.mItemCount++;
-				ApplicationMNM.LogCat(TAG, "Item Found ["+this.mItemCount+"]");
+				ApplicationMNM.logCat(TAG, "Item Found ["+this.mItemCount+"]");
 				this.mbParsingChannel = false;
 				
 				// Check if we reached the max articles permitted
@@ -263,8 +265,11 @@ abstract public class RSSParser extends DefaultHandler {
 					throw new RSSParserMaxElements("MAX ELEMENTS REACHED: " + mItemCount, null);
 				}
 				
-				// Add previus article
-				_addArticle();
+				// Add previus article in case we got a previus one
+				if ( this.mItemCount > 1 )
+				{
+					_addArticle();
+				}
 				
 				// Create new article to be hold
 				createFeedItem();
@@ -288,14 +293,14 @@ abstract public class RSSParser extends DefaultHandler {
 			{
 				if ( setFeedValue(mCurrentTag.trim(), mText.toString()) )
 				{
-					ApplicationMNM.LogCat(TAG, " [feed] " + mCurrentTag + ": " + mText.toString());
+					ApplicationMNM.logCat(TAG, " [feed] " + mCurrentTag + ": " + mText.toString());
 				}
 			}
 			else
 			{				
 				if ( setItemValue(mCurrentTag.trim(), mText.toString()) )
 				{
-					ApplicationMNM.LogCat(TAG, " - " + mCurrentTag + ": " + mText.toString());
+					ApplicationMNM.logCat(TAG, " - " + mCurrentTag + ": " + mText.toString());
 				}
 			}
 		}

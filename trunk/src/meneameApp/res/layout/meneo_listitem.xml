@@ -95,7 +95,7 @@
 		android:singleLine="true" />
      
 	<TextView
-		android:id="@+id/meneos"
+		android:id="@+id/votes"
 		
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

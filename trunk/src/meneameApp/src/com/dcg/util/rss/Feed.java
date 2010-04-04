@@ -19,7 +19,7 @@ public class Feed extends FeedItem {
 	public Feed() {
 		super();
 		
-		ApplicationMNM.AddLogCat(TAG);
+		ApplicationMNM.addLogCat(TAG);
 	}
 	
 	
@@ -30,8 +30,8 @@ public class Feed extends FeedItem {
 	public void addArticle( FeedItem article ) {
 		if ( article != null )
 		{
-			ApplicationMNM.LogCat(TAG, "Adding article: " + article);
-			mArticles.add(0, article);
+			ApplicationMNM.logCat(TAG, "Adding article: " + article.getKeyData("title"));
+			mArticles.add(mArticles.size(), article);
 		}
 	}
 	
