@@ -12,6 +12,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+/**
+ * Main activity, basically holds the main tab widget
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class MainActivity extends TabActivity  {
 	
 	/** Class tag used for it's logs */

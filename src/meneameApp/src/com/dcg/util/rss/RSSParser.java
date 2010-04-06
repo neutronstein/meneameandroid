@@ -14,6 +14,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.dcg.app.ApplicationMNM;
 
+/**
+ * Class that does the parsing of an RSS file
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 abstract public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */

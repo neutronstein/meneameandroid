@@ -1,7 +1,11 @@
 package com.dcg.meneame;
 
-
 import android.os.Bundle;
+
+/**
+ * Comments activity
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class CommentsActivity extends FeedActivity {
 	
 	static final int LIST_MENU_OPEN = 0;
@@ -12,7 +16,7 @@ public class CommentsActivity extends FeedActivity {
 		
 		// Set feed
 		mFeedURL = "http://www.meneame.net/comments_rss2.php";
-		mbEnableOpenSourceContextOption = false;
+		mbIsArticleFeed = false;
 	}
 
 	/** Called when the activity is first created. */

@@ -26,6 +26,10 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * General app object used by android life cycle
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class ApplicationMNM extends Application {
 	
 	/** log tag for this class */
@@ -71,6 +75,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("FeedParser");
 		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
+		addIgnoreCat("CommentsAdapter");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

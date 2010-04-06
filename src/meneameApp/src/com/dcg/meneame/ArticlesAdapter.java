@@ -23,12 +23,19 @@ public class ArticlesAdapter extends BaseAdapter {
 	private Feed mFeed=null;
 	private LayoutInflater mInflater;
 	
+	/** layout used to each item */
+	protected int mItenLayoutID;
+	
 	public ArticlesAdapter(Context context, Feed feed ) {
+		ApplicationMNM.addLogCat(TAG);
 		// Cache the LayoutInflate to avoid asking for a new one each time.
 		mInflater = LayoutInflater.from(context);
 		
 		// Save feed instance!
 		mFeed = feed;
+		
+		// Set default layout
+		mItenLayoutID = R.layout.meneo_listitem;
 	}
 	
 	/**
@@ -75,7 +82,7 @@ public class ArticlesAdapter extends BaseAdapter {
 		// to reinflate it. We only inflate a new View when the convertView supplied
 		// by ListView is null.
 		if (convertView == null) {
-			convertView = mInflater.inflate(R.layout.meneo_listitem, null);
+			convertView = mInflater.inflate(mItenLayoutID, null);
 			
 			// Creates a ViewHolder and store references to the two children views
 			// we want to bind data to.
