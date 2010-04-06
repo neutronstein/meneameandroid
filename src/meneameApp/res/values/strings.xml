@@ -55,6 +55,8 @@
     
     <string name="refreshing_failed">Failed to refresh feed:</string>
     <string name="refreshing_thread_still_alive">Worker thread still alive!</string>
+    
+    <string name="user_id_invalid">Invalid user ID! Please correct it in your preferences!</string>
 	<!-- 
     ================================================================
     Preference
@@ -67,8 +69,11 @@
     
     <string name="pref_account">Account</string>
     
-    <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
-    <string name="pref_account_apikey">API Key</string>
+    <string name="pref_account_apikey_summary">menèame API key (do not share, it's your personal key)</string>
+    <string name="pref_account_apikey">API key</string>
+    
+    <string name="pref_account_user_id_summary">menèame user ID (once you login to menéame you will find your id in your profile)</string>
+    <string name="pref_account_user_id">User ID</string>
     
     <string name="pref_account_user_summary">menéame username</string>    
     <string name="pref_account_user">Username</string>    
