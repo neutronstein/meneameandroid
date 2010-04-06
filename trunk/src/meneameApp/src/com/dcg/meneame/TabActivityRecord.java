@@ -8,7 +8,6 @@ import android.app.Activity;
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  *
  */
-
 public class TabActivityRecord extends Object {
 	private String mTabTag = "";
 	private Activity mTabActivity = null;

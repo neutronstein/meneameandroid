@@ -2,6 +2,10 @@ package com.dcg.meneame;
 
 import com.dcg.util.rss.FeedItem;
 
+/**
+ * Class that represents an article contained by a feed
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class ArticleFeedItem extends FeedItem {
 	
 	public ArticleFeedItem()

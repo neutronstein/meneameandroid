@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import com.dcg.app.ApplicationMNM;
 
+/**
+ * A parsed feed of items
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class Feed extends FeedItem {
 	
 	/** log tag for this class */

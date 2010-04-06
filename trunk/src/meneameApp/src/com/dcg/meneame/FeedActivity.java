@@ -24,6 +24,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 
+/**
+ * Basic activity that handles feed parsing and stuff like that
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 abstract public class FeedActivity extends ListActivity {
 	
 	/** Log tag */
@@ -73,17 +77,18 @@ abstract public class FeedActivity extends ListActivity {
     /** Context menu options */
     private static final int CONTEXT_MENU_OPEN = 0;
     private static final int CONTEXT_MENU_OPEN_SOURCE = 1;
-    protected boolean mbEnableOpenSourceContextOption;
     private static final int CONTEXT_MENU_VOTE = 2;
+    
+    /** Is this an article or an comments feed? */
+    protected boolean mbIsArticleFeed;
     
     /** Current feed we got */
     private Feed mFeed = null;
 	
 	public FeedActivity() {
 		super();
-		ApplicationMNM.addLogCat(TAG);
-		
-		mbEnableOpenSourceContextOption = true;
+		ApplicationMNM.addLogCat(TAG);		
+		mbIsArticleFeed = true;
 	}
 	
 	@Override
@@ -174,7 +179,7 @@ abstract public class FeedActivity extends ListActivity {
 					new View.OnCreateContextMenuListener() {
 						public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
 							menu.add(0, CONTEXT_MENU_OPEN, 0, R.string.meneo_item_open);
-							if ( mbEnableOpenSourceContextOption )
+							if ( mbIsArticleFeed )
 							{
 								menu.add(0, CONTEXT_MENU_OPEN_SOURCE, 0, R.string.meneo_item_open_source);
 								menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);

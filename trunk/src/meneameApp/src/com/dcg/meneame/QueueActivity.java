@@ -1,8 +1,11 @@
 package com.dcg.meneame;
 
-
 import android.os.Bundle;
 
+/**
+ * Where we show the queue of acticles
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class QueueActivity extends FeedActivity {
 	
 	public QueueActivity() {

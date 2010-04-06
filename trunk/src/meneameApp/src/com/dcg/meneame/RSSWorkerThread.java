@@ -15,6 +15,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+/**
+ * This thread dose all the hard parsing work
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class RSSWorkerThread extends BaseRSSWorkerThread {
 	
 	/** log tag for this class */

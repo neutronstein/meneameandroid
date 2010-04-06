@@ -3,6 +3,10 @@ package com.dcg.meneame;
 
 import android.os.Bundle;
 
+/**
+ * News activity
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class NewsActivity extends FeedActivity {
 	
 	public NewsActivity() {

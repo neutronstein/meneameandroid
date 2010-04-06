@@ -19,6 +19,11 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+/**
+ * Base class used to parse an RSS Feed.
+ * TODO: Pass a file object
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 abstract public class BaseRSSWorkerThread extends Thread {
 	
 	/** Definitions of a completed message */

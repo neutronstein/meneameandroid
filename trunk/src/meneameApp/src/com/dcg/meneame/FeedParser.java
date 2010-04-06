@@ -2,6 +2,10 @@ package com.dcg.meneame;
 
 import com.dcg.app.ApplicationMNM;
 
+/**
+ * Our feed parser
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class FeedParser extends com.dcg.util.rss.RSSParser {
 	
 	/** log tag for this class */
