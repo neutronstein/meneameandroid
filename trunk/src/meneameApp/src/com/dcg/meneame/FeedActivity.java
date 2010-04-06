@@ -1,5 +1,6 @@
 package com.dcg.meneame;
 
+import java.io.File;
 import java.util.concurrent.Semaphore;
 
 import com.dcg.app.ApplicationMNM;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -241,7 +243,7 @@ abstract public class FeedActivity extends ListActivity {
 	 * Returns the tag this activity will hold in the main TabWidget
 	 * @return String - TabTag
 	 */
-	public static String getTabActivityTag() {
+	public String getTabActivityTag() {
 		return "";
 	}
 	
@@ -249,7 +251,23 @@ abstract public class FeedActivity extends ListActivity {
 	 * String id used for the tab indicator
 	 * @return
 	 */
-	public static int getIndicatorStringID() {
+	public int getIndicatorStringID() {
+		return -1;
+	}
+	
+	/**
+	 * Returns the tag this activity will hold in the main TabWidget
+	 * @return String - TabTag
+	 */
+	public static String static_getTabActivityTag() {
+		return "";
+	}
+	
+	/**
+	 * String id used for the tab indicator
+	 * @return
+	 */
+	public static int static_getIndicatorStringID() {
 		return -1;
 	}
 	
@@ -342,6 +360,12 @@ abstract public class FeedActivity extends ListActivity {
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
+			
+			// Start caching process
+			// TODO: Put all this into another thread process!
+			prepareSDCard();
+			
+			// Update feed
 			_updateFeedList();
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
@@ -349,6 +373,9 @@ abstract public class FeedActivity extends ListActivity {
 			break;
 		case COMPLETE_ERROR:
 			ErrorMsg = getResources().getString(R.string.refreshing_failed)+" "+Error;
+			// Change empty text so that the user knows when it's all done
+			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView.setText(R.string.empty_list);
 			break;
 		}
 		if ( !ErrorMsg.equals("") )
@@ -454,4 +481,28 @@ abstract public class FeedActivity extends ListActivity {
     	
     	// TODO: Catch result!
     }
+    
+    /**
+	 * Prepares the SDCard with all we need for the caching process
+	 */
+	protected void prepareSDCard() {
+		try {			
+			// Create app dir in SDCard if possible
+			File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"com.dcg.meneame"+File.separator+"cache"+File.separator+getTabActivityTag());
+			if(!path.isDirectory()) {
+				if ( path.mkdirs() )
+				{
+					ApplicationMNM.logCat(TAG,"Directory created: " + path);
+				}
+				else
+				{
+					ApplicationMNM.warnCat(TAG,"Failed to create directory: " + path);
+				}
+			}
+		} catch( Exception e )
+		{
+			ApplicationMNM.warnCat(TAG,"Failed to prepare SD card for aching: " + e.toString());
+			e.printStackTrace();
+		}
+	}
 }

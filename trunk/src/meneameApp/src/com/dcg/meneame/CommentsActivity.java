@@ -35,7 +35,7 @@ public class CommentsActivity extends FeedActivity {
 	 * Returns the tag this activity will hold in the main TabWidget
 	 * @return String - TabTag
 	 */
-	public static String getTabActivityTag() {
+	public String getTabActivityTag() {
 		return "comments_tab";
 	}
 	
@@ -43,7 +43,23 @@ public class CommentsActivity extends FeedActivity {
 	 * String id used for the tab indicator
 	 * @return
 	 */
-	public static int getIndicatorStringID() {
+	public int getIndicatorStringID() {
+		return R.string.main_tab_comments;
+	}
+	
+	/**
+	 * Returns the tag this activity will hold in the main TabWidget
+	 * @return String - TabTag
+	 */
+	public static String static_getTabActivityTag() {
+		return "comments_tab";
+	}
+	
+	/**
+	 * String id used for the tab indicator
+	 * @return
+	 */
+	public static int static_getIndicatorStringID() {
 		return R.string.main_tab_comments;
 	}
 }

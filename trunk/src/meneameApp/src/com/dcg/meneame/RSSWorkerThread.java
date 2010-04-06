@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import com.dcg.app.ApplicationMNM;
@@ -13,6 +15,7 @@ import com.dcg.util.rss.FeedItem;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.util.Log;
 
 /**
@@ -47,7 +50,7 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 	/**
 	 * Prepares the SDCard with all we need
 	 */
-	protected void prepareSDCard( Bundle data ) {
+	protected void prepareSDCard() {
 		// Create app dir in SDCard if possible
 		File path = new File("/sdcard/com.dcg.meneame/cache/");
 		if(! path.isDirectory()) {
@@ -57,9 +60,16 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 			}
 			else
 			{
-				Log.w(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
+				ApplicationMNM.warnCat(TAG,"Failed to create directory: /sdcard/com.dcg.meneame/cache/");
 			}
 		}
+	}
+	
+	/**
+	 * Called once we parsed the file, the input reader has been reset before.
+	 */
+	protected void postProcessResult( Message msg, Feed parsedFeed ) {
+		// Start with caching process
 	}
 	
 	/**

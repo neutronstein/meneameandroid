@@ -1,7 +1,7 @@
 package com.dcg.util.rss;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.concurrent.Semaphore;
@@ -54,9 +54,6 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	/** Handler used to send messages to the activity that will handle our work */
 	private Handler mHandler;
-	
-	/** Read buffer used to catch our content */
-	private BufferedReader in = null;
 	
 	/** class that handles the caching process */
 	protected String mFeedCacherClassName = "";
@@ -144,6 +141,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		// At this point we are thread safe
 		Message msg = mHandler.obtainMessage();
 		Bundle mDdata = new Bundle();
+		InputStreamReader streamReader = null;
 		try {
 			HttpClient client = mApp.getHttpClient();
 			HttpGet request = new HttpGet();
@@ -157,16 +155,17 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			if ( mbStopRequested ) return;
 			
 			if ( response != null )
-			{				
+			{
+				streamReader = new InputStreamReader(response.getEntity().getContent());
 				// Start processing the RSS file
-				processResult( msg, new InputStreamReader(response.getEntity().getContent()) );				
+				processResult(msg, streamReader);				
 				
 				// look for any error
-				if ( isDataValid() )
+				if ( isDataValid() && mFeedParser != null )
 				{
-					// Cache result if we need to :P
-					
-					
+					// Let us make any post processing stuff
+					postProcessResult(msg, mFeedParser.getFeed());
+
 					// All fine
 					ApplicationMNM.logCat(TAG, "Finished!");				
 					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
@@ -185,11 +184,11 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			e.printStackTrace();
 			mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 		} finally {
-			if (in != null) {
+			if (streamReader != null) {
 				try {
-					in.close();
+					streamReader.close();
 				} catch (IOException e) {
-					e.printStackTrace();					
+					e.printStackTrace();
 				}
 			}
 			
@@ -253,6 +252,13 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	}
 	
 	/**
+	 * Called once we parsed the file, the input reader has been reset before.
+	 */
+	protected void postProcessResult( Message msg, Feed parsedFeed ) {
+		// Nothing to be done by default
+	}
+	
+	/**
 	 * Will parse the incoming data and save it into a Bundle
 	 * @param msg 
 	 * @param page
@@ -290,19 +296,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mFeedParser.setMaxItems(maxItems);
 		mFeedParser.parse();
 		
-		// We finished to inform subclasses
-		feedParsingFinished(mFeedParser.getFeed());
-		
 		msg.obj = mFeedParser.getFeed();
 		
 		ApplicationMNM.logCat(TAG,"Feed: " + mFeedParser.toString());
-	}
-	
-	/**
-	 * Will be called once the feed has been parsed
-	 * @param parsedFeed
-	 */
-	protected void feedParsingFinished( Feed parsedFeed ) {
-		// The feed we just resolved
 	}
 }

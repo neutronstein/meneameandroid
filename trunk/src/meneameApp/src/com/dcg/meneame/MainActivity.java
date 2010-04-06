@@ -52,22 +52,22 @@ public class MainActivity extends TabActivity  {
         mTabHost = getTabHost();
         
         // Add news tab
-        TabSpec newsTab = mTabHost.newTabSpec(NewsActivity.getTabActivityTag()); 
+        TabSpec newsTab = mTabHost.newTabSpec(NewsActivity.static_getTabActivityTag()); 
         newsTab.setContent(new Intent(this, NewsActivity.class)); 
-        newsTab.setIndicator( getResources().getString(NewsActivity.getIndicatorStringID()) ); 
+        newsTab.setIndicator( getResources().getString(NewsActivity.static_getIndicatorStringID()) ); 
         mTabHost.addTab(newsTab);
         
         // Add queue tab
-        TabSpec queueTab = mTabHost.newTabSpec(QueueActivity.getTabActivityTag()); 
+        TabSpec queueTab = mTabHost.newTabSpec(QueueActivity.static_getTabActivityTag()); 
         queueTab.setContent(new Intent(this, QueueActivity.class)); 
-        queueTab.setIndicator( getResources().getString(QueueActivity.getIndicatorStringID()) ); 
+        queueTab.setIndicator( getResources().getString(QueueActivity.static_getIndicatorStringID()) ); 
         mTabHost.addTab(queueTab);
 
         
         // Add comments tab
-        TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity.getTabActivityTag()); 
+        TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity.static_getTabActivityTag()); 
         commentsTab.setContent(new Intent(this, CommentsActivity.class)); 
-        commentsTab.setIndicator( getResources().getString(CommentsActivity.getIndicatorStringID()) ); 
+        commentsTab.setIndicator( getResources().getString(CommentsActivity.static_getIndicatorStringID()) ); 
         mTabHost.addTab(commentsTab);
         
         // Set news tab as visible one
