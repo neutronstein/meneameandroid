@@ -31,7 +31,7 @@ public class QueueActivity extends FeedActivity {
 	 * Returns the tag this activity will hold in the main TabWidget
 	 * @return String - TabTag
 	 */
-	public static String getTabActivityTag() {
+	public String getTabActivityTag() {
 		return "in_que_tab";
 	}
 	
@@ -39,7 +39,23 @@ public class QueueActivity extends FeedActivity {
 	 * String id used for the tab indicator
 	 * @return
 	 */
-	public static int getIndicatorStringID() {
+	public int getIndicatorStringID() {
+		return R.string.main_tab_queue;
+	}
+	
+	/**
+	 * Returns the tag this activity will hold in the main TabWidget
+	 * @return String - TabTag
+	 */
+	public static String static_getTabActivityTag() {
+		return "in_que_tab";
+	}
+	
+	/**
+	 * String id used for the tab indicator
+	 * @return
+	 */
+	public static int static_getIndicatorStringID() {
 		return R.string.main_tab_queue;
 	}
 }
