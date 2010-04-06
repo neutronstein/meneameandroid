@@ -4,16 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.BaseRSSWorkerThread;
 import com.dcg.util.rss.Feed;
 import com.dcg.util.rss.FeedItem;
-
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;

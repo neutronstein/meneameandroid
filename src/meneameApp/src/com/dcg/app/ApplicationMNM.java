@@ -3,7 +3,6 @@ package com.dcg.app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
-
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
@@ -17,9 +16,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-
 import com.dcg.meneame.TabActivityRecord;
-
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -292,5 +289,13 @@ public class ApplicationMNM extends Application {
 			}
 			mToast.show();
 		}
+	}
+	
+	/**
+	 * Shows a toast message but referencing a resource id and not directly a string
+	 * @param id
+	 */
+	public static void showToast( int id ) {
+		showToast(mAppContext.getResources().getString(id));
 	}
 }
