@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- 
+    ================================================================
+    UI Elements
+    ================================================================
+    -->
+    
+    <!-- Main Activity -->
+    
+    <string name="app_name">menéame</string>
+    <string name="hello">Welcome to menéame!</string>
+    
+    <!-- Tab Pages -->
+    
+    <string name="main_tab_news">News</string>
+	<string name="main_tab_queue">Queue</string>
+	<string name="main_tab_comments">All Comments</string>
+	
+	<!-- UI Lsts -->
+	
+	<string name="empty_list">List is empty... please refresh...</string>
+	<string name="meneo_item_open">Open</string>
+	<string name="meneo_item_open_source">Open (Source)</string>
+	<string name="meneo_item_vote">Vote</string>
+	
+	<!-- Menu -->
+	
+	<string name="main_menu_refresh">Refresh</string>
+	<string name="main_menu_notame">Nótame</string>
+	<string name="main_menu_settings">Settings</string>
+	<string name="main_menu_about">About</string>
+
+    <!-- Messages and Info -->
+    <string name="refreshing_lable">Refreshing...</string>
+    <string name="context_menu_open">Opening menèame.net</string>
+    <string name="context_menu_open_source">Opening source</string>
+    
+    <!-- Erros -->
+    <string name="general_unknown">Unkown Error</string>
+    
+    <string name="msg_obj_wrong_type_unknown">msg.obj is not a Feed object</string>
+    <string name="msg_obj_null">msg.obj is null!</string>
+    
+    <string name="refreshing_failed">Failed to refresh feed:</string>
+    <string name="refreshing_thread_still_alive">Worker thread still alive!</string>
+	<!-- 
+    ================================================================
+    Preference
+    ================================================================
+    -->
+    
+    <string name="app_pref_name">Preferences</string>
+    
+    <!-- Account Settings -->
+    
+    <string name="pref_account">Account</string>
+    
+    <string name="pref_account_apikey_summary">menèame API Key (do not share, it's your personal key)</string>
+    <string name="pref_account_apikey">API Key</string>
+    
+    <string name="pref_account_user_summary">menéame username</string>    
+    <string name="pref_account_user">Username</string>    
+    
+	<!-- Style customizations -->
+	
+	<string name="pref_style">Style</string>
+	
+	<string name="pref_style_mainanimation">App animation</string>
+    <string name="pref_style_mainanimation_summary">Animation used by the appliction</string>    
+    <string name="pref_style_mainanimation_none">None</string>
+    <string name="pref_style_mainanimation_fadein">Fade-In</string>
+    <string name="pref_style_mainanimation_slidein">Slide-In</string>
+    
+    <!-- Application settings -->
+    
+    <string name="pref_app">App</string>
+    
+    <string name="pref_app_refreshonlaunch">Refresh on launch</string>
+    <string name="pref_app_refreshonlaunch_summary">Refresh feeds when app launches?</string>
+    
+    <string name="pref_app_clearcache">Clear cache</string>
+    <string name="pref_app_clearcache_summary">Will clear the cache of feeds (TODO:Use custom dialog for this)</string>
+    
+    <string name="pref_app_storage">Prefered storage method</string>
+    <string name="pref_app_storage_summary">Method used to store cached rss feeds</string>
+    <string name="pref_app_storage_none">None</string>
+    <string name="pref_app_storage_internal">Internal</string>
+    <string name="pref_app_storage_sdcard">SD-Card</string>
+    
+    <string name="pref_app_maxarticles">Articles we will take from feed</string>
+    <string name="pref_app_maxarticles_summary">Method used to store cached rss feeds</string>
+    <string name="pref_app_maxarticles_10">10</string>
+    <string name="pref_app_maxarticles_20">20</string>
+    <string name="pref_app_maxarticles_40">40</string>
+    <string name="pref_app_maxarticles_ALL">All</string>
+</resources>
