@@ -19,7 +19,7 @@
 	
 	<!-- UI Lsts -->
 	
-	<string name="empty_list">List is empty... please refresh...</string>
+	<string name="empty_list">List is empty... Touch to refresh</string>
 	<string name="meneo_item_open">Open</string>
 	<string name="meneo_item_open_source">Open (Source)</string>
 	<string name="meneo_item_vote">Vote</string>

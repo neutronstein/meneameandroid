@@ -2,7 +2,6 @@ package com.dcg.util.rss;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.dcg.app.ApplicationMNM;
 
 public class Feed extends FeedItem {
@@ -20,8 +19,7 @@ public class Feed extends FeedItem {
 		super();
 		
 		ApplicationMNM.addLogCat(TAG);
-	}
-	
+	}	
 	
 	/**
 	 * Adds a new article int the feed
@@ -41,6 +39,24 @@ public class Feed extends FeedItem {
 	 */
 	public List<FeedItem> getArticleList() {
 		return mArticles;
+	}
+	
+	/**
+	 * Return an article of this feed
+	 * @param position
+	 * @return
+	 */
+	public FeedItem getArticle(int position) {
+		if ( mArticles.size() > 0 && position < mArticles.size() )
+			return mArticles.get(position);
+		return null;
+	}
+	
+	/**
+	 * Get number of feeds we got
+	 */
+	public int getArticleCount() {
+		return mArticles.size();
 	}
 	
 	/**

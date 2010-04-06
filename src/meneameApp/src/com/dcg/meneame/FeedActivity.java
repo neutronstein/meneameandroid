@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
@@ -74,6 +75,9 @@ abstract public class FeedActivity extends ListActivity {
     private static final int CONTEXT_MENU_OPEN_SOURCE = 1;
     protected boolean mbEnableOpenSourceContextOption;
     private static final int CONTEXT_MENU_VOTE = 2;
+    
+    /** Current feed we got */
+    private Feed mFeed = null;
 	
 	public FeedActivity() {
 		super();
@@ -106,16 +110,52 @@ abstract public class FeedActivity extends ListActivity {
 		// Do final stuff
 		seupListView();
 		
+		// Recover the feed if that was possible
+		try
+		{
+			mFeed = (Feed)savedInstanceState.getParcelable(getTabActivityTag());
+		} catch (Exception e)
+		{
+			// Nothing needs to be done here
+		}
+		
 		// Refresh if needed
 		_conditionRefreshFeed();
 	}
 	
+	/**
+	 * Save state data into
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable(getTabActivityTag(), mFeed);
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// If the users touches the screen and no feed is setup refresh it!
+		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
+		{
+			refreshFeed();
+		}
+		return super.onTouchEvent(event);
+	}
+	
 	private void _conditionRefreshFeed() {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-        if ( prefs.getBoolean("pref_app_refreshonlaunch", false) )
-        {
-        	refreshFeed();
-        }
+		if ( mFeed != null )
+		{
+			// We got already a feed, so just set a new adapter
+			_updateFeedList();
+		}
+		else
+		{
+	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+	        if ( prefs.getBoolean("pref_app_refreshonlaunch", false) )
+	        {
+	        	refreshFeed();
+	        }
+		}
 	}
 	
 	/**
@@ -135,10 +175,11 @@ abstract public class FeedActivity extends ListActivity {
 						public void onCreateContextMenu(ContextMenu menu, View view,ContextMenu.ContextMenuInfo menuInfo) {
 							menu.add(0, CONTEXT_MENU_OPEN, 0, R.string.meneo_item_open);
 							if ( mbEnableOpenSourceContextOption )
+							{
 								menu.add(0, CONTEXT_MENU_OPEN_SOURCE, 0, R.string.meneo_item_open_source);
-							menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);
+								menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);
+							}
 						}
-		
 					});
 		}
 		else
@@ -270,6 +311,21 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * Will assign the current article list to our ListView
+	 */
+	private void _updateFeedList()
+	{
+		// Clear out list adapter
+		setListAdapter(null);
+		
+		// Set the new adapter!		
+		if ( this.mFeed != null )
+		{
+			setListAdapter(new ArticlesAdapter(this, this.mFeed));
+		}
+	}
+	
+	/**
 	 * Called when we finished to refresh a thread
 	 */
 	private void onRefreshCompleted( int completeCode, Bundle data, Feed parsedFeed, String Error )
@@ -280,9 +336,8 @@ abstract public class FeedActivity extends ListActivity {
 		case COMPLETE_SUCCESSFULL:
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.logCat(TAG,"Completed!");
-
-			// Set the new adapter!			
-			setListAdapter(new ArticlesAdapter(this, parsedFeed.getArticleList()));
+			this.mFeed = parsedFeed;
+			_updateFeedList();
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
 			ErrorMsg = getResources().getString(R.string.refreshing_thread_still_alive);

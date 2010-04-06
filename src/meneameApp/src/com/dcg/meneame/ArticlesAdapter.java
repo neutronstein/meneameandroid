@@ -1,9 +1,9 @@
 package com.dcg.meneame;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.util.rss.Feed;
 import com.dcg.util.rss.FeedItem;
 
 import android.content.Context;
@@ -20,16 +20,15 @@ import android.widget.TextView;
 public class ArticlesAdapter extends BaseAdapter {
 	
 	private static final String TAG = "ArticlesAdapter";
-	private List<FeedItem> mData=new ArrayList<FeedItem>();
+	private Feed mFeed=null;
 	private LayoutInflater mInflater;
 	
-	public ArticlesAdapter(Context context, List<FeedItem> data ) {
+	public ArticlesAdapter(Context context, Feed feed ) {
 		// Cache the LayoutInflate to avoid asking for a new one each time.
 		mInflater = LayoutInflater.from(context);
 		
-		// Save data, this will just copy the items so that once we use this adapter we
-		// can get rid of the actual feed objects we generated when parsing the feed
-		mData.addAll(data);
+		// Save feed instance!
+		mFeed = feed;
 	}
 	
 	/**
@@ -39,7 +38,7 @@ public class ArticlesAdapter extends BaseAdapter {
 	 * @see android.widget.ListAdapter#getCount()
 	 */
 	public int getCount() {
-		return mData.size();
+		return mFeed.getArticleCount();
 	}
 	
 	/**
@@ -48,7 +47,7 @@ public class ArticlesAdapter extends BaseAdapter {
 	 * @see android.widget.ListAdapter#getItem(int)
 	 */
 	public Object getItem(int position) {
-		return mData.get(position);
+		return mFeed.getArticle(position);
 	}
 	
 	/**
