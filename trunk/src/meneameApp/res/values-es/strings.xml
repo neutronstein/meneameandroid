@@ -45,6 +45,8 @@
     
     <string name="refreshing_failed">No se ha podidio refrescar el feed:</string>
     <string name="refreshing_thread_still_alive">Hilo de refresco aún activo!</string>
+    
+    <string name="user_id_invalid">ID de usuario inválida! Revisa tus preferencias!</string>
 	<!-- 
     ================================================================
     Preference
@@ -59,6 +61,9 @@
     
     <string name="pref_account_apikey_summary">Clave-API menéame (no compartir, es tu clave personal)</string>
     <string name="pref_account_apikey">Clave-API</string>
+    
+    <string name="pref_account_user_id_summary">menèame user ID (una vez logeado en menemae.net podrás acceder a tu id desde tu perfil)</string>
+    <string name="pref_account_user_id">ID de usuario</string>
     
     <string name="pref_account_user_summary">Nombre de usuario de menéame</string>    
     <string name="pref_account_user">Usuario</string>    

@@ -86,7 +86,12 @@ abstract public class FeedActivity extends ListActivity {
     
     /** Current feed we got */
     private Feed mFeed = null;
-	
+    
+    /** The following constants will define all basic URL's meneame will handle */
+    private static final String MENEAME_BASE_URL = "http://www.meneame.net";
+    private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
+    private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
+    
 	public FeedActivity() {
 		super();
 		ApplicationMNM.addLogCat(TAG);		
@@ -441,49 +446,50 @@ abstract public class FeedActivity extends ListActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
     	AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
-    	switch (item.getItemId()) 
-        {
-    	case CONTEXT_MENU_OPEN:
-        case CONTEXT_MENU_OPEN_SOURCE:
-        	// Get the real item
-        	if ( mListView != null )
-        	{
-        		FeedItem selecteItem = (FeedItem)mListView.getAdapter().getItem(menuInfo.position);
-        		if ( selecteItem != null )
-        		{
-        			String url = "";
-        			if (item.getItemId() == CONTEXT_MENU_OPEN)
-        			{
-        				url = (String)selecteItem.getKeyData("link");
-        				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
-        			}
-        			else
-        			{
-        				url = (String)selecteItem.getKeyData("url");
-        				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
-        			}
-        			try
-        			{
-        				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-        			} catch ( Exception e )
-        			{
-        				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
-        			}
-        		}
-        		else
-        		{
-        			ApplicationMNM.warnCat(TAG,"List item null or not a FeedItem");
-        		}
-        	}
-        	else
-        	{
-        		ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
-        	}
-        	return true;
-    	case CONTEXT_MENU_VOTE:
-    		ApplicationMNM.showToast(R.string.advice_not_implemented);
-        	return true;
-        }
+    	if ( mListView != null )
+    	{
+    		FeedItem selecteItem = (FeedItem)mListView.getAdapter().getItem(menuInfo.position);
+    		// Get the real item
+    		if ( selecteItem != null )
+    		{
+	    		switch (item.getItemId()) 
+	    		{
+		    	case CONTEXT_MENU_OPEN:
+		        case CONTEXT_MENU_OPEN_SOURCE:
+		    			String url = "";
+		    			if (item.getItemId() == CONTEXT_MENU_OPEN)
+		    			{
+		    				url = (String)selecteItem.getKeyData("link");
+		    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
+		    			}
+		    			else
+		    			{
+		    				url = (String)selecteItem.getKeyData("url");
+		    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
+		    			}
+		    			try
+		    			{
+		    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+		    			} catch ( Exception e )
+		    			{
+		    				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
+		    			}
+		    		
+		        	return true;
+		    	case CONTEXT_MENU_VOTE:
+		    		menealo(selecteItem);
+		        	return true;
+		        }
+    		}
+    		else
+    		{
+    			ApplicationMNM.warnCat(TAG,"List item null or not a FeedItem");
+    		}
+    	}
+    	else
+    	{
+    		ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
+    	}
     	return false;
     }
     
@@ -503,7 +509,6 @@ abstract public class FeedActivity extends ListActivity {
     	if ( prepareSDCard() )
     	{
     		// Cache!
-    		ApplicationMNM.showToast("Starting caching!");
     	}
     	else
     	{
@@ -535,5 +540,26 @@ abstract public class FeedActivity extends ListActivity {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	/**
+	 * Will vote an article/comment
+	 */
+	public void menealo( FeedItem item ) {
+		String menealoURL = buildMenealoURL();
+	}
+	
+	/**
+	 * Will retunr the full menealo url used send votes for articles
+	 * @return
+	 */
+	private String buildMenealoURL() {
+		try {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+			int userID = Integer.parseInt(prefs.getString("pref_account_user_id", "0"));
+		} catch( Exception e ) {
+			ApplicationMNM.showToast(R.string.user_id_invalid);
+		}
+		return "";
 	}
 }

@@ -8,6 +8,12 @@
 			android:defaultValue="" 
 			android:key="pref_account_user"/>
 		<EditTextPreference
+			android:name="pref_account_user_id"
+			android:title="@string/pref_account_user_id" 
+			android:summary="@string/pref_account_user_id_summary"
+			android:defaultValue="" 
+			android:key="pref_account_user_id"/>
+		<EditTextPreference
 			android:name="pref_account_apikey"
 			android:title="@string/pref_account_apikey"
 			android:key="pref_account_apikey"
