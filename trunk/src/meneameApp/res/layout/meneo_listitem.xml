@@ -62,7 +62,7 @@
 		
 		android:text="This new implementation behaves exactlay has two lines of text: the title and an optional description. When a description is not available for a given list item, the application"
 		android:textColor="@color/Color.black" 
-		android:singleLine="false" />
+		android:singleLine="false" android:autoLink="web"/>
 		
 	<TextView  
 		android:id="@+id/tags"

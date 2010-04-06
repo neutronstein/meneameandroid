@@ -1,5 +1,7 @@
 package com.dcg.util.rss;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +14,13 @@ import com.dcg.app.ApplicationMNM;
  * Base item our feed parser will return, must be subclassed to own types.
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-abstract public class FeedItem extends Object {
+public class FeedItem implements Parcelable {
 	
 	/** log tag for this class */
 	private static final String TAG = "FeedItem";
 	
 	/** Our map that holds the internal data */
-	private Map<String, Object> mItemData = new HashMap<String, Object>();;
+	private Map<String, String> mItemData = null;
 	
 	/** our semaphore to make this class thread safe! */
 	private Semaphore mSemaphore = new Semaphore(1);
@@ -32,12 +34,52 @@ abstract public class FeedItem extends Object {
 	/**
 	 * Empty constructor
 	 */
-	public FeedItem() {
-		super();
-		
-		ApplicationMNM.addLogCat(TAG);
+	public FeedItem() {	
+		ApplicationMNM.addLogCat(TAG);		
+		mItemData = new HashMap<String, String>();
 	}
 	
+	public FeedItem(Parcel in) {		
+		ApplicationMNM.addLogCat(TAG);		
+		mItemData = new HashMap<String, String>();
+		readFromParcel(in);
+	}
+	
+	public static final Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>() {
+        public FeedItem createFromParcel(Parcel in) {
+            return new FeedItem(in);
+        }
+ 
+        public FeedItem[] newArray(int size) {
+            return new FeedItem[size];
+        }
+    };
+    
+    public int describeContents() {
+		return 0;
+	}
+    
+    /**
+     * Write all our data to a parcel
+     */
+    public void writeToParcel(Parcel dest, int flags) {
+    	dest.writeInt(mItemData.size());
+    	for (String s: mItemData.keySet()) {
+    		dest.writeString(s);
+    		dest.writeString(mItemData.get(s));
+    	}
+	}
+	
+    /**
+     * Fill up all data from a parcel
+     * @param in
+     */
+    public void readFromParcel(Parcel in) {
+    	int count = in.readInt();
+    	for ( int i = 0; i < count; i++ )
+    		setValue(in.readString(), in.readString());
+    }
+    
 	/**
 	 * Will acquire internal semaphore
 	 * @throws InterruptedException
@@ -170,53 +212,54 @@ abstract public class FeedItem extends Object {
 	 * @param value
 	 * @return true/false
 	 */
-	@SuppressWarnings("unchecked")
 	protected boolean setListItemValue( String key, String value )
 	{
-		boolean bResult;
-		String finalValue = value;
-		bResult = false;		
-		try {
-			// Make us tread safe!
-			acquireSemaphore();
-			
-			finalValue = tranformRAWValue(key,value);
-			
-			// Create or add a new item
-			List<String> itemList = null;
-			if ( !containsKey(key) )
-			{			
-				// No item there so build the list item
-				itemList = new ArrayList<String>();
-				
-				// Add the new value
-				itemList.add(finalValue);
-			}
-			else
-			{
-				Object rawValue = getKeyData(key);
-				itemList = (rawValue != null)?(List<String>) rawValue:null;
-				if ( itemList != null )
-				{
-					itemList.add(finalValue);
-				}
-			}
-			
-			// Update item
-			if ( itemList != null )
-			{
-				ApplicationMNM.logCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
-				setKeyValue(key,itemList);
-				bResult = true;
-			}
-		} catch( Exception e) {
-			// fall thru and exit normally
-			ApplicationMNM.warnCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
-		} finally {
-			// release our semaphore
-			releaseSemaphore();
-		}
-		return bResult;
+		// TODO: Add list functionality
+		return false;
+//		boolean bResult;
+//		String finalValue = value;
+//		bResult = false;		
+//		try {
+//			// Make us tread safe!
+//			acquireSemaphore();
+//			
+//			finalValue = tranformRAWValue(key,value);
+//			
+//			// Create or add a new item
+//			List<String> itemList = null;
+//			if ( !containsKey(key) )
+//			{			
+//				// No item there so build the list item
+//				itemList = new ArrayList<String>();
+//				
+//				// Add the new value
+//				itemList.add(finalValue);
+//			}
+//			else
+//			{
+//				Object rawValue = getKeyData(key);
+//				itemList = (rawValue != null)?(List<String>) rawValue:null;
+//				if ( itemList != null )
+//				{
+//					itemList.add(finalValue);
+//				}
+//			}
+//			
+//			// Update item
+//			if ( itemList != null )
+//			{
+//				ApplicationMNM.logCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
+//				setKeyValue(key,itemList);
+//				bResult = true;
+//			}
+//		} catch( Exception e) {
+//			// fall thru and exit normally
+//			ApplicationMNM.warnCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
+//		} finally {
+//			// release our semaphore
+//			releaseSemaphore();
+//		}
+//		return bResult;
 	}
 	
 	/**
@@ -224,7 +267,7 @@ abstract public class FeedItem extends Object {
 	 * @param key
 	 * @param value
 	 */
-	private void setKeyValue( String key, Object value ) {
+	private void setKeyValue( String key, String value ) {
 		mItemData.put(key, value);
 	}
 	
@@ -257,7 +300,7 @@ abstract public class FeedItem extends Object {
 	 * Return the map of data
 	 * @return Map of Key/Value
 	 */
-	public Map<String, Object> getAllData()
+	public Map<String, String> getAllData()
 	{		
 		return mItemData;
 	}
