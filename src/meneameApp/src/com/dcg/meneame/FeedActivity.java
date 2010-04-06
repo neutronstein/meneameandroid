@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -361,6 +362,19 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
 			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+	        String mainAnim = prefs.getString("pref_app_storage", "Internal");
+	        if ( mainAnim.compareTo("Internal") == 0 )
+	        {
+	        	// Make DB caching
+	        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+	        }
+	        else if ( mainAnim.compareTo("SDCard") == 0 )
+	        {
+	        	// Make SD-card caching
+	        	startInternalCaching();
+	        }
+			
 			// Start caching process
 			// TODO: Put all this into another thread process!
 			prepareSDCard();
@@ -483,9 +497,24 @@ abstract public class FeedActivity extends ListActivity {
     }
     
     /**
+     * Starts the internal caching process to the SD-card
+     */
+    private void startInternalCaching() {
+    	// Start creating the cache folders
+    	if ( prepareSDCard() )
+    	{
+    		// Cache!
+    	}
+    	else
+    	{
+    		ApplicationMNM.showToast("Can not cache to SD-Card!");
+    	}
+    }
+    
+    /**
 	 * Prepares the SDCard with all we need for the caching process
 	 */
-	protected void prepareSDCard() {
+	protected boolean prepareSDCard() {
 		try {			
 			// Create app dir in SDCard if possible
 			File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"com.dcg.meneame"+File.separator+"cache"+File.separator+getTabActivityTag());
@@ -499,10 +528,12 @@ abstract public class FeedActivity extends ListActivity {
 					ApplicationMNM.warnCat(TAG,"Failed to create directory: " + path);
 				}
 			}
+			return true;
 		} catch( Exception e )
 		{
 			ApplicationMNM.warnCat(TAG,"Failed to prepare SD card for aching: " + e.toString());
 			e.printStackTrace();
 		}
+		return false;
 	}
 }
