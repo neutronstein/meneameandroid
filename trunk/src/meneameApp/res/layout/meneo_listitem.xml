@@ -31,7 +31,7 @@
 		android:layout_alignWithParentIfMissing="true"
 		        
 		android:gravity="center_vertical"
-		android:text="RelativeLayout for ListItems\nRelativeLayout for ListItems"
+		android:text="Title"
 		android:textColor="@color/Color.dark_blue"
 		android:textStyle="bold"
 		android:singleLine="false" />
@@ -46,7 +46,7 @@
 		android:layout_alignParentRight="true"
 		android:layout_below="@+id/title"
 		
-		android:text="http://www.quesabesde.com/noticias/mikel-aristregi-con-texto-fotografico,1_5991"
+		android:text="http://www.mydomain.com"
 		android:textColor="@color/Color.dark_grey"
 		android:singleLine="true" />
 
@@ -60,7 +60,7 @@
 		android:layout_alignParentRight="true"
 		android:layout_below="@+id/source"
 		
-		android:text="This new implementation behaves exactlay has two lines of text: the title and an optional description. When a description is not available for a given list item, the application"
+		android:text="Description"
 		android:textColor="@color/Color.black" 
 		android:singleLine="false" android:autoLink="web"/>
 		
@@ -90,7 +90,7 @@
 		android:layout_below="@+id/description"
 		android:ellipsize="marquee"
 		
-		android:text="spotify, musica, internet, premium, promusicae, pirateria, descargas, p2p, guisasola"
+		android:text="tags"
 		android:textColor="@color/Color.black"
 		android:singleLine="true" />
      

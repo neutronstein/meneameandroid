@@ -1,17 +1,13 @@
 package com.dcg.util.rss;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.concurrent.Semaphore;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-
 import com.dcg.app.ApplicationMNM;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;

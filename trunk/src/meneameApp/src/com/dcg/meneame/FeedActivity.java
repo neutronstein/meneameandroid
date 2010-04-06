@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -362,22 +361,20 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
 			
+			// Start caching process
+			// TODO: Put all this into another thread process!
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
 	        String mainAnim = prefs.getString("pref_app_storage", "Internal");
 	        if ( mainAnim.compareTo("Internal") == 0 )
 	        {
 	        	// Make DB caching
-	        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
 	        }
 	        else if ( mainAnim.compareTo("SDCard") == 0 )
 	        {
 	        	// Make SD-card caching
 	        	startInternalCaching();
 	        }
-			
-			// Start caching process
-			// TODO: Put all this into another thread process!
-			prepareSDCard();
 			
 			// Update feed
 			_updateFeedList();
@@ -427,13 +424,15 @@ abstract public class FeedActivity extends ListActivity {
             return true;
         case MENU_NOTAME:
         	// Open notame activity
-        	ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+        	ApplicationMNM.showToast(R.string.advice_not_implemented);
         	return true;
         case MENU_SETTINGS:
             // Open settitngs screen
         	openSettingsScreen();
             return true;
         case MENU_ABOUT:
+        	AboutDialog aboutDialog = new AboutDialog(this);
+        	aboutDialog.show();
         	return true;
         }
         return false;
@@ -482,7 +481,7 @@ abstract public class FeedActivity extends ListActivity {
         	}
         	return true;
     	case CONTEXT_MENU_VOTE:
-    		ApplicationMNM.showToast("NOT YET IMPLEMENTED");
+    		ApplicationMNM.showToast(R.string.advice_not_implemented);
         	return true;
         }
     	return false;
@@ -504,6 +503,7 @@ abstract public class FeedActivity extends ListActivity {
     	if ( prepareSDCard() )
     	{
     		// Cache!
+    		ApplicationMNM.showToast("Starting caching!");
     	}
     	else
     	{
