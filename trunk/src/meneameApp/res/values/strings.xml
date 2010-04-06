@@ -72,7 +72,7 @@
     <string name="pref_account_apikey_summary">menèame API key (do not share, it's your personal key)</string>
     <string name="pref_account_apikey">API key</string>
     
-    <string name="pref_account_user_id_summary">menèame user ID (once you login to menéame you will find your id in your profile)</string>
+    <string name="pref_account_user_id_summary">menèame user ID (can be found in your profile)</string>
     <string name="pref_account_user_id">User ID</string>
     
     <string name="pref_account_user_summary">menéame username</string>    
