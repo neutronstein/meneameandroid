@@ -388,7 +388,8 @@ abstract public class FeedActivity extends ListActivity {
 	        else if ( mainAnim.compareTo("SDCard") == 0 )
 	        {
 	        	// Make SD-card caching
-	        	startInternalCaching();
+	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
+	        	//startSDCardCaching();
 	        }
 			
 			// Update feed
@@ -487,7 +488,8 @@ abstract public class FeedActivity extends ListActivity {
 		    		
 		        	return true;
 		    	case CONTEXT_MENU_VOTE:
-		    		menealo(selecteItem);
+		    		ApplicationMNM.showToast(R.string.advice_not_implemented);
+		    		//menealo(selecteItem);
 		        	return true;
 		        }
     		}
@@ -514,7 +516,7 @@ abstract public class FeedActivity extends ListActivity {
     /**
      * Starts the internal caching process to the SD-card
      */
-    private void startInternalCaching() {
+    private void startSDCardCaching() {
     	// Start creating the cache folders
     	if ( prepareSDCard() )
     	{
