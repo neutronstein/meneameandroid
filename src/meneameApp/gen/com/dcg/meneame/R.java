@@ -81,6 +81,7 @@ public final class R {
         public static final int about_faq_a1=0x7f080014;
         public static final int about_faq_q1=0x7f080013;
         /**  About info 
+ About info 
          */
         public static final int about_title=0x7f080011;
         public static final int about_title_app=0x7f080015;

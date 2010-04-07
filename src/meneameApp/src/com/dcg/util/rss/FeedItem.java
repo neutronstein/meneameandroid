@@ -1,7 +1,5 @@
 package com.dcg.util.rss;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

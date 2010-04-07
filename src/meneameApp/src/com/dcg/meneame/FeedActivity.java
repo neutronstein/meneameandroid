@@ -376,21 +376,21 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
 			
-			// Start caching process
-			// TODO: Put all this into another thread process!
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-	        String mainAnim = prefs.getString("pref_app_storage", "Internal");
-	        if ( mainAnim.compareTo("Internal") == 0 )
-	        {
-	        	// Make DB caching
-	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
-	        }
-	        else if ( mainAnim.compareTo("SDCard") == 0 )
-	        {
-	        	// Make SD-card caching
-	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
-	        	//startSDCardCaching();
-	        }
+//			// Start caching process
+//			// TODO: Put all this into another thread process!
+//			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+//	        String mainAnim = prefs.getString("pref_app_storage", "Internal");
+//	        if ( mainAnim.compareTo("Internal") == 0 )
+//	        {
+//	        	// Make DB caching
+//	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
+//	        }
+//	        else if ( mainAnim.compareTo("SDCard") == 0 )
+//	        {
+//	        	// Make SD-card caching
+//	        	//ApplicationMNM.showToast(R.string.advice_not_implemented);
+//	        	startSDCardCaching();
+//	        }
 			
 			// Update feed
 			_updateFeedList();
