@@ -15,16 +15,16 @@ import com.dcg.app.ApplicationMNM;
  * Base item our feed parser will return, must be subclassed to own types.
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class FeedItem implements Parcelable {
+public class FeedItem extends Object {
 	
 	/** log tag for this class */
 	private static final String TAG = "FeedItem";
 	
 	/** Our map that holds the internal data */
-	private Map<String, String> mItemData = null;
+	protected Map<String, String> mItemData = null;
 	
 	/** Character used to separate list items if the map type is a list */
-	public static final String LIST_SEPARATOR = "|";
+	public static final String LIST_SEPARATOR = ";";
 	
 	/** our semaphore to make this class thread safe! */
 	private Semaphore mSemaphore = new Semaphore(1);
@@ -42,47 +42,6 @@ public class FeedItem implements Parcelable {
 		ApplicationMNM.addLogCat(TAG);		
 		mItemData = new HashMap<String, String>();
 	}
-	
-	public FeedItem(Parcel in) {		
-		ApplicationMNM.addLogCat(TAG);		
-		mItemData = new HashMap<String, String>();
-		readFromParcel(in);
-	}
-	
-	public static final Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>() {
-        public FeedItem createFromParcel(Parcel in) {
-            return new FeedItem(in);
-        }
- 
-        public FeedItem[] newArray(int size) {
-            return new FeedItem[size];
-        }
-    };
-    
-    public int describeContents() {
-		return 0;
-	}
-    
-    /**
-     * Write all our data to a parcel
-     */
-    public void writeToParcel(Parcel dest, int flags) {
-    	dest.writeInt(mItemData.size());
-    	for (String s: mItemData.keySet()) {
-    		dest.writeString(s);
-    		dest.writeString(mItemData.get(s));
-    	}
-	}
-	
-    /**
-     * Fill up all data from a parcel
-     * @param in
-     */
-    public void readFromParcel(Parcel in) {
-    	int count = in.readInt();
-    	for ( int i = 0; i < count; i++ )
-    		setValue(in.readString(), in.readString());
-    }
     
 	/**
 	 * Will acquire internal semaphore
@@ -142,7 +101,6 @@ public class FeedItem implements Parcelable {
 	 * @return true if added and valid or false if not valid or adding failed
 	 */
 	public boolean setValue( String key, Object value ) {
-		if ( !isKeyValid(key) ) return false;
 		try {
 			return (isKeyListValue(key))?setListItemValue(key, (String) value):setStringValue(key, (String) value);
 		} catch ( Exception e) {
@@ -284,7 +242,12 @@ public class FeedItem implements Parcelable {
 	 * @return
 	 */
 	public String getRawKeyData( String key ) {
-		return mItemData.get(key);
+		String rawData = mItemData.get(key);
+		if ( rawData != null )
+		{
+			return rawData;
+		}
+		return "";
 	}
 	
 	/**
@@ -294,12 +257,20 @@ public class FeedItem implements Parcelable {
 	 */
 	public Object getKeyData( String key ) {
 		String rawData = mItemData.get(key);
-		// Get the raw value or parse it into a
+		if ( rawData != null )
+		{
+			// Get the raw value or parse it into a
+			if ( !isKeyListValue(key) )
+			{
+				return rawData;
+			}
+			return new ArrayList<String>(Arrays.asList(rawData.trim().split(LIST_SEPARATOR)));
+		}
 		if ( !isKeyListValue(key) )
 		{
-			return rawData;
+			return "";
 		}
-		return Arrays.asList(rawData.split(LIST_SEPARATOR));
+		return new ArrayList<String>();
 	}
 	
 	/**
@@ -308,5 +279,13 @@ public class FeedItem implements Parcelable {
 	 */
 	public Map<String, String> getAllData() {		
 		return mItemData;
+	}
+	
+	/**
+	 * Returns the number of data fields this item has
+	 * @return
+	 */
+	public int size() {
+		return mItemData.size();
 	}
 }
