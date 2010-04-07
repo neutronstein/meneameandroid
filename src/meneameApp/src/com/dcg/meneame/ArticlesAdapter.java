@@ -112,10 +112,10 @@ public class ArticlesAdapter extends BaseAdapter {
 			
 			// Now get data
 			// TODO: Control null return values!
-			title = (String)feedItem.getKeyData("title");
-			description = (String)feedItem.getKeyData("description");
-			votes = (String)feedItem.getKeyData("votes");
-			url = (String)feedItem.getKeyData("url");
+			title = feedItem.getRawKeyData("title");
+			description = feedItem.getRawKeyData("description");
+			votes = feedItem.getRawKeyData("votes");
+			url = feedItem.getRawKeyData("url");
 			
 			ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
 			if ( tags != null )

@@ -3,6 +3,7 @@ package com.dcg.util.rss;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,9 @@ public class FeedItem implements Parcelable {
 	
 	/** Our map that holds the internal data */
 	private Map<String, String> mItemData = null;
+	
+	/** Character used to separate list items if the map type is a list */
+	public static final String LIST_SEPARATOR = "|";
 	
 	/** our semaphore to make this class thread safe! */
 	private Semaphore mSemaphore = new Semaphore(1);
@@ -84,16 +88,14 @@ public class FeedItem implements Parcelable {
 	 * Will acquire internal semaphore
 	 * @throws InterruptedException
 	 */
-	private void acquireSemaphore() throws InterruptedException
-	{
+	private void acquireSemaphore() throws InterruptedException	{
 		mSemaphore.acquire();
 	}
 	
 	/**
 	 * release internal semaphore
 	 */
-	private void releaseSemaphore()
-	{
+	private void releaseSemaphore()	{
 		mSemaphore.release();
 	}
 	
@@ -102,8 +104,7 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return
 	 */
-	public boolean isKeyValid( String key )
-	{
+	public boolean isKeyValid( String key ) {
 		return isKeyPermitted(key) && !isKeyRestricted(key);
 	}
 	
@@ -112,8 +113,7 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return
 	 */
-	protected boolean isKeyPermitted( String key )
-	{
+	protected boolean isKeyPermitted( String key ) {
 		return mPermittedList.contains(key);
 	}
 	
@@ -122,8 +122,7 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return
 	 */
-	protected boolean isKeyRestricted( String key )
-	{
+	protected boolean isKeyRestricted( String key ) {
 		return mRestrictedList.contains(key);
 	}
 	
@@ -132,8 +131,7 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return
 	 */
-	protected boolean isKeyListValue( String key )
-	{
+	protected boolean isKeyListValue( String key ) {
 		return false;
 	}
 	
@@ -143,8 +141,7 @@ public class FeedItem implements Parcelable {
 	 * @param value
 	 * @return true if added and valid or false if not valid or adding failed
 	 */
-	public boolean setValue( String key, Object value )
-	{
+	public boolean setValue( String key, Object value ) {
 		if ( !isKeyValid(key) ) return false;
 		try {
 			return (isKeyListValue(key))?setListItemValue(key, (String) value):setStringValue(key, (String) value);
@@ -160,8 +157,7 @@ public class FeedItem implements Parcelable {
 	 * @param rawValue
 	 * @return
 	 */
-	protected String tranformRAWValue( String key, String rawValue )
-	{
+	protected String tranformRAWValue( String key, String rawValue ) {
 		String value = rawValue;
 		return value;		
 	}
@@ -172,8 +168,7 @@ public class FeedItem implements Parcelable {
 	 * @param rawValue
 	 * @return
 	 */
-	protected String tranformRAWListValue( String key, String rawValue )
-	{
+	protected String tranformRAWListValue( String key, String rawValue ) {
 		String value = rawValue;
 		return value;		
 	}
@@ -184,8 +179,7 @@ public class FeedItem implements Parcelable {
 	 * @param value
 	 * @return true/false
 	 */
-	protected boolean setStringValue( String key, String value )
-	{
+	protected boolean setStringValue( String key, String value ) {
 		boolean bResult;
 		String finalValue = value;
 		bResult = false;		
@@ -207,59 +201,58 @@ public class FeedItem implements Parcelable {
 	}
 
 	/**
-	 * Add a value as an item of a list
+	 * Add a value as an item of a list. A list is also just a string
+	 * but each item is separated by a special character, in this case 
+	 * LIST_SEPARATOR.
 	 * @param key
 	 * @param value
 	 * @return true/false
 	 */
-	protected boolean setListItemValue( String key, String value )
-	{
-		// TODO: Add list functionality
-		return false;
-//		boolean bResult;
-//		String finalValue = value;
-//		bResult = false;		
-//		try {
-//			// Make us tread safe!
-//			acquireSemaphore();
-//			
-//			finalValue = tranformRAWValue(key,value);
-//			
-//			// Create or add a new item
-//			List<String> itemList = null;
-//			if ( !containsKey(key) )
-//			{			
-//				// No item there so build the list item
-//				itemList = new ArrayList<String>();
-//				
-//				// Add the new value
-//				itemList.add(finalValue);
-//			}
-//			else
-//			{
-//				Object rawValue = getKeyData(key);
-//				itemList = (rawValue != null)?(List<String>) rawValue:null;
-//				if ( itemList != null )
-//				{
-//					itemList.add(finalValue);
-//				}
-//			}
-//			
-//			// Update item
-//			if ( itemList != null )
-//			{
-//				ApplicationMNM.logCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
-//				setKeyValue(key,itemList);
-//				bResult = true;
-//			}
-//		} catch( Exception e) {
-//			// fall thru and exit normally
-//			ApplicationMNM.warnCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
-//		} finally {
-//			// release our semaphore
-//			releaseSemaphore();
-//		}
-//		return bResult;
+	protected boolean setListItemValue( String key, String value ) {
+		boolean bResult;
+		String finalValue = value;
+		bResult = false;		
+		try {
+			// Make us tread safe!
+			acquireSemaphore();
+			
+			// Before we let any child class transform our value
+			// we need to get rid of any LIST_SEPARATOR character
+			// value could contain! It' a drawback but thats life
+			// hehehe.
+			value = value.replaceAll(LIST_SEPARATOR, "");
+			
+			// now apply any pre-add transformation
+			finalValue = tranformRAWListValue(key,value);
+			
+			// Create or add a new item
+			String itemList = "";
+			if ( !containsKey(key) )
+			{			
+				// Add the new value
+				itemList = finalValue;
+			}
+			else
+			{
+				itemList = getRawKeyData(key);
+				itemList += LIST_SEPARATOR + finalValue;
+			}
+			
+			// Update item
+			if ( itemList != "" )
+			{
+				ApplicationMNM.logCat(TAG,"setListItemValue::("+ key +") value("+ finalValue +")");
+				setKeyValue(key,itemList);
+				bResult = true;
+			}
+		} catch( Exception e) {
+			// fall thru and exit normally
+			ApplicationMNM.warnCat(TAG,"(setListItemValue) Can not set key("+ key +") value("+ finalValue +")");
+		} finally {
+			// release our semaphore
+			releaseSemaphore();
+		}
+		return bResult;
 	}
 	
 	/**
@@ -271,8 +264,7 @@ public class FeedItem implements Parcelable {
 		mItemData.put(key, value);
 	}
 	
-	public void removeKey( String key )
-	{
+	public void removeKey( String key ) {
 		mItemData.remove(key);
 	}
 	
@@ -281,27 +273,40 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return true/false if the key is included
 	 */
-	public boolean containsKey( String key )
-	{
+	public boolean containsKey( String key ) {
 		return mItemData.containsKey(key);
 	}
 	
 	/**
-	 * Return the data value object for a specifc key
+	 * Will just return the raw data of a field, this means that if the
+	 * field is a list type you will get a string and not the parsed list!
+	 * @param key
+	 * @return
+	 */
+	public String getRawKeyData( String key ) {
+		return mItemData.get(key);
+	}
+	
+	/**
+	 * Return the data value object for a specific key
 	 * @param key
 	 * @return value
 	 */
-	public Object getKeyData( String key )
-	{
-		return mItemData.get(key);
+	public Object getKeyData( String key ) {
+		String rawData = mItemData.get(key);
+		// Get the raw value or parse it into a
+		if ( !isKeyListValue(key) )
+		{
+			return rawData;
+		}
+		return Arrays.asList(rawData.split(LIST_SEPARATOR));
 	}
 	
 	/**
 	 * Return the map of data
 	 * @return Map of Key/Value
 	 */
-	public Map<String, String> getAllData()
-	{		
+	public Map<String, String> getAllData() {		
 		return mItemData;
 	}
 }
