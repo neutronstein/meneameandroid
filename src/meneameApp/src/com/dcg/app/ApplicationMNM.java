@@ -67,7 +67,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
 		addIgnoreCat("FeedItem");
-		//addIgnoreCat("Feed");
+		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
 		addIgnoreCat("FeedActivity");
