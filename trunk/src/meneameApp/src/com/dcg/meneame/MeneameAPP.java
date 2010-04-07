@@ -15,7 +15,7 @@ import android.widget.TabHost.TabSpec;
  * Main activity, basically holds the main tab widget
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class MainActivity extends TabActivity  {
+public class MeneameAPP extends TabActivity  {
 	
 	/** Class tag used for it's logs */
 	private static final String TAG = "MeneameMainActivity";
