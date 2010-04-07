@@ -1,8 +1,6 @@
 package com.dcg.meneame;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.Feed;
 

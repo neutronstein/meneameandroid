@@ -89,95 +89,99 @@ public class ArticlesAdapter extends BaseAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// A ViewHolder keeps references to children views to avoid unnecessary calls
-		// to findViewById() on each row.
-		ViewHolder holder;
-		
-		// When convertView is not null, we can reuse it directly, there is no need
-		// to reinflate it. We only inflate a new View when the convertView supplied
-		// by ListView is null.
-		if (convertView == null) {
-			convertView = mInflater.inflate(mItenLayoutID, null);
-			
-			// Creates a ViewHolder and store references to the two children views
-			// we want to bind data to.
-			holder = new ViewHolder();
-			Object viewObj = null;
-			viewObj = convertView.findViewById(R.id.title);
-			if ( viewObj != null )
-				holder.title = (TextView)viewObj;
-			viewObj = convertView.findViewById(R.id.description);
-			if ( viewObj != null )
-				holder.description = (TextView)viewObj;
-			viewObj = convertView.findViewById(R.id.votes);
-			if ( viewObj != null )
-				holder.votes = (TextView)viewObj;
-			viewObj = convertView.findViewById(R.id.source);
-			if ( viewObj != null )
-				holder.url = (TextView)viewObj;
-			viewObj = convertView.findViewById(R.id.tags_content);
-			if ( viewObj != null )
-				holder.category = (TextView)viewObj;
-			
-			convertView.setTag(holder);
-		} else {
-			// Get the ViewHolder back to get fast access to the TextView
-			// and the ImageView.
-			holder = (ViewHolder) convertView.getTag();
-		}
-		
-		FeedItem feedItem = null;
-		String title = "";
-		String description = "";
-		String votes = "";
-		String url = "";
-		String category = "";
 		try {
-			// Get item
-			feedItem = (FeedItem)getItem(position);
+			// A ViewHolder keeps references to children views to avoid unnecessary calls
+			// to findViewById() on each row.
+			ViewHolder holder;
 			
-			// Now get data
-			// TODO: Control null return values!
-			title = feedItem.getRawKeyData("title");
-			description = feedItem.getRawKeyData("description");
-			votes = feedItem.getRawKeyData("votes");
-			url = feedItem.getRawKeyData("url");
-			
-			ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
-			if ( tags != null )
-			{
-				int tagsNum = tags.size();
-				for (int i = 0; i < tagsNum; i++ )
-				{
-					category += tags.get(i);
-					// Add separator if needed
-					if ( i < tagsNum - 1 )
-					{
-						category += ", ";
-					}
-				}
+			// When convertView is not null, we can reuse it directly, there is no need
+			// to reinflate it. We only inflate a new View when the convertView supplied
+			// by ListView is null.
+			if (convertView == null) {
+				convertView = mInflater.inflate(mItenLayoutID, null);
+				
+				// Creates a ViewHolder and store references to the two children views
+				// we want to bind data to.
+				holder = new ViewHolder();
+				Object viewObj = null;
+				viewObj = convertView.findViewById(R.id.title);
+				if ( viewObj != null )
+					holder.title = (TextView)viewObj;
+				viewObj = convertView.findViewById(R.id.description);
+				if ( viewObj != null )
+					holder.description = (TextView)viewObj;
+				viewObj = convertView.findViewById(R.id.votes);
+				if ( viewObj != null )
+					holder.votes = (TextView)viewObj;
+				viewObj = convertView.findViewById(R.id.source);
+				if ( viewObj != null )
+					holder.url = (TextView)viewObj;
+				viewObj = convertView.findViewById(R.id.tags_content);
+				if ( viewObj != null )
+					holder.category = (TextView)viewObj;
+				
+				convertView.setTag(holder);
+			} else {
+				// Get the ViewHolder back to get fast access to the TextView
+				// and the ImageView.
+				holder = (ViewHolder) convertView.getTag();
 			}
 			
-		} catch ( ClassCastException  e )
-		{
-			// What the hell!
-			ApplicationMNM.logCat(TAG, "Failed to ceate view for item at position ["+position+"]");
+			FeedItem feedItem = null;
+			String title = "";
+			String description = "";
+			String votes = "";
+			String url = "";
+			String category = "";
+			try {
+				// Get item
+				feedItem = (FeedItem)getItem(position);
+				
+				// Now get data
+				// TODO: Control null return values!
+				title = feedItem.getRawKeyData("title");
+				description = feedItem.getRawKeyData("description");
+				votes = feedItem.getRawKeyData("votes");
+				url = feedItem.getRawKeyData("url");
+				
+				ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
+				if ( tags != null )
+				{
+					int tagsNum = tags.size();
+					for (int i = 0; i < tagsNum; i++ )
+					{
+						category += tags.get(i);
+						// Add separator if needed
+						if ( i < tagsNum - 1 )
+						{
+							category += ", ";
+						}
+					}
+				}
+				
+			} catch ( ClassCastException  e )
+			{
+				// What the hell!
+				ApplicationMNM.logCat(TAG, "Failed to ceate view for item at position ["+position+"]");
+				e.printStackTrace();
+			}
+			
+			if ( feedItem != null )
+			{
+				// Bind the data efficiently with the holder.
+				if ( holder.title != null )
+					holder.title.setText(title);
+				if ( holder.description != null )
+					holder.description.setText(description);
+				if ( holder.votes != null )
+					holder.votes.setText(votes);
+				if ( holder.url != null )
+					holder.url.setText(url);
+				if ( holder.category != null )
+					holder.category.setText(category);
+			}
+		} catch ( Exception e ) {
 			e.printStackTrace();
-		}
-		
-		if ( feedItem != null )
-		{
-			// Bind the data efficiently with the holder.
-			if ( holder.title != null )
-				holder.title.setText(title);
-			if ( holder.description != null )
-				holder.description.setText(description);
-			if ( holder.votes != null )
-				holder.votes.setText(votes);
-			if ( holder.url != null )
-				holder.url.setText(url);
-			if ( holder.category != null )
-				holder.category.setText(category);
 		}
 		return convertView;
 	}

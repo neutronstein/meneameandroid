@@ -47,6 +47,17 @@
     <string name="refreshing_thread_still_alive">Hilo de refresco aún activo!</string>
     
     <string name="user_id_invalid">ID de usuario inválida! Revisa tus preferencias!</string>
+	
+	<!-- About info -->
+    <string name="about_title">menéame para Android</string>
+    <string name="about_title_faq">FAQ</string>
+    <string name="about_faq_q1">¿Es la applicación totalmente gratis?</string>
+    <string name="about_faq_a1">¡Sí! Si quieres ayudarnos a mejorar busca la applicación de donación que estará disponible en breve en el Market de Android!</string>
+    <string name="about_title_app">App license</string>
+    <string name="about_body_app">menéame for Android is made by Moritz Wundke (www.DarkCultureGames.com) and licensed under GNU General Public License (http://www.gnu.org/licenses/gpl.html)\nThe source code is available here: http://code.google.com/p/meneameandroid/\nGraphics are made by Menéame Comunicacions, SL and licensed under Creative Commons (http://creativecommons.org/licenses/by-sa/2.5/)</string>
+    <string name="about_title_meneame">Menéame license</string>
+    <string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL</string>
+    
 	<!-- 
     ================================================================
     Preference

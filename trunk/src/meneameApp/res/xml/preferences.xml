@@ -33,6 +33,7 @@
 			android:title="@string/pref_app_refreshonlaunch"
 			android:summary="@string/pref_app_refreshonlaunch_summary"
 			android:defaultValue="false" />
+		<!-- Cache is not implemented yet
 		<ListPreference
 			android:key="pref_app_storage" 
 			android:summary="@string/pref_app_storage_summary" 
@@ -44,6 +45,7 @@
 			android:key="pref_app_clearcache"
 			android:title="@string/pref_app_clearcache"
 			android:summary="@string/pref_app_clearcache_summary" />
+		 -->
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_style">
 		<ListPreference 
