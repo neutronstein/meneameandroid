@@ -47,22 +47,52 @@ public final class R {
         public static final int tab_unselected=0x7f020009;
     }
     public static final class id {
-        public static final int applogo=0x7f0a0000;
-        public static final int description=0x7f0a0004;
-        public static final int icon=0x7f0a0001;
-        public static final int meneos=0x7f0a0007;
-        public static final int source=0x7f0a0003;
-        public static final int tags=0x7f0a0005;
-        public static final int tags_content=0x7f0a0006;
-        public static final int title=0x7f0a0002;
+        public static final int about_faq_a1=0x7f0a0005;
+        public static final int about_faq_q1=0x7f0a0004;
+        public static final int applogo=0x7f0a000c;
+        public static final int body_app=0x7f0a0007;
+        public static final int body_meneame=0x7f0a0009;
+        public static final int btnOk=0x7f0a000b;
+        public static final int description=0x7f0a0010;
+        public static final int icon=0x7f0a000d;
+        public static final int linlayoutBase=0x7f0a0000;
+        public static final int linlayoutButtons=0x7f0a000a;
+        public static final int scrollview=0x7f0a0001;
+        public static final int source=0x7f0a000f;
+        public static final int tags=0x7f0a0011;
+        public static final int tags_content=0x7f0a0012;
+        public static final int tilte_app=0x7f0a0006;
+        public static final int tilte_faq=0x7f0a0003;
+        public static final int tilte_meneame=0x7f0a0008;
+        public static final int title=0x7f0a000e;
+        public static final int votes=0x7f0a0013;
+        public static final int widget30=0x7f0a0002;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
-        public static final int meneo_list=0x7f030001;
-        public static final int meneo_listitem=0x7f030002;
+        public static final int about_dialog=0x7f030000;
+        public static final int main=0x7f030001;
+        public static final int meneo_list=0x7f030002;
+        public static final int meneo_listitem=0x7f030003;
     }
     public static final class string {
+        public static final int about_body_app=0x7f080016;
+        public static final int about_body_meneame=0x7f080018;
+        public static final int about_faq_a1=0x7f080014;
+        public static final int about_faq_q1=0x7f080013;
+        /**  About info 
+         */
+        public static final int about_title=0x7f080011;
+        public static final int about_title_app=0x7f080015;
+        public static final int about_title_faq=0x7f080012;
+        public static final int about_title_meneame=0x7f080017;
+        public static final int advice_not_implemented=0x7f080010;
         /**  
+    ================================================================
+    UI Elements
+    ================================================================
+    
+ Main Activity 
+ 
     ================================================================
     UI Elements
     ================================================================
@@ -75,57 +105,87 @@ public final class R {
     Preference
     ================================================================
     
+ 
+    ================================================================
+    Preference
+    ================================================================
+    
          */
-        public static final int app_pref_name=0x7f08000b;
+        public static final int app_pref_name=0x7f08001f;
+        public static final int context_menu_open=0x7f08000e;
+        public static final int context_menu_open_source=0x7f08000f;
         /**  UI Lsts 
+ UI Lsts 
          */
         public static final int empty_list=0x7f080005;
-        public static final int hello=0x7f080001;
-        public static final int main_menu_notame=0x7f080009;
-        /**  Menu 
+        /**  Erros 
+ Erros 
          */
-        public static final int main_menu_refresh=0x7f080008;
-        public static final int main_menu_settings=0x7f08000a;
+        public static final int general_unknown=0x7f080019;
+        public static final int hello=0x7f080001;
+        public static final int main_menu_about=0x7f08000c;
+        public static final int main_menu_notame=0x7f08000a;
+        /**  Menu 
+ Menu 
+         */
+        public static final int main_menu_refresh=0x7f080009;
+        public static final int main_menu_settings=0x7f08000b;
         public static final int main_tab_comments=0x7f080004;
         /**  Tab Pages 
+ Tab Pages 
          */
         public static final int main_tab_news=0x7f080002;
         public static final int main_tab_queue=0x7f080003;
         public static final int meneo_item_open=0x7f080006;
-        public static final int meneo_item_vote=0x7f080007;
+        public static final int meneo_item_open_source=0x7f080007;
+        public static final int meneo_item_vote=0x7f080008;
+        public static final int msg_obj_null=0x7f08001b;
+        public static final int msg_obj_wrong_type_unknown=0x7f08001a;
         /**  Account Settings 
+ Account Settings 
          */
-        public static final int pref_account=0x7f08000c;
-        public static final int pref_account_apikey=0x7f08000e;
-        public static final int pref_account_apikey_summary=0x7f08000d;
-        public static final int pref_account_user=0x7f080010;
-        public static final int pref_account_user_summary=0x7f08000f;
+        public static final int pref_account=0x7f080020;
+        public static final int pref_account_apikey=0x7f080022;
+        public static final int pref_account_apikey_summary=0x7f080021;
+        public static final int pref_account_user=0x7f080026;
+        public static final int pref_account_user_id=0x7f080024;
+        public static final int pref_account_user_id_summary=0x7f080023;
+        public static final int pref_account_user_summary=0x7f080025;
         /**  Application settings 
+ Application settings 
          */
-        public static final int pref_app=0x7f080017;
-        public static final int pref_app_clearcache=0x7f08001a;
-        public static final int pref_app_clearcache_summary=0x7f08001b;
-        public static final int pref_app_maxarticles=0x7f080021;
-        public static final int pref_app_maxarticles_10=0x7f080023;
-        public static final int pref_app_maxarticles_20=0x7f080024;
-        public static final int pref_app_maxarticles_40=0x7f080025;
-        public static final int pref_app_maxarticles_ALL=0x7f080026;
-        public static final int pref_app_maxarticles_summary=0x7f080022;
-        public static final int pref_app_refreshonlaunch=0x7f080018;
-        public static final int pref_app_refreshonlaunch_summary=0x7f080019;
-        public static final int pref_app_storage=0x7f08001c;
-        public static final int pref_app_storage_internal=0x7f08001f;
-        public static final int pref_app_storage_none=0x7f08001e;
-        public static final int pref_app_storage_sdcard=0x7f080020;
-        public static final int pref_app_storage_summary=0x7f08001d;
+        public static final int pref_app=0x7f08002d;
+        public static final int pref_app_clearcache=0x7f080030;
+        public static final int pref_app_clearcache_summary=0x7f080031;
+        public static final int pref_app_maxarticles=0x7f080037;
+        public static final int pref_app_maxarticles_10=0x7f080039;
+        public static final int pref_app_maxarticles_20=0x7f08003a;
+        public static final int pref_app_maxarticles_40=0x7f08003b;
+        public static final int pref_app_maxarticles_ALL=0x7f08003c;
+        public static final int pref_app_maxarticles_summary=0x7f080038;
+        public static final int pref_app_refreshonlaunch=0x7f08002e;
+        public static final int pref_app_refreshonlaunch_summary=0x7f08002f;
+        public static final int pref_app_storage=0x7f080032;
+        public static final int pref_app_storage_internal=0x7f080035;
+        public static final int pref_app_storage_none=0x7f080034;
+        public static final int pref_app_storage_sdcard=0x7f080036;
+        public static final int pref_app_storage_summary=0x7f080033;
         /**  Style customizations 
+ Style customizations 
          */
-        public static final int pref_style=0x7f080011;
-        public static final int pref_style_mainanimation=0x7f080012;
-        public static final int pref_style_mainanimation_fadein=0x7f080015;
-        public static final int pref_style_mainanimation_none=0x7f080014;
-        public static final int pref_style_mainanimation_slidein=0x7f080016;
-        public static final int pref_style_mainanimation_summary=0x7f080013;
+        public static final int pref_style=0x7f080027;
+        public static final int pref_style_mainanimation=0x7f080028;
+        public static final int pref_style_mainanimation_fadein=0x7f08002b;
+        public static final int pref_style_mainanimation_none=0x7f08002a;
+        public static final int pref_style_mainanimation_slidein=0x7f08002c;
+        public static final int pref_style_mainanimation_summary=0x7f080029;
+        public static final int refreshing_failed=0x7f08001c;
+        /**  Messages and Info 
+ Messages and Info 
+         */
+        public static final int refreshing_lable=0x7f08000d;
+        public static final int refreshing_thread_still_alive=0x7f08001d;
+        public static final int user_id_invalid=0x7f08001e;
     }
     public static final class style {
         public static final int MNM_Prefs_TextView_ListSeparator=0x7f090008;
