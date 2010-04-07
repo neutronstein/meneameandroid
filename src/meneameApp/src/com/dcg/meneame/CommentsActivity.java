@@ -16,6 +16,7 @@ public class CommentsActivity extends FeedActivity {
 		
 		// Set feed
 		mFeedURL = "http://www.meneame.net/comments_rss2.php";
+		mListAdapterClass = "com.dcg.meneame.CommentsAdapter";
 		mbIsArticleFeed = false;
 	}
 

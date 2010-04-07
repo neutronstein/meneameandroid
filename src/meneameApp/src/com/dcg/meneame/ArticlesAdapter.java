@@ -26,7 +26,14 @@ public class ArticlesAdapter extends BaseAdapter {
 	/** layout used to each item */
 	protected int mItenLayoutID;
 	
-	public ArticlesAdapter(Context context, Feed feed ) {
+	public ArticlesAdapter() {
+		ApplicationMNM.addLogCat(TAG);
+		
+		// Set default layout
+		mItenLayoutID = R.layout.meneo_listitem;
+	}
+	
+	public ArticlesAdapter(Context context, Feed feed) {
 		ApplicationMNM.addLogCat(TAG);
 		// Cache the LayoutInflate to avoid asking for a new one each time.
 		mInflater = LayoutInflater.from(context);
@@ -36,6 +43,14 @@ public class ArticlesAdapter extends BaseAdapter {
 		
 		// Set default layout
 		mItenLayoutID = R.layout.meneo_listitem;
+	}
+	
+	public void setupAdapter( Context context, Feed feed ) {
+		// Cache the LayoutInflate to avoid asking for a new one each time.
+		mInflater = LayoutInflater.from(context);
+		
+		// Save feed instance!
+		mFeed = feed;
 	}
 	
 	/**
@@ -87,11 +102,22 @@ public class ArticlesAdapter extends BaseAdapter {
 			// Creates a ViewHolder and store references to the two children views
 			// we want to bind data to.
 			holder = new ViewHolder();
-			holder.title = (TextView) convertView.findViewById(R.id.title);
-			holder.description = (TextView) convertView.findViewById(R.id.description);
-			holder.votes = (TextView) convertView.findViewById(R.id.votes);
-			holder.url = (TextView) convertView.findViewById(R.id.source);
-			holder.category = (TextView) convertView.findViewById(R.id.tags_content);
+			Object viewObj = null;
+			viewObj = convertView.findViewById(R.id.title);
+			if ( viewObj != null )
+				holder.title = (TextView)viewObj;
+			viewObj = convertView.findViewById(R.id.description);
+			if ( viewObj != null )
+				holder.description = (TextView)viewObj;
+			viewObj = convertView.findViewById(R.id.votes);
+			if ( viewObj != null )
+				holder.votes = (TextView)viewObj;
+			viewObj = convertView.findViewById(R.id.source);
+			if ( viewObj != null )
+				holder.url = (TextView)viewObj;
+			viewObj = convertView.findViewById(R.id.tags_content);
+			if ( viewObj != null )
+				holder.category = (TextView)viewObj;
 			
 			convertView.setTag(holder);
 		} else {
@@ -142,11 +168,16 @@ public class ArticlesAdapter extends BaseAdapter {
 		if ( feedItem != null )
 		{
 			// Bind the data efficiently with the holder.
-			holder.title.setText(title);
-			holder.description.setText(description);
-			holder.votes.setText(votes);
-			holder.url.setText(url);
-			holder.category.setText(category);
+			if ( holder.title != null )
+				holder.title.setText(title);
+			if ( holder.description != null )
+				holder.description.setText(description);
+			if ( holder.votes != null )
+				holder.votes.setText(votes);
+			if ( holder.url != null )
+				holder.url.setText(url);
+			if ( holder.category != null )
+				holder.category.setText(category);
 		}
 		return convertView;
 	}
