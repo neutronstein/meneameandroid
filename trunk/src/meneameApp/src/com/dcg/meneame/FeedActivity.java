@@ -36,8 +36,11 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static final String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
-
+	protected static String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
+	
+	/** Class used for our list adapters */
+	protected static String mListAdapterClass = "com.dcg.meneame.ArticlesAdapter";
+	
 	/** Global Application */
 	protected ApplicationMNM mApp = null;
 	
@@ -346,10 +349,17 @@ abstract public class FeedActivity extends ListActivity {
 		// Clear out list adapter
 		setListAdapter(null);
 		
-		// Set the new adapter!		
-		if ( this.mFeed != null )
+		try {
+			// Set the new adapter!		
+			if ( this.mFeed != null )
+			{
+				ArticlesAdapter listAdapter = (ArticlesAdapter) Class.forName( mListAdapterClass ).newInstance();
+				listAdapter.setupAdapter(this, this.mFeed);
+				setListAdapter(listAdapter);
+			}
+		} catch ( Exception e )
 		{
-			setListAdapter(new ArticlesAdapter(this, this.mFeed));
+			onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
 		}
 	}
 	
