@@ -25,9 +25,6 @@ public class MeneameAPP extends TabActivity  {
     
     /** Main animation */
     private Animation mMainAnimation = null;
-    
-    /** Global Application */
-	private ApplicationMNM mApp = null;
 
 	/** Called when the activity is first created. */
     @Override
@@ -36,16 +33,9 @@ public class MeneameAPP extends TabActivity  {
         
         ApplicationMNM.addLogCat(TAG);
         
-        ApplicationMNM.logCat(TAG, "Starting...");
+        ApplicationMNM.logCat(TAG, "onCreate()");
         
         setContentView(R.layout.main);
-        
-        // Cache app
-		try {
-			mApp = (ApplicationMNM)getApplication();
-		} catch(Exception e){
-			e.printStackTrace();
-		}
         
         // Get some global stuff
         mTabHost = getTabHost();
@@ -73,6 +63,30 @@ public class MeneameAPP extends TabActivity  {
         mTabHost.setCurrentTab(0);
     }
     
+    @Override
+	protected void onStart() {
+		ApplicationMNM.logCat(TAG, "onStart()");
+		super.onStart();
+	}
+	
+	@Override
+	protected void onRestart() {
+		ApplicationMNM.logCat(TAG, "onRestart()");
+		super.onRestart();
+	}
+	
+	@Override
+	protected void onPause() {
+		ApplicationMNM.logCat(TAG, "onPause()");
+		super.onPause();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		ApplicationMNM.logCat(TAG, "onDestroy()");
+		super.onDestroy();
+	}
+    
     /** Refresh the animation we will use for the tab page */
     private void initAnim() {
     	mMainAnimation = null;
@@ -91,12 +105,14 @@ public class MeneameAPP extends TabActivity  {
     
     @Override
     protected void onStop() {
-    	super.onStop();
+    	ApplicationMNM.logCat(TAG, "onStop()");
+    	super.onStop();    	
     }
     
     /** After the activity get's visible to the user */
     protected void onResume() {
     	super.onResume();
+    	ApplicationMNM.logCat(TAG, "onStop()");
     	
     	// Start animation stuff
     	initAnim();
