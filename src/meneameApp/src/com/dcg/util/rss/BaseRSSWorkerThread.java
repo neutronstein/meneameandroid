@@ -127,10 +127,13 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				ApplicationMNM.logCat(TAG, "Releasing semaphore " + mSemaphore.toString());
 				mSemaphore.release();
 			}
-		}
-		else {
+		} else {
 			Log.w(TAG, "No application object found!");
 		}
+		
+		// Release last refs
+		mSemaphore = null;
+		mHandler = null;
 	}
 	
 	private void guardedRun() throws InterruptedException {

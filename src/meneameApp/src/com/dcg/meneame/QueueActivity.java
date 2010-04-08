@@ -19,12 +19,6 @@ public class QueueActivity extends FeedActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// Register our self
-		if ( getTabActivityTag().length() > 0 )
-		{
-			mApp.addTabActivity( getTabActivityTag(), this);
-		}
 	}
 	
 	/**

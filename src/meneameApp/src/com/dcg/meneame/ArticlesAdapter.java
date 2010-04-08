@@ -89,7 +89,7 @@ public class ArticlesAdapter extends BaseAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
-		try {
+		try {			
 			// A ViewHolder keeps references to children views to avoid unnecessary calls
 			// to findViewById() on each row.
 			ViewHolder holder;
@@ -182,6 +182,9 @@ public class ArticlesAdapter extends BaseAdapter {
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
+		} finally {
+			// Force GC
+			System.gc();
 		}
 		return convertView;
 	}

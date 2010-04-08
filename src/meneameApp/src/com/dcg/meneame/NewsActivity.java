@@ -18,13 +18,7 @@ public class NewsActivity extends FeedActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		// Register our self
-		if ( getTabActivityTag().length() > 0 )
-		{
-			mApp.addTabActivity( getTabActivityTag(), this);
-		}		
+		super.onCreate(savedInstanceState);	
 	}
 	
 	/**

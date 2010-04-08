@@ -41,9 +41,6 @@ abstract public class FeedActivity extends ListActivity {
 	/** Class used for our list adapters */
 	protected static String mListAdapterClass = "com.dcg.meneame.ArticlesAdapter";
 	
-	/** Global Application */
-	protected ApplicationMNM mApp = null;
-	
 	/** Feed URL */
 	protected String mFeedURL = "";
 	
@@ -105,12 +102,7 @@ abstract public class FeedActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		 // Cache app
-		try {
-			mApp = (ApplicationMNM)getApplication();
-		} catch(Exception e){
-			e.printStackTrace();
-		}
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onCreate()");
 		
 		mHandler = new Handler(){
 			@Override
@@ -125,17 +117,75 @@ abstract public class FeedActivity extends ListActivity {
 		// Do final stuff
 		seupListView();
 		
-		// Recover the feed if that was possible
-		try
-		{
-			mFeed = (Feed)savedInstanceState.getParcelable(getTabActivityTag());
-		} catch (Exception e)
-		{
-			// Nothing needs to be done here
-		}
-		
 		// Refresh if needed
 		_conditionRefreshFeed();
+	}
+	
+	@Override
+	protected void onStart() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onStart()");
+		super.onStart();
+	}
+	
+	@Override
+	protected void onResume() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onResume()");		
+		super.onResume();
+		
+		// Recreate the handler
+		if ( mHandler == null )
+		{
+			mHandler = new Handler(){
+				@Override
+				public void handleMessage(Message msg) {
+					handleThreadMessage( msg );
+				}
+			};
+		}
+		
+		// Make sure or empty list text is set to it's default
+		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+		emptyTextView.setText(R.string.empty_list);
+	}
+	
+	@Override
+	protected void onRestart() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onRestart()");
+		super.onRestart();
+	}
+	
+	@Override
+	protected void onPause() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onPause()");
+		
+		mHandler = null;
+		
+		// Free feed
+		if ( mFeed != null )
+		{
+			mFeed.clearArticleList();
+		}
+		mFeed = null;
+		
+		// Free listadapter
+		setListAdapter(null);
+		
+		// Cleanup
+		System.gc();
+		
+		super.onPause();
+	}
+	
+	@Override
+	protected void onStop() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onStop()");
+		super.onStop();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onDestroy()");
+		super.onDestroy();
 	}
 	
 	/**
@@ -143,12 +193,13 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putParcelable(getTabActivityTag(), mFeed);
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onSaveInstanceState()");
 		super.onSaveInstanceState(outState);
 	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onTouchEvent()");
 		// If the users touches the screen and no feed is setup refresh it!
 		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
 		{
@@ -205,6 +256,7 @@ abstract public class FeedActivity extends ListActivity {
 	
 	protected void handleThreadMessage(Message msg) {
 		Bundle data = msg.getData();
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::handleThreadMessage()");
 		
 		String errorMsg = "";
 		// Check if it completed ok or not
@@ -283,7 +335,7 @@ abstract public class FeedActivity extends ListActivity {
 	 * Setup all basic data our worker thread needs to work well
 	 */
 	protected void setupWorkerThread() {
-		mRssThread.setupWorker( mApp, mHandler, getFeedURL(), mSemaphore );
+		mRssThread.setupWorker( (ApplicationMNM)getApplication(), mHandler, getFeedURL(), mSemaphore );
 	}
 	
 	/**
