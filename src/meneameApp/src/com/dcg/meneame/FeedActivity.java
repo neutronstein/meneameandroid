@@ -46,6 +46,7 @@ abstract public class FeedActivity extends ListActivity {
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
 	protected static String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
+	protected static String mLocalRssWorkerThreadClassName = "com.dcg.meneame.LocalRSSWorkerThread";
 	
 	/** Class used for our list adapters */
 	protected static String mListAdapterClass = "com.dcg.meneame.ArticlesAdapter";
@@ -95,6 +96,9 @@ abstract public class FeedActivity extends ListActivity {
     
     /** Are we paused or not? */
     protected boolean mbIsPaused;
+    
+    /** Are we loading a cached feed? */
+    protected boolean mbIsLoadingCachedFeed;
     
     /** Current feed we got */
     private Feed mFeed = null;
@@ -165,9 +169,19 @@ abstract public class FeedActivity extends ListActivity {
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 		emptyTextView.setText(R.string.empty_list);
 		
+		// Look if we need to request a stop for the current caching thread
+		if ( mbIsLoadingCachedFeed && mRssThread != null )
+		{
+			mRssThread.requestStop();
+			mRssThread = null;
+			// We start again I think!
+			mbIsLoadingCachedFeed = false;
+		}
+		
 		// Should be get the feed from the cached file?
 		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
 		{
+			// If the refresh thread is active kill it in case it's a cached one
 			String storageType = getStorageType();
 	        if ( storageType.compareTo("SDCard") == 0 )
 	        {
@@ -190,6 +204,15 @@ abstract public class FeedActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onPause()");
+		
+		// Look if we need to request a stop for the current caching thread
+		if ( mbIsLoadingCachedFeed && mRssThread != null )
+		{
+			mRssThread.requestStop();
+			mRssThread = null;
+			// We start again I think!
+			mbIsLoadingCachedFeed = false;
+		}
 		
 		// Pause
 		mbIsPaused = true;
@@ -333,6 +356,10 @@ abstract public class FeedActivity extends ListActivity {
 	 * @return String - FeedURL
 	 */
 	public String getFeedURL() {
+		if ( mbIsLoadingCachedFeed )
+		{
+			return getSDCardCacheFilePath();
+		}
 		return mFeedURL;
 	}
 	
@@ -387,9 +414,12 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	public void refreshFeed( boolean bUseCache ) {		
 		// Start thread if not started or not alive
-		if ( mRssThread == null || !mRssThread.isAlive() )
+		// If we are loading a cached feed to we are pause we can not start!
+		if ( !mbIsLoadingCachedFeed && !mbIsPaused && 
+				( mRssThread == null || !mRssThread.isAlive() ))
 		{
 			String Error = "";
+			mbIsLoadingCachedFeed = bUseCache;
 			try {
 				// Clear the current list adapter!
 				setListAdapter(null);
@@ -400,7 +430,7 @@ abstract public class FeedActivity extends ListActivity {
 				
 				// Start with our task!
 				ApplicationMNM.logCat(TAG, "Staring worker thread");
-				String threadClassName = bUseCache?mRssWorkerThreadClassName:mRssWorkerThreadClassName;
+				String threadClassName = bUseCache?mLocalRssWorkerThreadClassName:mRssWorkerThreadClassName;
 				mRssThread = (BaseRSSWorkerThread) Class.forName( threadClassName ).newInstance();
 				
 				// Give our child's a chance to setup the thread
@@ -479,18 +509,22 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
 			
-			// Start caching process
-			String storageType = getStorageType();
-	        if ( storageType.compareTo("Internal") == 0 )
-	        {
-	        	// Make DB caching
-	        	ApplicationMNM.showToast(R.string.advice_not_implemented);
-	        }
-	        else if ( storageType.compareTo("SDCard") == 0 )
-	        {
-	        	// Make SD-card caching
-	        	startSDCardCaching( parsedFeed );
-	        }
+			// If we are loading a cached feed do not cache it again
+			if ( !mbIsLoadingCachedFeed )
+			{
+				// Start caching process
+				String storageType = getStorageType();
+		        if ( storageType.compareTo("Internal") == 0 )
+		        {
+		        	// Make DB caching
+		        	ApplicationMNM.showToast(R.string.advice_not_implemented);
+		        }
+		        else if ( storageType.compareTo("SDCard") == 0 )
+		        {
+		        	// Make SD-card caching
+		        	startSDCardCaching( parsedFeed );
+		        }
+			}
 			// Update feed
 			_updateFeedList();
 			break;
@@ -510,8 +544,9 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.showToast(ErrorMsg);
 		}
 		
-		// Clear reference out
+		// Clear references out
 		mRssThread = null;
+		mbIsLoadingCachedFeed = false;
 	}
 	
 	/* Creates the menu items */

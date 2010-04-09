@@ -53,6 +53,9 @@ abstract public class RSSParser extends DefaultHandler {
 	/** Current tag we are in */
 	private String mCurrentTag;
 	
+	/** did we received a stop request? */
+	private boolean mbStopRequested;
+	
 	/**
 	 * Create a RSSParser passing along a RSS RawData
 	 * @param RawFeed
@@ -66,6 +69,13 @@ abstract public class RSSParser extends DefaultHandler {
         // Add our tag to the category log (so it will be printed out)
         ApplicationMNM.addLogCat(TAG);
     }
+	
+	/**
+	 * Request this thread to stop what it's doing
+	 */
+	public void requestStop() {
+		mbStopRequested = true;
+	}
 	
 	public String getmFeedItemClassName() {
 		return mFeedItemClassName;
@@ -205,6 +215,9 @@ abstract public class RSSParser extends DefaultHandler {
 		} catch (RSSParserMaxElements e) {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
+		} catch (RSSParserStopRequest e) {
+			// Not a real 'error' heheh
+			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -245,7 +258,7 @@ abstract public class RSSParser extends DefaultHandler {
 	/**
 	 * [XML-PARSING] We found a start element
 	 */
-	public void startElement(String uri, String name, String qName, Attributes atts) throws RSSParserMaxElements {
+	public void startElement(String uri, String name, String qName, Attributes atts) throws RSSParserMaxElements, RSSParserStopRequest {
 		if ( name.length() > 0 )
 		{
 			//ApplicationMNM.LogCat(TAG, "[START] localName: " + name.toString());
@@ -267,6 +280,12 @@ abstract public class RSSParser extends DefaultHandler {
 				if ( this.mMaxItems > 0 && this.mItemCount >= this.mMaxItems )
 				{
 					throw new RSSParserMaxElements("MAX ELEMENTS REACHED: " + mItemCount, null);
+				}
+				
+				// Did we got a stop request?
+				if ( mbStopRequested )
+				{
+					throw new RSSParserStopRequest("Received stop request from parent thread!", null);
 				}
 				
 				// Add previus article in case we got a previus one
