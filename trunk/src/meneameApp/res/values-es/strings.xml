@@ -30,6 +30,15 @@
 	<string name="main_menu_notame">Nótame</string>
 	<string name="main_menu_settings">Preferencias</string>
 	<string name="main_menu_about">Acerca de</string>
+	
+	<!-- Version changeset -->
+    <string name="version_change_title">Cambios de Versiones</string>
+    <string name="version_change_v3_title">Version 3 (0.1.3)</string>
+    <string name="version_change_v3">Actual</string>
+    <string name="version_change_v2_title">Version 2 (0.1.2)</string>
+    <string name="version_change_v2">- Arreglándo fallos de memoria\n- Limpiándo contenido de las listas al cambiar, falta el proceso de cacheo para que no se pierda la información.</string>
+    <string name="version_change_v1_title">Version 1 (0.1.1)</string>
+    <string name="version_change_v1">- Primera version beta</string>
 
     <!-- Messages and Info -->
     <string name="refreshing_lable">Cargando...</string>
@@ -92,6 +101,9 @@
     <!-- Application settings -->
     
     <string name="pref_app">App</string>
+    
+    <string name="pref_app_version_number">Version (0.1.2)</string>
+    <string name="pref_app_version_number_summary">Version actual</string>
     
     <string name="pref_app_refreshonlaunch">Refrescar al lanzar</string>
     <string name="pref_app_refreshonlaunch_summary">Refrescar los feeds al lanzar cada página</string>

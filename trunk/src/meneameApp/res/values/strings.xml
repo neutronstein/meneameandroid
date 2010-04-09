@@ -37,6 +37,15 @@
     <string name="context_menu_open_source">Opening source</string>
     <string name="advice_not_implemented">Ooops.. Not yet implemented!</string>
     
+    <!-- Version changeset -->
+    <string name="version_change_title">Version Changes</string>
+    <string name="version_change_v3_title">Version 3 (0.1.3)</string>
+    <string name="version_change_v3">CURRENT</string>
+    <string name="version_change_v2_title">Version 2 (0.1.2)</string>
+    <string name="version_change_v2">- Fixing some memory issues\n- Releasing list content when switching pages, needs a cache process to be seamless</string>
+    <string name="version_change_v1_title">Version 1 (0.1.1)</string>
+    <string name="version_change_v1">- First beta release</string>
+    
     <!-- About info -->
     <string name="about_title">menéame for Android</string>
     <string name="about_title_faq">FAQ</string>
@@ -91,6 +100,9 @@
     <!-- Application settings -->
     
     <string name="pref_app">App</string>
+    
+    <string name="pref_app_version_number">Version (0.1.2)</string>
+    <string name="pref_app_version_number_summary">Application version</string>
     
     <string name="pref_app_refreshonlaunch">Refresh on launch</string>
     <string name="pref_app_refreshonlaunch_summary">Refresh feeds when app launches?</string>

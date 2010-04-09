@@ -84,6 +84,9 @@ abstract public class FeedActivity extends ListActivity {
     /** Is this an article or an comments feed? */
     protected boolean mbIsArticleFeed;
     
+    /** Are we paused or not? */
+    protected boolean mbIsPaused;
+    
     /** Current feed we got */
     private Feed mFeed = null;
     
@@ -101,9 +104,12 @@ abstract public class FeedActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onCreate()");
 		
+		// Unpause
+		mbIsPaused = false;
+		
+		// Create a new handler
 		mHandler = new Handler(){
 			@Override
 			public void handleMessage(Message msg) {
@@ -132,6 +138,9 @@ abstract public class FeedActivity extends ListActivity {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onResume()");		
 		super.onResume();
 		
+		// Unpause
+		mbIsPaused = false;
+		
 		// Recreate the handler
 		if ( mHandler == null )
 		{
@@ -158,6 +167,10 @@ abstract public class FeedActivity extends ListActivity {
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onPause()");
 		
+		// Pause
+		mbIsPaused = true;
+		
+		// Clear handler
 		mHandler = null;
 		
 		// Free feed
@@ -401,18 +414,19 @@ abstract public class FeedActivity extends ListActivity {
 		// Clear out list adapter
 		setListAdapter(null);
 		
-		try {
-			// Set the new adapter!		
-			if ( this.mFeed != null )
-			{
-				ArticlesAdapter listAdapter = (ArticlesAdapter) Class.forName( mListAdapterClass ).newInstance();
-				listAdapter.setupAdapter(this, this.mFeed);
-				setListAdapter(listAdapter);
+		// We can only assign a new feed if we are not paused!
+		if ( !mbIsPaused )		
+			try {
+				// Set the new adapter!		
+				if ( this.mFeed != null )
+				{
+					ArticlesAdapter listAdapter = (ArticlesAdapter) Class.forName( mListAdapterClass ).newInstance();
+					listAdapter.setupAdapter(this, this.mFeed);
+					setListAdapter(listAdapter);
+				}
+			} catch ( Exception e ) {
+				onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
 			}
-		} catch ( Exception e )
-		{
-			onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
-		}
 	}
 	
 	/**
@@ -443,7 +457,6 @@ abstract public class FeedActivity extends ListActivity {
 //	        	//ApplicationMNM.showToast(R.string.advice_not_implemented);
 //	        	startSDCardCaching();
 //	        }
-			
 			// Update feed
 			_updateFeedList();
 			break;
@@ -463,7 +476,7 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.showToast(ErrorMsg);
 		}
 		
-		// Clear refernce out
+		// Clear reference out
 		mRssThread = null;
 	}
 	
