@@ -165,9 +165,13 @@ abstract public class FeedActivity extends ListActivity {
 			};
 		}
 		
-		// Make sure or empty list text is set to it's default
-		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
-		emptyTextView.setText(R.string.empty_list);
+		// Make sure or empty list text is set to it's default in case we are not loading
+		// a feed already
+		if ( mRssThread == null )
+		{
+			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView.setText(R.string.empty_list);
+		}
 		
 		// Look if we need to request a stop for the current caching thread
 		if ( mbIsLoadingCachedFeed && mRssThread != null )
@@ -445,7 +449,7 @@ abstract public class FeedActivity extends ListActivity {
 
 				// Change empty text so that the user knows when it's all done
 				TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
-				emptyTextView.setText(R.string.refreshing_lable);
+				emptyTextView.setText(bUseCache?R.string.refreshing_lable_cached:R.string.refreshing_lable);
 				
 				// Start with our task!
 				ApplicationMNM.logCat(TAG, "Staring worker thread");
@@ -681,7 +685,6 @@ abstract public class FeedActivity extends ListActivity {
 	    		// Save it to disc
 	    		feedFile = new FileWriter( getSDCardCacheFilePath() );	    		
 	    		feedFile.write(feedXML);
-	    		ApplicationMNM.showToast("Feed written to: "+getSDCardCacheFilePath());
 	    		ApplicationMNM.logCat(TAG, "Feed written to: "+getSDCardCacheFilePath());
 			} catch (Exception e) {
 				ApplicationMNM.showToast("Failed to save feed to SD-Card");
@@ -699,7 +702,7 @@ abstract public class FeedActivity extends ListActivity {
     	}
     	else
     	{
-    		ApplicationMNM.showToast("Can not cache to SD-Card!");
+    		ApplicationMNM.warnCat(TAG, "Can not cache to SD-Card!");
     	}
     }
     
