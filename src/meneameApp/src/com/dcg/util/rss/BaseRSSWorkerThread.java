@@ -212,6 +212,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+				setErrorMessage(e.toString());
 			} finally {
 				if (streamReader != null) {
 					try {

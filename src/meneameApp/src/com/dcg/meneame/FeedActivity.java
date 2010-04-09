@@ -525,6 +525,7 @@ abstract public class FeedActivity extends ListActivity {
 	private void onRefreshCompleted( int completeCode, Bundle data, Feed parsedFeed, String Error )
 	{
 		String ErrorMsg = "";
+		boolean bShowToast = true;
 		switch( completeCode )
 		{
 		case COMPLETE_SUCCESSFULL:
@@ -552,6 +553,7 @@ abstract public class FeedActivity extends ListActivity {
 			_updateFeedList();
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
+			bShowToast = false;
 			ErrorMsg = getResources().getString(R.string.refreshing_thread_still_alive);
 			break;
 		case COMPLETE_ERROR:
@@ -564,7 +566,10 @@ abstract public class FeedActivity extends ListActivity {
 		if ( !ErrorMsg.equals("") )
 		{
 			ApplicationMNM.logCat(TAG, ErrorMsg);
-			ApplicationMNM.showToast(ErrorMsg);
+			if ( bShowToast )
+			{
+				ApplicationMNM.showToast(ErrorMsg);
+			}
 		}
 		
 		// Clear references out
