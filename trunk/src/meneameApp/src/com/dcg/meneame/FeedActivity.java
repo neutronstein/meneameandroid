@@ -172,28 +172,8 @@ abstract public class FeedActivity extends ListActivity {
 	        if ( storageType.compareTo("SDCard") == 0 )
 	        {
 	        	try {
-					InputStreamReader reader = new InputStreamReader(new FileInputStream ( this.getSDCardCacheFilePath()), "UTF-8");
-					FeedParser feedParser = new FeedParser();
-					feedParser.setInputStream( reader );
-					
-					// Get the max number of items to be shown from our preferences
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-			        int maxItems = -1;        
-			        try
-			        {
-			        	maxItems = Integer.parseInt(prefs.getString("pref_app_maxarticles", "-1"));
-			        }
-			        catch( Exception e)
-			        {
-			        	// Nothing to do here :P
-			        }                
-			        feedParser.setMaxItems(maxItems);
-			        feedParser.parse();
-					
-					mFeed =  feedParser.getFeed();
-					
-					// Update list
-					_updateFeedList();
+					//InputStreamReader reader = new InputStreamReader(new FileInputStream ( this.getSDCardCacheFilePath()), "UTF-8");
+	        		refreshFeed( true );
 	        	} catch (Exception e) {
 					// Not cached
 				}
@@ -260,7 +240,7 @@ abstract public class FeedActivity extends ListActivity {
 		// If the users touches the screen and no feed is setup refresh it!
 		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
 		{
-			refreshFeed();
+			refreshFeed( false );
 		}
 		return super.onTouchEvent(event);
 	}
@@ -276,7 +256,7 @@ abstract public class FeedActivity extends ListActivity {
 	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
 	        if ( prefs.getBoolean("pref_app_refreshonlaunch", false) )
 	        {
-	        	refreshFeed();
+	        	refreshFeed( false );
 	        }
 		}
 	}
@@ -405,7 +385,7 @@ abstract public class FeedActivity extends ListActivity {
 	/**
 	 * Will refresh the current feed
 	 */
-	public void refreshFeed() {		
+	public void refreshFeed( boolean bUseCache ) {		
 		// Start thread if not started or not alive
 		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
@@ -420,7 +400,8 @@ abstract public class FeedActivity extends ListActivity {
 				
 				// Start with our task!
 				ApplicationMNM.logCat(TAG, "Staring worker thread");
-				mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClassName ).newInstance();
+				String threadClassName = bUseCache?mRssWorkerThreadClassName:mRssWorkerThreadClassName;
+				mRssThread = (BaseRSSWorkerThread) Class.forName( threadClassName ).newInstance();
 				
 				// Give our child's a chance to setup the thread
 				setupWorkerThread();
@@ -551,7 +532,7 @@ abstract public class FeedActivity extends ListActivity {
         {
         case MENU_REFRESH:
             // Refresh !   	
-        	refreshFeed();
+        	refreshFeed( false );
             return true;
         case MENU_NOTAME:
         	// Open notame activity

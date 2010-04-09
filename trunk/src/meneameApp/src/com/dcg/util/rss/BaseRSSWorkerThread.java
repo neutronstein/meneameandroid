@@ -3,8 +3,10 @@ package com.dcg.util.rss;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Semaphore;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import com.dcg.app.ApplicationMNM;
@@ -136,6 +138,30 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mHandler = null;
 	}
 	
+	/**
+	 * Will get the input stream reader the feed reader will use to parse it
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	protected InputStreamReader getInputStreamReader() throws ClientProtocolException, IOException, URISyntaxException 
+	{
+		HttpClient client = mApp.getHttpClient();
+		HttpGet request = new HttpGet();
+		
+		request.setURI(new URI(mFeedURL));
+		ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
+		
+		HttpResponse response = client.execute(request);
+		
+		if ( response != null )
+		{
+			return new InputStreamReader(response.getEntity().getContent());
+		}
+		return null;
+	}
+	
 	private void guardedRun() throws InterruptedException {
 		// At this point we are thread safe
 		if ( mHandler != null )
@@ -144,20 +170,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			Bundle mDdata = new Bundle();
 			InputStreamReader streamReader = null;
 			try {
-				HttpClient client = mApp.getHttpClient();
-				HttpGet request = new HttpGet();
-				
-				request.setURI(new URI(mFeedURL));
-				ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
-				
-				HttpResponse response = client.execute(request);
-				
-				// We have stopped!
-				if ( mbStopRequested ) return;
-				
-				if ( response != null )
+				streamReader = getInputStreamReader();
+
+				if ( streamReader != null )
 				{
-					streamReader = new InputStreamReader(response.getEntity().getContent());
 					// Start processing the RSS file
 					processResult(msg, streamReader);				
 					
