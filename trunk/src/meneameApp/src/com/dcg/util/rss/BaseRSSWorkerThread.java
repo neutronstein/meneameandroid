@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -62,7 +64,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	/** Default handler we use to parse the current feed */
 	private RSSParser mFeedParser = null;
 	
-	protected Bundle mDdata = new Bundle();
+	protected Bundle mData = new Bundle();
 	
 	/**
 	 * 
@@ -155,6 +157,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		HttpClient client = mApp.getHttpClient();
 		HttpGet request = new HttpGet();
 		
+		client.getConnectionManager().closeExpiredConnections();
+		client.getConnectionManager().closeIdleConnections(10, TimeUnit.SECONDS );
+		
 		request.setURI(new URI(mFeedURL));
 		ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
 		
@@ -172,7 +177,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		if ( mHandler != null && !mbStopRequested )
 		{
 			Message msg = mHandler.obtainMessage();
-			Bundle mDdata = new Bundle();
+			mData = new Bundle();
 			InputStreamReader streamReader = null;
 			try {
 				streamReader = getInputStreamReader();
@@ -197,21 +202,22 @@ abstract public class BaseRSSWorkerThread extends Thread {
 						{
 							ApplicationMNM.logCat(TAG, "Stop requested while parsing: " + mFeedURL);
 						}
-						mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
+						mData.putInt(COMPLETED_KEY, COMPLETED_OK);
 					}
 					else
 					{
-						mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+						mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 					}		
 				}
 				else
 				{
-					Log.d(TAG, "Failed to parse: " + mFeedURL);
-					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+					ApplicationMNM.logCat(TAG, "Failed to parse: " + mFeedURL);
+					mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+				ApplicationMNM.logCat(TAG, "Failed to parse: " + e.toString());
+				mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 				setErrorMessage(e.toString());
 			} finally {
 				if (streamReader != null) {
@@ -223,7 +229,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				}
 				
 				// Send final message
-				msg.setData(mDdata);
+				msg.setData(mData);
 				sendMessage(msg);
 			}
 		}
@@ -245,7 +251,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @return 
 	 */
 	protected boolean isDataValid() {
-		return mDdata.getInt(ERROR_KEY) == ERROR_SUCCESSFULL;
+		return mData.getInt(ERROR_KEY) == ERROR_SUCCESSFULL;
 	}
 	
 	/**
@@ -253,7 +259,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @return
 	 */
 	protected String getErrorMessage() {
-		return mDdata.getString(ERROR_MESSAGE_KEY);
+		return mData.getString(ERROR_MESSAGE_KEY);
 	}
 	
 	/**
@@ -261,8 +267,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param error
 	 */
 	protected void setErrorMessage( String error ) {
-		mDdata.putInt(ERROR_KEY, ERROR_FAILED);
-		mDdata.putString(ERROR_MESSAGE_KEY, error);
+		mData.putInt(ERROR_KEY, ERROR_FAILED);
+		mData.putString(ERROR_MESSAGE_KEY, error);
 	}
 	
 	private void createRSSHandler() {

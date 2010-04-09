@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.Xml;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -339,7 +340,7 @@ abstract public class FeedActivity extends ListActivity {
 	
 	protected void handleThreadMessage(Message msg) {
 		Bundle data = msg.getData();
-		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::handleThreadMessage()");
+		Log.d(TAG, getTabActivityTag()+"::handleThreadMessage()");
 		
 		String errorMsg = "";
 		// Check if it completed ok or not
@@ -354,7 +355,7 @@ abstract public class FeedActivity extends ListActivity {
 					errorMsg = getResources().getString(R.string.msg_obj_wrong_type_unknown)+" "+ msg.obj.toString();
 				}
 			} finally {
-				if ( !errorMsg.equals("") )
+				if ( errorMsg != null && !errorMsg.equals("") )
 				{
 					onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
 				}
@@ -362,13 +363,11 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		else
 		{
-			if ( data.getInt(BaseRSSWorkerThread.ERROR_KEY) == BaseRSSWorkerThread.ERROR_FAILED )
+			// TODO: Error messages are not getting along the right way!
+			errorMsg = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
+			if ( errorMsg != null && !errorMsg.equals("") )
 			{
-				errorMsg = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
-			}
-			else
-			{
-				errorMsg = getResources().getString(R.string.general_unknown);
+				errorMsg = getResources().getString(R.string.host_unavailable);
 			}
 			onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
 		}
