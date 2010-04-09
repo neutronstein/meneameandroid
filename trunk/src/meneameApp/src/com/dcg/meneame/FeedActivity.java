@@ -192,6 +192,11 @@ abstract public class FeedActivity extends ListActivity {
 				}
 	        }
 		}
+		else
+		{
+			// We got a saved thread so set it again!
+			_updateFeedList();
+		}
 	}
 	
 	@Override
@@ -252,7 +257,23 @@ abstract public class FeedActivity extends ListActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onSaveInstanceState()");
+		/*
+		if ( mFeed != null )
+		{
+			ApplicationMNM.logCat(TAG, " saving feed...");
+			outState.putParcelable("currentlySavedFeed", mFeed);
+		}
+		*/
 		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle state) {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onRestoreInstanceState()");
+		/*
+		mFeed = state.getParcelable("currentlySavedFeed");
+		*/
+		super.onRestoreInstanceState(state);
 	}
 	
 	@Override
