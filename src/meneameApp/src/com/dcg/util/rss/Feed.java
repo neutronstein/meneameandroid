@@ -64,6 +64,7 @@ public class Feed extends FeedItem implements Parcelable {
      * Write all our data to a parcel
      */
     public void writeToParcel(Parcel dest, int flags) {
+    	ApplicationMNM.logCat(TAG, "writeToParcel");
     	// First of all add the data of this feed
     	dest.writeInt(mItemData.size());
     	for (String s: mItemData.keySet()) {
@@ -106,6 +107,7 @@ public class Feed extends FeedItem implements Parcelable {
      * @param in
      */
     public void readFromParcel(Parcel in) {
+    	ApplicationMNM.logCat(TAG, "readFromParcel");
     	// Read the feed stuff in
     	int count = in.readInt();
     	for ( int i = 0; i < count; i++ )
@@ -134,7 +136,7 @@ public class Feed extends FeedItem implements Parcelable {
 	    		addArticle(currentItem);
 	    	}
     	} catch( Exception e) {
-    		// Ups! If something got wrong we should get rid of any refernce!
+    		// Ups! If something got wrong we should get rid of any references!
     		mMaxItemData = 0;
     		clearArticleList();
     		ApplicationMNM.warnCat(TAG, "Failed to recover feed from parcel: "+e.toString());
