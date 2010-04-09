@@ -212,10 +212,10 @@ abstract public class RSSParser extends DefaultHandler {
 			
 			// This is all right, so get rid of the current feed item
 			this.mFeedItem = null;
-		} catch (RSSParserMaxElements e) {
+		} catch (RSSParserMaxElementsException e) {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
-		} catch (RSSParserStopRequest e) {
+		} catch (RSSParserStopRequestException e) {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
@@ -258,7 +258,7 @@ abstract public class RSSParser extends DefaultHandler {
 	/**
 	 * [XML-PARSING] We found a start element
 	 */
-	public void startElement(String uri, String name, String qName, Attributes atts) throws RSSParserMaxElements, RSSParserStopRequest {
+	public void startElement(String uri, String name, String qName, Attributes atts) throws RSSParserMaxElementsException, RSSParserStopRequestException {
 		if ( name.length() > 0 )
 		{
 			//ApplicationMNM.LogCat(TAG, "[START] localName: " + name.toString());
@@ -279,13 +279,13 @@ abstract public class RSSParser extends DefaultHandler {
 				// NOTE: The last article will be added by the parser 'always!'
 				if ( this.mMaxItems > 0 && this.mItemCount >= this.mMaxItems )
 				{
-					throw new RSSParserMaxElements("MAX ELEMENTS REACHED: " + mItemCount, null);
+					throw new RSSParserMaxElementsException("MAX ELEMENTS REACHED: " + mItemCount, null);
 				}
 				
 				// Did we got a stop request?
 				if ( mbStopRequested )
 				{
-					throw new RSSParserStopRequest("Received stop request from parent thread!", null);
+					throw new RSSParserStopRequestException("Received stop request from parent thread!", null);
 				}
 				
 				// Add previus article in case we got a previus one
