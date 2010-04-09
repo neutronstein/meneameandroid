@@ -31,8 +31,7 @@ public class MeneameAPP extends TabActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        ApplicationMNM.addLogCat(TAG);
-        
+        ApplicationMNM.addLogCat(TAG);        
         ApplicationMNM.logCat(TAG, "onCreate()");
         
         setContentView(R.layout.main);
@@ -61,6 +60,24 @@ public class MeneameAPP extends TabActivity  {
         
         // Set news tab as visible one
         mTabHost.setCurrentTab(0);
+        
+        // Check version number and if we change the version show a nice dialog
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        int savedVersion = prefs.getInt("pref_app_version_number", 0);
+        ApplicationMNM.logCat(TAG, ""+savedVersion);
+        if ( ApplicationMNM.getVersionNumber() > savedVersion )
+        {
+        	VersionChangesDialog versionDialog = new VersionChangesDialog(this);
+        	versionDialog.show();
+        	
+        	// Save the version
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());  
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt("pref_app_version_number", ApplicationMNM.getVersionNumber());
+
+            // Don't forget to commit your edits!!!
+            editor.commit();
+        }
     }
     
     @Override
