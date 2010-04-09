@@ -48,7 +48,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	private Semaphore mSemaphore = null;
 	
 	/** Feed URL */
-	private String mFeedURL = "";
+	protected String mFeedURL = "";
 	
 	/** Handler used to send messages to the activity that will handle our work */
 	private Handler mHandler;
@@ -101,6 +101,11 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 */
 	public void requestStop() {
 		mbStopRequested = true;
+		if ( mFeedParser != null )
+		{
+			// Stop parsing
+			mFeedParser.requestStop();
+		}
 	}
 	
 	@Override
@@ -164,7 +169,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	private void guardedRun() throws InterruptedException {
 		// At this point we are thread safe
-		if ( mHandler != null )
+		if ( mHandler != null && !mbStopRequested )
 		{
 			Message msg = mHandler.obtainMessage();
 			Bundle mDdata = new Bundle();
@@ -180,11 +185,18 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					// look for any error
 					if ( isDataValid() && mFeedParser != null )
 					{
-						// Let us make any post processing stuff
-						postProcessResult(msg, mFeedParser.getFeed());
-	
-						// All fine
-						ApplicationMNM.logCat(TAG, "Finished!");				
+						if ( ! mbStopRequested )
+						{
+							// Let us make any post processing stuff
+							postProcessResult(msg, mFeedParser.getFeed());
+		
+							// All fine
+							ApplicationMNM.logCat(TAG, "Finished parsing: " + mFeedURL);
+						}
+						else
+						{
+							ApplicationMNM.logCat(TAG, "Stop requested while parsing: " + mFeedURL);
+						}
 						mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
 					}
 					else
@@ -194,8 +206,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 				}
 				else
 				{
-					Log.d(TAG, "Failed!");
-					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
+					Log.d(TAG, "Failed to parse: " + mFeedURL);
+					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -221,7 +233,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param msg
 	 */
 	private void sendMessage( Message msg ) {
-		if ( mHandler != null )
+		if ( mHandler != null && !mbStopRequested )
 		{
 			mHandler.sendMessage(msg);
 		}
@@ -318,7 +330,5 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mFeedParser.parse();
 		
 		msg.obj = mFeedParser.getFeed();
-		
-		ApplicationMNM.logCat(TAG,"Feed: " + mFeedParser.toString());
 	}
 }
