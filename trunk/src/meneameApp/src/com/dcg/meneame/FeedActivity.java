@@ -436,6 +436,9 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	private void _updateFeedList()
 	{
+		// TODO: Need a methos to update just the adapter to add single items!
+		// http://www.softwarepassion.com/android-series-custom-listview-items-and-adapters/
+		
 		// Clear out list adapter
 		setListAdapter(null);
 		
