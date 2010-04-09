@@ -516,7 +516,7 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	public String getStorageType() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-        return prefs.getString("pref_app_storage", "Internal");
+        return prefs.getString("pref_app_storage", "SDCard");
 	}
 	
 	/**
