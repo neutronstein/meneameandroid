@@ -23,7 +23,7 @@
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
 		<Preference 
-			android:enabled="false"
+			android:enabled="true"
 			android:key="pref_app_version_number" 
 			android:title="@string/pref_app_version_number" 
 			android:summary="@string/pref_app_version_number_summary" >
