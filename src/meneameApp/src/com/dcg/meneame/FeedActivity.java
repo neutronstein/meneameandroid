@@ -174,7 +174,6 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			mRssThread.requestStop();
 			mRssThread = null;
-			// We start again I think!
 			mbIsLoadingCachedFeed = false;
 		}
 		
@@ -210,7 +209,6 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			mRssThread.requestStop();
 			mRssThread = null;
-			// We start again I think!
 			mbIsLoadingCachedFeed = false;
 		}
 		
