@@ -16,8 +16,7 @@ public class ArticleFeedItem extends FeedItem {
 		mPermittedList.add("description");
 		mPermittedList.add("votes");
 		mPermittedList.add("url");
-		// TODO: Cats must to be added to a single line
-		//mPermittedList.add("category");
+		mPermittedList.add("category");
 		mPermittedList.add("link");
 	}
 	/**
@@ -31,10 +30,14 @@ public class ArticleFeedItem extends FeedItem {
 		String value = super.tranformRAWValue(key,rawValue);
 		if( key.equalsIgnoreCase("description") )
 		{
-			// Get the real description
-			int startIdx = rawValue.indexOf("<p>")+3;
-			int endIdx = rawValue.indexOf("</p>");
-			value = value.substring(startIdx, endIdx);
+			try {
+				// Get the real description
+				int startIdx = rawValue.indexOf("<p>")+3;
+				int endIdx = rawValue.indexOf("</p>");
+				value = value.substring(startIdx, endIdx);
+			} catch(Exception e) {
+				// If this happens the sting is already cleaned up so just use the raw value
+			}
 			
 			// Now strip any html tags
 			value = value.replaceAll("\\<.*?>","");

@@ -138,62 +138,65 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	private void guardedRun() throws InterruptedException {
 		// At this point we are thread safe
-		Message msg = mHandler.obtainMessage();
-		Bundle mDdata = new Bundle();
-		InputStreamReader streamReader = null;
-		try {
-			HttpClient client = mApp.getHttpClient();
-			HttpGet request = new HttpGet();
-			
-			request.setURI(new URI(mFeedURL));
-			ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
-			
-			HttpResponse response = client.execute(request);
-			
-			// We have stopped!
-			if ( mbStopRequested ) return;
-			
-			if ( response != null )
-			{
-				streamReader = new InputStreamReader(response.getEntity().getContent());
-				// Start processing the RSS file
-				processResult(msg, streamReader);				
+		if ( mHandler != null )
+		{
+			Message msg = mHandler.obtainMessage();
+			Bundle mDdata = new Bundle();
+			InputStreamReader streamReader = null;
+			try {
+				HttpClient client = mApp.getHttpClient();
+				HttpGet request = new HttpGet();
 				
-				// look for any error
-				if ( isDataValid() && mFeedParser != null )
+				request.setURI(new URI(mFeedURL));
+				ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
+				
+				HttpResponse response = client.execute(request);
+				
+				// We have stopped!
+				if ( mbStopRequested ) return;
+				
+				if ( response != null )
 				{
-					// Let us make any post processing stuff
-					postProcessResult(msg, mFeedParser.getFeed());
-
-					// All fine
-					ApplicationMNM.logCat(TAG, "Finished!");				
-					mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
+					streamReader = new InputStreamReader(response.getEntity().getContent());
+					// Start processing the RSS file
+					processResult(msg, streamReader);				
+					
+					// look for any error
+					if ( isDataValid() && mFeedParser != null )
+					{
+						// Let us make any post processing stuff
+						postProcessResult(msg, mFeedParser.getFeed());
+	
+						// All fine
+						ApplicationMNM.logCat(TAG, "Finished!");				
+						mDdata.putInt(COMPLETED_KEY, COMPLETED_OK);
+					}
+					else
+					{
+						mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+					}		
 				}
 				else
 				{
-					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-				}		
-			}
-			else
-			{
-				Log.d(TAG, "Failed!");
-				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-		} finally {
-			if (streamReader != null) {
-				try {
-					streamReader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+					Log.d(TAG, "Failed!");
+					mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);	
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				mDdata.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+			} finally {
+				if (streamReader != null) {
+					try {
+						streamReader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				// Send final message
+				msg.setData(mDdata);
+				sendMessage(msg);
 			}
-			
-			// Send final message
-			msg.setData(mDdata);
-			sendMessage(msg);
 		}
 	}
 	
@@ -202,7 +205,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param msg
 	 */
 	private void sendMessage( Message msg ) {
-		mHandler.sendMessage(msg);
+		if ( mHandler != null )
+		{
+			mHandler.sendMessage(msg);
+		}
 	}
 	
 	/**

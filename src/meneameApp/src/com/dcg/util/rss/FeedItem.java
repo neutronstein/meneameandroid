@@ -149,6 +149,7 @@ public class FeedItem extends Object {
 		} catch( Exception e) {
 			// fall thru and exit normally
 			ApplicationMNM.warnCat(TAG,"(setStringValue) Can not set key("+ key +") value("+ finalValue +")");
+			e.printStackTrace();
 		} finally {
 			// release our semaphore
 			releaseSemaphore();

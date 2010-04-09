@@ -32,6 +32,8 @@ public class Feed extends FeedItem implements Parcelable {
 		ApplicationMNM.addLogCat(TAG);
 		mArticles = new ArrayList<FeedItem>();
 		mMaxItemData = 0;
+		
+		mPermittedList.add("title");
 	}	
 	
 	public Feed(Parcel in) {
@@ -40,6 +42,8 @@ public class Feed extends FeedItem implements Parcelable {
 		mArticles = new ArrayList<FeedItem>();
 		mMaxItemData = 0;
 		readFromParcel(in);
+		
+		mPermittedList.add("title");
 	}
 	
 	public static final Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>() {
