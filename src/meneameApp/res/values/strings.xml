@@ -59,6 +59,7 @@
     
     <!-- Erros -->
     <string name="general_unknown">Unkown Error</string>
+    <string name="host_unavailable">No data conection!</string>
     
     <string name="msg_obj_wrong_type_unknown">msg.obj is not a Feed object</string>
     <string name="msg_obj_null">msg.obj is null!</string>

@@ -49,6 +49,7 @@
     
     <!-- Erros -->
     <string name="general_unknown">Error desconocido</string>
+    <string name="host_unavailable">Sin conexión de datos!</string>
     
     <string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de 'Feed'</string>
     <string name="msg_obj_null">¡msg.obj es nulo!</string>
