@@ -222,6 +222,9 @@ abstract public class FeedActivity extends ListActivity {
 			mbIsLoadingCachedFeed = false;
 		}
 		
+		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+		emptyTextView.setText("");
+		
 		// Pause
 		mbIsPaused = true;
 		
@@ -421,7 +424,19 @@ abstract public class FeedActivity extends ListActivity {
 	 * Setup all basic data our worker thread needs to work well
 	 */
 	protected void setupWorkerThread() {
-		mRssThread.setupWorker( (ApplicationMNM)getApplication(), mHandler, getFeedURL(), mSemaphore );
+		// Get the max number of items to be shown from our preferences
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        int maxItems = -1;        
+        try
+        {
+        	maxItems = Integer.parseInt(prefs.getString("pref_app_maxarticles", "-1"));
+        }
+        catch( Exception e)
+        {
+        	// Nothing to do here :P
+        }  
+        ((ApplicationMNM) getApplication()).getHttpClient();
+		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getFeedURL(), mSemaphore );
 	}
 	
 	/**
@@ -525,12 +540,16 @@ abstract public class FeedActivity extends ListActivity {
 	{
 		String ErrorMsg = "";
 		boolean bShowToast = true;
+		TextView emptyTextView = null;
 		switch( completeCode )
 		{
 		case COMPLETE_SUCCESSFULL:
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
+			
+			emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView.setText(R.string.empty_list);
 			
 			// If we are loading a cached feed do not cache it again
 			if ( !mbIsLoadingCachedFeed )
@@ -558,7 +577,7 @@ abstract public class FeedActivity extends ListActivity {
 		case COMPLETE_ERROR:
 			ErrorMsg = getResources().getString(R.string.refreshing_failed)+" "+Error;
 			// Change empty text so that the user knows when it's all done
-			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView = (TextView) findViewById(android.R.id.empty);
 			emptyTextView.setText(R.string.empty_list);
 			break;
 		}
