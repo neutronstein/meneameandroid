@@ -38,7 +38,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public static String ERROR_MESSAGE_KEY = "error_msg";
 	
 	/** Global Application */
-	private ApplicationMNM mApp = null;
+	private HttpClient mHTTPClient = null;
 	
 	/** log tag for this class */
 	private static final String TAG = "BaseRSSWorkerThread";
@@ -64,7 +64,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	/** Default handler we use to parse the current feed */
 	private RSSParser mFeedParser = null;
 	
+	/** thread msg data */
 	protected Bundle mData = new Bundle();
+	private int mMaxItems;
 	
 	/**
 	 * 
@@ -78,16 +80,18 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	
 	/**
 	 * Setup all data this class needs, we can not use it's constructor because we invoke this class!
+	 * @param maxItems 
 	 * @param globalApp
 	 * @param handler
 	 * @param feedURL
 	 * @param threadSemaphore
 	 */
-	public void setupWorker( ApplicationMNM globalApp, Handler handler, String feedURL, Semaphore threadSemaphore ) {
+	public void setupWorker( HttpClient HTTPClient, int maxItems, Handler handler, String feedURL, Semaphore threadSemaphore ) {
 		mFeedURL = feedURL;
 		mSemaphore = threadSemaphore;
-		mApp = globalApp;
+		mHTTPClient = HTTPClient;
 		mHandler = handler;
+		mMaxItems = maxItems;
 	}
 	
 	public String getmFeedParserClassName() {
@@ -113,31 +117,26 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	@Override
 	public void run() {
 		mbStopRequested = false;
-		if ( mApp != null ) {
+		try {
 			try {
-				try {
-					ApplicationMNM.logCat(TAG, "Aquirering semaphore " + mSemaphore.toString());
-					mSemaphore.acquire();
-				} catch (InterruptedException e) {
-						return;
-				}
-				guardedRun();
+				ApplicationMNM.logCat(TAG, "Aquirering semaphore " + mSemaphore.toString());
+				mSemaphore.acquire();
 			} catch (InterruptedException e) {
-				// fall thru and exit normally
-			} finally {
-				// Set our catched app to null so GC can clean the refernce
-				mApp = null;
-				if ( mFeedParser != null )
-				{
-					// We got all needed data, clear internal references
-					mFeedParser.clearReferences();
-					mFeedParser = null;
-				}
-				ApplicationMNM.logCat(TAG, "Releasing semaphore " + mSemaphore.toString());
-				mSemaphore.release();
+					return;
 			}
-		} else {
-			Log.w(TAG, "No application object found!");
+			guardedRun();
+		} catch (InterruptedException e) {
+			// fall thru and exit normally
+		} finally {
+			// Set our catched app to null so GC can clean the refernce
+			if ( mFeedParser != null )
+			{
+				// We got all needed data, clear internal references
+				mFeedParser.clearReferences();
+				mFeedParser = null;
+			}
+			ApplicationMNM.logCat(TAG, "Releasing semaphore " + mSemaphore.toString());
+			mSemaphore.release();
 		}
 		
 		// Release last refs
@@ -154,16 +153,16 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 */
 	protected InputStreamReader getInputStreamReader() throws ClientProtocolException, IOException, URISyntaxException 
 	{
-		HttpClient client = mApp.getHttpClient();
 		HttpGet request = new HttpGet();
 		
-		client.getConnectionManager().closeExpiredConnections();
-		client.getConnectionManager().closeIdleConnections(10, TimeUnit.SECONDS );
+		mHTTPClient.getConnectionManager().closeExpiredConnections();
+		mHTTPClient.getConnectionManager().closeIdleConnections(10, TimeUnit.SECONDS );
 		
 		request.setURI(new URI(mFeedURL));
 		ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
 		
-		HttpResponse response = client.execute(request);
+		HttpResponse response = mHTTPClient.execute(request);
+		mHTTPClient = null;
 		
 		if ( response != null )
 		{
@@ -322,18 +321,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		mFeedParser.setInputStream( inputStreamReader );
 		mFeedParser.setWorkerThread(this);
 		
-		// Get the max number of items to be shown from our preferences
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp.getBaseContext());        
-        int maxItems = -1;        
-        try
-        {
-        	maxItems = Integer.parseInt(prefs.getString("pref_app_maxarticles", "-1"));
-        }
-        catch( Exception e)
-        {
-        	// Nothing to do here :P
-        }                
-		mFeedParser.setMaxItems(maxItems);
+		              
+		mFeedParser.setMaxItems(mMaxItems);
 		mFeedParser.parse();
 		
 		msg.obj = mFeedParser.getFeed();

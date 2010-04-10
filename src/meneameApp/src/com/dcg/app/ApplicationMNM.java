@@ -3,6 +3,8 @@ package com.dcg.app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
@@ -279,6 +281,15 @@ public class ApplicationMNM extends Application {
 		{
 			ApplicationMNM.logCat(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
+		}
+	}
+	
+	public void clearHttpClientConnections()
+	{
+		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
+		{
+			mHttpClient.getConnectionManager().closeExpiredConnections();
+			mHttpClient.getConnectionManager().closeIdleConnections(10, TimeUnit.SECONDS );
 		}
 	}
 	
