@@ -1,5 +1,8 @@
 package com.dcg.meneame;
 
+import android.util.Log;
+
+import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.FeedItem;
 
 /**
@@ -7,10 +10,13 @@ import com.dcg.util.rss.FeedItem;
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class ArticleFeedItem extends FeedItem {
+	/** Log tag */
+	private static final String TAG = "ArticleFeedItem";
 	
 	public ArticleFeedItem()
 	{
 		super();
+		ApplicationMNM.addLogCat(TAG);
 		
 		mPermittedList.add("title");
 		mPermittedList.add("description");
@@ -18,6 +24,7 @@ public class ArticleFeedItem extends FeedItem {
 		mPermittedList.add("url");
 		mPermittedList.add("category");
 		mPermittedList.add("link");
+		mPermittedList.add("commentRss");
 	}
 	/**
 	 * tranform the data from a raw value into a valid value
@@ -78,7 +85,19 @@ public class ArticleFeedItem extends FeedItem {
 			value = value.replaceAll("&#62;",">");
 			value = value.replaceAll("&#63;","?");
 		}
-		return value;		
+		else if( key.equalsIgnoreCase("commentRss") )
+		{
+			try {
+				String articleID = value.substring(44);
+				//tmpValue = value.replaceAll("http://www.meneame.net/comments_rss2.php?id","joder");
+				ApplicationMNM.logCat(TAG,"ArticleID: "+articleID);
+				setArticleID(Integer.parseInt(articleID));
+			} catch ( Exception e ) {
+				// Nothing to be done here
+				ApplicationMNM.warnCat(TAG,"ERROR: "+e.toString());
+			}
+		}
+		return value;
 	}
 	
 	/**

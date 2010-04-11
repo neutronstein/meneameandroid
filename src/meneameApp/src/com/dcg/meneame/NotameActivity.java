@@ -30,31 +30,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * Notame activity that handles all actions the notame api can handle
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class NotameActivity extends Activity {
 	/** Class tag used for it's logs */
 	private static final String TAG = "NotameActivity";
 	
 	/** Result filed when the msg has been send to nótame */
-	public static final String NOTAME_RESUL_KEY = "notame_result";
+	private static final String NOTAME_RESULT_KEY = "notame_result";
 	
 	/** Result codes used by this activity */
 	private static int NOTAME_RESULT_CODE_SEND = 0;
 	private static int NOTAME_RESULT_CODE_BACK = 1;
 	
 	/** thread msg handler */
-	public Handler mHandler = null;
+	private Handler mHandler = null;
 	
 	/** Current http client */
-	public HttpClient mHttpClient = null;
+	private HttpClient mHttpClient = null;
 	
 	/** notame thread! */
 	private NotameThread notameThread = null;
 	
 	/** Basic nótame data */
-	public static final String NOTAME_URL = "http://meneame.net/api/newpost.php";
-	public static final String NOTAME_USER_FIELD = "user";
-	public static final String NOTAME_API_KEY = "key";
-	public static final String NOTAME_MSG = "text";
+	private static final String NOTAME_URL = "http://meneame.net/api/newpost.php";
+	private static final String NOTAME_USER_FIELD = "user";
+	private static final String NOTAME_API_KEY = "key";
+	private static final String NOTAME_MSG = "text";
 	
 	/** Views we need to take into account */
 	private EditText mEditTextView = null;
@@ -128,7 +132,7 @@ public class NotameActivity extends Activity {
 		}
 		else
 		{
-			boolean bSuccessfull = data.getBoolean("NOTAME_RESUL_KEY",false);
+			boolean bSuccessfull = data.getBoolean(NOTAME_RESULT_KEY,false);
 			ApplicationMNM.showToast(bSuccessfull?R.string.notame_ok:R.string.notame_failed);
 		}
 		
@@ -177,6 +181,10 @@ public class NotameActivity extends Activity {
 		return null;
 	}
 	
+	/**
+	 * Nota add notes thread
+	 * @author Moritz Wundke (b.thax.dcg@gmail.com)
+	 */
 	public class NotameThread extends Thread {
 
 	    public void run() {
@@ -219,11 +227,10 @@ public class NotameActivity extends Activity {
 	    	{
 	    		Message msg = mHandler.obtainMessage();
 	    		Bundle data = new Bundle();
-	    		data.putBoolean("NOTAME_RESUL_KEY", bResult);
+	    		data.putBoolean(NOTAME_RESULT_KEY, bResult);
 	    		msg.setData(data);
 	    		mHandler.sendMessage(msg);
 	    	}	    	
 	    }
 	}
-
 }

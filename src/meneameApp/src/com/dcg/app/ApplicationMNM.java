@@ -62,7 +62,16 @@ public class ApplicationMNM extends Application {
 	/** Enable logging or not */
 	private static boolean mbEnableLogging = true;
 	
+	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
+	
+	/** IDs used to handle diffrenet messages comming from different threads */
+	public static final String MSG_ID_KEY = "msg_id_key";
+	public static final int MSG_ID_ARTICLE_PARSER = 0;
+	public static final int MSG_ID_MENEALO = 1;
+	
+	/** Some global definitions */
+	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
 	
 	@Override
 	public void onCreate() {
@@ -82,11 +91,12 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		//addIgnoreCat("FeedActivity");
+		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
+		addIgnoreCat("ArticleFeedItem");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

@@ -2,11 +2,15 @@ package com.dcg.meneame;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.dcg.app.ApplicationMNM;
@@ -21,7 +25,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -103,11 +106,11 @@ abstract public class FeedActivity extends ListActivity {
     private Feed mFeed = null;
     
     /** The following constants will define all basic URL's meneame will handle */
-    private static final String MENEAME_BASE_URL = "http://www.meneame.net";
     private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
     private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
-    
-	public FeedActivity() {
+    private static final String MENEALO_RESULT_KEY = "menealo_result_key";
+	
+    public FeedActivity() {
 		super();
 		ApplicationMNM.addLogCat(TAG);		
 		mbIsArticleFeed = true;
@@ -348,32 +351,42 @@ abstract public class FeedActivity extends ListActivity {
 	
 	protected void handleThreadMessage(Message msg) {
 		Bundle data = msg.getData();
-		int msgKey = data.getInt( BaseRSSWorkerThread.COMPLETED_KEY);
-		int errorKey = data.getInt( BaseRSSWorkerThread.ERROR_KEY);
-		Log.d(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
 		
-		String errorMsg = "";
-		// Check if it completed ok or not
-		if ( msgKey == BaseRSSWorkerThread.COMPLETED_OK )
-		{
-			try {
-				onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
-			} catch ( ClassCastException e ) {
-				errorMsg = getResources().getString(R.string.msg_obj_null);
-				if ( msg.obj != null )
+		// Check who has send the msg
+		int msgID = data.getInt( ApplicationMNM.MSG_ID_KEY );
+		switch(msgID) {
+			case ApplicationMNM.MSG_ID_ARTICLE_PARSER:
+				int msgKey = data.getInt( BaseRSSWorkerThread.COMPLETED_KEY);
+				int errorKey = data.getInt( BaseRSSWorkerThread.ERROR_KEY);
+				Log.d(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
+				
+				String errorMsg = "";
+				// Check if it completed ok or not
+				if ( msgKey == BaseRSSWorkerThread.COMPLETED_OK )
 				{
-					errorMsg = getResources().getString(R.string.msg_obj_wrong_type_unknown)+" "+ msg.obj.toString();
+					try {
+						onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
+					} catch ( ClassCastException e ) {
+						errorMsg = getResources().getString(R.string.msg_obj_null);
+						if ( msg.obj != null )
+						{
+							errorMsg = getResources().getString(R.string.msg_obj_wrong_type_unknown)+" "+ msg.obj.toString();
+						}
+					} finally {
+						if ( errorMsg != null && !errorMsg.equals("") )
+						{
+							onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
+						}
+					}
 				}
-			} finally {
-				if ( errorMsg != null && !errorMsg.equals("") )
+				else
 				{
-					onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
+					onRefreshCompleted(COMPLETE_ERROR, null, null, getFeedErrorMessage(errorKey));
 				}
-			}
-		}
-		else
-		{
-			onRefreshCompleted(COMPLETE_ERROR, null, null, getFeedErrorMessage(errorKey));
+				break;
+			case ApplicationMNM.MSG_ID_MENEALO:
+				// We finished a voting action
+				break;
 		}
 	}
 	
@@ -697,8 +710,7 @@ abstract public class FeedActivity extends ListActivity {
 		    		
 		        	return true;
 		    	case CONTEXT_MENU_VOTE:
-		    		ApplicationMNM.showToast(R.string.advice_not_implemented);
-		    		//menealo(selecteItem);
+		    		menealo(selecteItem);
 		        	return true;
 		        }
     		}
@@ -907,8 +919,28 @@ abstract public class FeedActivity extends ListActivity {
 	 * Will vote an article/comment
 	 */
 	public void menealo( FeedItem item ) {
-		String menealoURL = buildMenealoURL();
+		if ( hasMenealoDataSetup() )
+		{
+			String menealoURL = buildMenealoURL();
+		}
 	}
+	
+	/**
+     * Did the user set the needed notame data or not?
+     * @return
+     */
+    public boolean hasMenealoDataSetup() {
+    	try {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+		String userName = prefs.getString("pref_account_user", "");
+		String APIKey = prefs.getString("pref_account_apikey", "");
+		int userID = Integer.parseInt(prefs.getString("pref_account_apikey", ""));
+		return userName.compareTo("") != 0 && APIKey.compareTo("") != 0;
+    	} catch ( Exception e ) {
+    		ApplicationMNM.showToast(R.string.user_id_invalid);
+    		return false;
+    	}
+    }
 	
 	/**
 	 * Will retunr the full menealo url used send votes for articles
@@ -922,5 +954,63 @@ abstract public class FeedActivity extends ListActivity {
 			ApplicationMNM.showToast(R.string.user_id_invalid);
 		}
 		return "";
+	}
+	
+	/**
+	 * Thread responsible to vote an articel and respond :P
+	 * @author Moritz Wundke (b.thax.dcg@gmail.com)
+	 */
+	public class MenealoThread extends Thread {
+		private HttpClient mHttpClient = null;
+		
+		public void setupThread( HttpClient HttpClient ) {
+			mHttpClient = HttpClient;
+		}
+	    public void run() {
+	    	boolean bResult = false;
+	    	ApplicationMNM.logCat(TAG, "Sending nótame message");
+	    	
+	    	if ( mHttpClient != null )
+	    	{
+	    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+    			String userName = prefs.getString("pref_account_user", "");
+    			String userID = prefs.getString("pref_account_user_id", "0");
+    			String APIKey = prefs.getString("pref_account_apikey", "");
+	    		
+	    		String URL = ApplicationMNM.MENEAME_BASE_URL + MENEAME_MENEALO_API + "?user=" + userName + "&key=" + APIKey + "&charset=utf-8";
+	    		HttpGet httpGet = new HttpGet(URL);
+	    		try {
+	    			
+	    			// Execute
+	    			HttpResponse response = mHttpClient.execute(httpGet);
+	    			if ( response != null )
+	    			{
+	    				InputStreamReader inputStream = new InputStreamReader(response.getEntity().getContent());
+	    				int data = inputStream.read();
+	    				String finalData = "";
+	    				while(data != -1){
+	    					finalData += (char) data;
+	    					data = inputStream.read();
+	    				}
+	    				inputStream.close();
+	    				Log.d(TAG,finalData);
+	    				// Did we got an ok?
+	    				bResult = finalData.startsWith("OK");
+	    			}
+	    		} catch ( Exception e) {
+	    			// Nothing to be done
+	    		}
+	    	}
+	    	
+	    	if ( mHandler != null )
+	    	{
+	    		Message msg = mHandler.obtainMessage();
+	    		Bundle data = new Bundle();
+	    		data.putBoolean(MENEALO_RESULT_KEY, bResult);
+	    		data.putInt(ApplicationMNM.MSG_ID_KEY, ApplicationMNM.MSG_ID_MENEALO);
+	    		msg.setData(data);
+	    		mHandler.sendMessage(msg);
+	    	}	    	
+	    }
 	}
 }
