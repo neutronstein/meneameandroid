@@ -79,6 +79,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
+		addIgnoreCat("NotameActivity");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

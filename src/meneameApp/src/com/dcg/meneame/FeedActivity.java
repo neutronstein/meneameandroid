@@ -1,9 +1,7 @@
 package com.dcg.meneame;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +82,9 @@ abstract public class FeedActivity extends ListActivity {
     /** About menu item id */
     private static final int MENU_ABOUT = 3;
     
-    /** Settings activity result ID */
+    /** Sub activity ID's */
     private static final int SUB_ACT_SETTINGS_ID = 0;
+    private static final int SUB_ACT_NOTAME_ID = 1;
     
     /** Context menu options */
     private static final int CONTEXT_MENU_OPEN = 0;
@@ -620,7 +619,7 @@ abstract public class FeedActivity extends ListActivity {
             return true;
         case MENU_NOTAME:
         	// Open notame activity
-        	ApplicationMNM.showToast(R.string.advice_not_implemented);
+        	openNotameScreen();
         	return true;
         case MENU_SETTINGS:
             // Open settitngs screen
@@ -685,12 +684,22 @@ abstract public class FeedActivity extends ListActivity {
     	return false;
     }
     
-    /* Open settings screen */
+    /**
+     * Open settings screen 
+     */
     public void openSettingsScreen() {
     	Intent settingsActivity = new Intent( this, Preferences.class);
     	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
     	
     	// TODO: Catch result!
+    }
+    
+    /**
+     * Open notame activity
+     */
+    public void openNotameScreen() {
+    	Intent notameActivity = new Intent( this, NotameActivity.class);
+    	startActivityForResult(notameActivity, SUB_ACT_NOTAME_ID);
     }
     
     /**

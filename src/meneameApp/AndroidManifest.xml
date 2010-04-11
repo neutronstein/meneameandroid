@@ -23,6 +23,7 @@
 			android:label="@string/app_pref_name"
 			android:theme="@style/Theme.mnm_prefs">
 		</activity>
-	</application>
+	<activity android:name="NotameActivity"></activity>
+</application>
 	<uses-sdk android:minSdkVersion="4" />
 </manifest> 
