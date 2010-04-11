@@ -962,10 +962,13 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	public class MenealoThread extends Thread {
 		private HttpClient mHttpClient = null;
+		private String mURL = "";
 		
-		public void setupThread( HttpClient HttpClient ) {
+		public void setupThread( HttpClient HttpClient, String URL ) {
 			mHttpClient = HttpClient;
+			mURL = URL;
 		}
+		
 	    public void run() {
 	    	boolean bResult = false;
 	    	ApplicationMNM.logCat(TAG, "Sending nótame message");
