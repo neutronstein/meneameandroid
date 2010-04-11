@@ -1,5 +1,8 @@
 package com.dcg.app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -22,6 +25,7 @@ import com.dcg.meneame.TabActivityRecord;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -75,7 +79,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
@@ -320,5 +324,58 @@ public class ApplicationMNM extends Application {
 	 */
 	public static void showToast( int id ) {
 		showToast(mAppContext.getResources().getString(id));
+	}
+	
+	/**
+	 * Returns the root folder we will use in the SDCard
+	 * @return
+	 */
+	public static String getRootSDcardFolder() {
+		return Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"com.dcg.meneame"+File.separator;
+	}
+	
+	/**
+	 * Returns the root path to our cache foldet
+	 * @return
+	 */
+	public static String getRootCacheFolder() {
+		return getRootSDcardFolder()+"cache"+File.separator;
+	}
+	
+	/**
+	 * Clear all cached feeds
+	 * @return
+	 */
+	public static boolean clearFeedCache() {
+		try {
+			File directory = new File(getRootCacheFolder());
+			fileDelete(directory);
+			return true;
+		} catch (IOException e ) {
+			warnCat(TAG, "Failed to clear cache: "+e.toString());
+		}
+		return false;
+	}
+	
+	/**
+	 * Delete a file/directory recursively
+	 * @param srcFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void fileDelete(File srcFile) throws FileNotFoundException, IOException {
+		if (srcFile.isDirectory()) 
+		{
+			File[] b = srcFile.listFiles();
+			for (int i = 0; i < b.length; i++) 
+			{
+				fileDelete(b[i]);
+			}
+			srcFile.delete();
+		} 
+		else 
+		{
+			srcFile.delete();
+		}
 	}
 }

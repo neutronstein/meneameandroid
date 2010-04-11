@@ -1,9 +1,11 @@
 package com.dcg.util.rss;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -24,15 +26,27 @@ import android.os.Message;
 abstract public class BaseRSSWorkerThread extends Thread {
 	
 	/** Definitions of a completed message */
-	public static String COMPLETED_KEY = "completed";
-	public static int COMPLETED_OK = 0;
-	public static int COMPLETED_FAILED = -1;
+	public static final String COMPLETED_KEY = "completed";
+	public static final int COMPLETED_OK = 0;
+	public static final int COMPLETED_FAILED = 1;
 	
 	/** Key which defines any state when caching a feed */
-	public static String ERROR_KEY = "error";
-	public static int ERROR_SUCCESSFULL = 0;
-	public static int ERROR_FAILED = -1;
-	public static String ERROR_MESSAGE_KEY = "error_msg";
+	public static final String ERROR_KEY = "error";
+	public static final int ERROR_SUCCESSFULL = 0;
+	public static final int ERROR_FAILED = ERROR_SUCCESSFULL+1;
+	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ERROR_FAILED+1;
+	public static final int ERROR_INVALID_RSS_DATA = ERROR_COULD_NOT_CREATE_RSS_HANDLER+1;
+	public static final int ERROR_NO_INPUT_STREAM = ERROR_INVALID_RSS_DATA+1;
+	public static final int ERROR_NO_INPUT_STREAM_EXCEPTION = ERROR_NO_INPUT_STREAM+1;
+	public static final int ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND = ERROR_NO_INPUT_STREAM_EXCEPTION+1;
+	public static final int ERROR_NO_INPUT_STREAM_UNKOWN_HOST = ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND+1;
+	public static final int ERROR_CREATE_FEEDITEM_ACCESS = ERROR_NO_INPUT_STREAM_UNKOWN_HOST+1;
+	public static final int ERROR_CREATE_FEEDITEM_INSTANCE = ERROR_CREATE_FEEDITEM_ACCESS+1;
+	public static final int ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND = ERROR_CREATE_FEEDITEM_INSTANCE+1;
+	public static final int ERROR_RSS_SAX = ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND+1;
+	public static final int ERROR_RSS_IO_EXCEPTION = ERROR_RSS_SAX+1;
+	public static final int ERROR_RSS_PARSE_CONFIG = ERROR_RSS_IO_EXCEPTION+1;
+	public static final int ERROR_RSS_UNKOWN = ERROR_RSS_PARSE_CONFIG+1;
 	
 	/** Global Application */
 	private HttpClient mHTTPClient = null;
@@ -174,6 +188,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		{
 			Message msg = mHandler.obtainMessage();
 			mData = new Bundle();
+			mData.putInt(COMPLETED_KEY, COMPLETED_OK);
+			mData.putInt(ERROR_KEY, ERROR_SUCCESSFULL);
 			InputStreamReader streamReader = null;
 			try {
 				streamReader = getInputStreamReader();
@@ -198,23 +214,26 @@ abstract public class BaseRSSWorkerThread extends Thread {
 						{
 							ApplicationMNM.logCat(TAG, "Stop requested while parsing: " + mFeedURL);
 						}
-						mData.putInt(COMPLETED_KEY, COMPLETED_OK);
 					}
 					else
 					{
-						mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+						setError(ERROR_INVALID_RSS_DATA);
 					}		
 				}
 				else
 				{
-					ApplicationMNM.logCat(TAG, "Failed to parse: " + mFeedURL);
-					mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+					ApplicationMNM.warnCat(TAG, "Failed to parse: " + mFeedURL);
+					setError(ERROR_NO_INPUT_STREAM);
 				}
+			} catch ( UnknownHostException e ) {
+				ApplicationMNM.warnCat(TAG, "(UnknownHostException) Failed to parse: " + e.toString());
+				setError(ERROR_NO_INPUT_STREAM_UNKOWN_HOST);
+			} catch ( FileNotFoundException e ) {
+				ApplicationMNM.warnCat(TAG, "(FileNotFoundException) Failed to parse: " + e.toString());
+				setError(ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND);
 			} catch (Exception e) {
-				e.printStackTrace();
-				ApplicationMNM.logCat(TAG, "Failed to parse: " + e.toString());
-				mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-				setErrorMessage(e.toString());
+				ApplicationMNM.warnCat(TAG, "(Exception) Failed to parse: " + e.toString());
+				setError(ERROR_NO_INPUT_STREAM_EXCEPTION);
 			} finally {
 				if (streamReader != null) {
 					try {
@@ -251,20 +270,12 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	}
 	
 	/**
-	 * Returns the current error message registered with the Bundle
-	 * @return
-	 */
-	protected String getErrorMessage() {
-		return mData.getString(ERROR_MESSAGE_KEY);
-	}
-	
-	/**
 	 * Set a new error message into our current data Bundle
 	 * @param error
 	 */
-	protected void setErrorMessage( String error ) {
-		mData.putInt(ERROR_KEY, ERROR_FAILED);
-		mData.putString(ERROR_MESSAGE_KEY, error);
+	protected void setError( int errorID ) {
+		mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
+		mData.putInt(ERROR_KEY, errorID);
 	}
 	
 	private void createRSSHandler() {
@@ -273,17 +284,14 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			mFeedParser = (RSSParser)Class.forName(this.mFeedParserClassName).newInstance();
 			ApplicationMNM.logCat(TAG, "RSS-Parser created: " + mFeedParser.toString());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, e.toString());
+			setError(ERROR_COULD_NOT_CREATE_RSS_HANDLER);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, e.toString());
+			setError(ERROR_COULD_NOT_CREATE_RSS_HANDLER);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, e.toString());
+			setError(ERROR_COULD_NOT_CREATE_RSS_HANDLER);
 		}
 	}
 	
@@ -309,8 +317,6 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		// Check if we got a valid parser
 		if ( mFeedParser == null )
 		{
-			// Set error message and return
-			setErrorMessage("Could not create parser of class " + mFeedParserClassName);
 			return;
 		}
 		

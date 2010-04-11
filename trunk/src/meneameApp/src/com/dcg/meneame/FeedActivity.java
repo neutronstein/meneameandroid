@@ -188,12 +188,14 @@ abstract public class FeedActivity extends ListActivity {
 			String storageType = getStorageType();
 	        if ( storageType.compareTo("SDCard") == 0 )
 	        {
-	        	try {
-					//InputStreamReader reader = new InputStreamReader(new FileInputStream ( this.getSDCardCacheFilePath()), "UTF-8");
-	        		refreshFeed( true );
-	        	} catch (Exception e) {
-					// Not cached
-				}
+	        	// Do we got a valid cache file?
+	        	if ( hasCachedFeed() )
+		        	try {
+						//InputStreamReader reader = new InputStreamReader(new FileInputStream ( this.getSDCardCacheFilePath()), "UTF-8");
+		        		refreshFeed( true );
+		        	} catch (Exception e) {
+						// Not cached
+					}
 	        }
 		}
 		else
@@ -342,11 +344,13 @@ abstract public class FeedActivity extends ListActivity {
 	
 	protected void handleThreadMessage(Message msg) {
 		Bundle data = msg.getData();
-		Log.d(TAG, getTabActivityTag()+"::handleThreadMessage()");
+		int msgKey = data.getInt( BaseRSSWorkerThread.COMPLETED_KEY);
+		int errorKey = data.getInt( BaseRSSWorkerThread.ERROR_KEY);
+		Log.d(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
 		
 		String errorMsg = "";
 		// Check if it completed ok or not
-		if ( data.getInt( BaseRSSWorkerThread.COMPLETED_KEY) == BaseRSSWorkerThread.COMPLETED_OK )
+		if ( msgKey == BaseRSSWorkerThread.COMPLETED_OK )
 		{
 			try {
 				onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
@@ -365,14 +369,28 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		else
 		{
-			// TODO: Error messages are not getting along the right way!
-			errorMsg = data.getString(BaseRSSWorkerThread.ERROR_MESSAGE_KEY);
-			if ( errorMsg != null && !errorMsg.equals("") )
-			{
-				errorMsg = getResources().getString(R.string.host_unavailable);
-			}
-			onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
+			onRefreshCompleted(COMPLETE_ERROR, null, null, getFeedErrorMessage(errorKey));
 		}
+	}
+	
+	/**
+	 * returns the error string
+	 * @return
+	 */
+	public String getFeedErrorMessage( int errorID ) {
+		int resID = R.string.error_unknown;
+		switch( errorID ) {
+		case BaseRSSWorkerThread.ERROR_INVALID_RSS_DATA:
+			resID = R.string.feed_invalid_data; 
+			break;
+		case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND:
+			resID = R.string.feed_cache_file_not_found; 
+			break;
+		case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_UNKOWN_HOST:
+			resID = R.string.feed_host_unavailable; 
+			break;
+		}
+		return getResources().getString(resID);
 	}
 	
 	/**
@@ -794,7 +812,7 @@ abstract public class FeedActivity extends ListActivity {
      * Returns the folder we will use to cache the feed to the SD-Card
      * */
     private String getSDCardCacheFolderPath() {
-    	return Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"com.dcg.meneame"+File.separator+"cache"+File.separator+getTabActivityTag();
+    	return ApplicationMNM.getRootCacheFolder()+getTabActivityTag();
     }
     
     /** 
@@ -802,6 +820,15 @@ abstract public class FeedActivity extends ListActivity {
      * */
     private String getSDCardCacheFilePath() {
     	return getSDCardCacheFolderPath()+File.separator+"feed.rss";
+    }
+    
+    /**
+     * Look if we have a cache file or not
+     * @return
+     */
+    public boolean hasCachedFeed() {
+    	File file = new File(getSDCardCacheFilePath());
+    	return file.exists();
     }
     
     /**

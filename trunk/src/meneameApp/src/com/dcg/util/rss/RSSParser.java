@@ -119,10 +119,10 @@ abstract public class RSSParser extends DefaultHandler {
 	/**
 	 * Set error in worker thread
 	 */
-	public void setErrorMessage( String error ) {
+	public void setError( int errorID ) {
 		if ( mParentThread != null )
 		{
-			mParentThread.setErrorMessage(error);
+			mParentThread.setError(errorID);
 		}
 	}
 	
@@ -136,17 +136,14 @@ abstract public class RSSParser extends DefaultHandler {
 			this.mFeedItem = (FeedItem)Class.forName(this.mFeedItemClassName).newInstance();
 			ApplicationMNM.logCat(TAG, "FeedItem created: " + this.mFeedItem.toString());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
+			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_ACCESS);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
+			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_INSTANCE);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
+			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND);
 		}
 	}
 	
@@ -219,21 +216,13 @@ abstract public class RSSParser extends DefaultHandler {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			setError(BaseRSSWorkerThread.ERROR_RSS_SAX);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			setError(BaseRSSWorkerThread.ERROR_RSS_IO_EXCEPTION);
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			setError(BaseRSSWorkerThread.ERROR_RSS_PARSE_CONFIG);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			setErrorMessage(e.toString());
+			setError(BaseRSSWorkerThread.ERROR_RSS_UNKOWN);
 		} finally {
 			// We should add the last article to the feed (if it exists)
 			_addArticle();
