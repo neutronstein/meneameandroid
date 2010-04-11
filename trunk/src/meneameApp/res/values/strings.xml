@@ -45,11 +45,13 @@
     <string name="advice_not_implemented">Ooops.. Not yet implemented!</string>
     <string name="confirm_clear_cache">Clear cached feeds?</string>
     <string name="clear_cache_successfull">Cache has been deleted!</string>
+    <string name="notame_setup_data">You need to setup your Username and API Key before using Nótame.\nWould you like to configure it now?</string>
+    <string name="notame_setup_data_tilte">Nótame configuration</string>
     
     <!-- Version changeset -->
     <string name="version_change_title">Version Changes</string>
     <string name="version_change_v3_title">Version 3 (0.1.3)</string>
-    <string name="version_change_v3">- SD-Card cache implemented</string>
+    <string name="version_change_v3">- SD-Card cache implemented\n-Added Nótame page to add notes to Nótame\n-Added voting system</string>
     <string name="version_change_v2_title">Version 2 (0.1.2)</string>
     <string name="version_change_v2">- Fixing some memory issues\n- Releasing list content when switching pages, needs a cache process to be seamless</string>
     <string name="version_change_v1_title">Version 1 (0.1.1)</string>
@@ -74,10 +76,15 @@
     <string name="refreshing_thread_still_alive">Worker thread still alive!</string>    
     <string name="user_id_invalid">Invalid user ID! Please correct it in your preferences!</string>
 	
-	<!-- Errors -->
+	<!-- Feed Errors -->
 	<string name="feed_host_unavailable">No data conection!</string>
 	<string name="feed_cache_file_not_found">Cache file not found!</string>
 	<string name="feed_invalid_data">Feed contains errores!</string>
+	
+	<!-- Nótame erros messages -->
+	<string name="notame_sending">Sending...</string>
+	<string name="notame_ok">Nótame message has been send!</string>
+	<string name="notame_failed">Failed to send nótame message!</string>
 	
 	<!-- 
     ================================================================

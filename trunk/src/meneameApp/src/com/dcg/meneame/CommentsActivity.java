@@ -16,7 +16,6 @@ public class CommentsActivity extends FeedActivity {
 		
 		// Set feed
 		mFeedURL = "http://www.meneame.net/comments_rss2.php";
-		mListAdapterClass = "com.dcg.meneame.CommentsAdapter";
 		mbIsArticleFeed = false;
 	}
 
@@ -24,6 +23,14 @@ public class CommentsActivity extends FeedActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+	
+	/**
+	 * Returns the class name of the list adapter we should use
+	 * @return
+	 */
+	public String getListAdapterClassName() {
+		return "com.dcg.meneame.CommentsAdapter";
 	}
 
 	/**

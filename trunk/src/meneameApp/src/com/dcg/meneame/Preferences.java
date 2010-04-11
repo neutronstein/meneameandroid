@@ -44,15 +44,15 @@ public class Preferences extends PreferenceActivity {
 		else if ( preference.getKey().compareTo("pref_app_clearcache") == 0 )
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(this.getResources().getString(R.string.confirm_clear_cache))
+			builder.setMessage(R.string.confirm_clear_cache)
 				.setCancelable(false)
-				.setPositiveButton(this.getResources().getString(R.string.generic_ok), new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.generic_ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						clearFeedCache();
 						dialog.dismiss();
 					}
 				})
-				.setNegativeButton(this.getResources().getString(R.string.generic_no), new DialogInterface.OnClickListener() {
+				.setNegativeButton(R.string.generic_no, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
