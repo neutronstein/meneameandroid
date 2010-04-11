@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRoute;
+import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -255,17 +258,22 @@ public class ApplicationMNM extends Application {
 	{
 		ApplicationMNM.logCat(TAG,"createHttpClient()");
 		
+		// Set basic data
 		HttpParams params = new BasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
 		HttpProtocolParams.setUseExpectContinue(params, true);
 		
+		// Make pool
+		ConnPerRoute connPerRoute = new ConnPerRouteBean(12); 
+		ConnManagerParams.setMaxConnectionsPerRoute(params, connPerRoute);
+		ConnManagerParams.setMaxTotalConnections(params, 20); 
+		
 		// Register http/s shemas!
 		SchemeRegistry schReg = new SchemeRegistry();
 		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-		ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params,schReg);
-		
+		ThreadSafeClientConnManager conMgr = new ThreadSafeClientConnManager(params,schReg);
 		return new DefaultHttpClient(conMgr, params);
 	}
 	
@@ -287,6 +295,14 @@ public class ApplicationMNM extends Application {
 			ApplicationMNM.logCat(TAG, "Shutting current HttpClient down");
 			mHttpClient.getConnectionManager().shutdown();
 		}
+	}
+	
+	/**
+	 * Will shutdown and create a new httpclient
+	 */
+	public void refreshHttpClient() {
+		shutdownHttpClient();
+		mHttpClient = createHttpClient();
 	}
 	
 	public void clearHttpClientConnections()

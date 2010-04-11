@@ -14,7 +14,9 @@ import com.dcg.util.rss.BaseRSSWorkerThread;
 import com.dcg.util.rss.Feed;
 import com.dcg.util.rss.FeedItem;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -46,10 +48,7 @@ abstract public class FeedActivity extends ListActivity {
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
 	protected static String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
 	protected static String mLocalRssWorkerThreadClassName = "com.dcg.meneame.LocalRSSWorkerThread";
-	
-	/** Class used for our list adapters */
-	protected static String mListAdapterClass = "com.dcg.meneame.ArticlesAdapter";
-	
+
 	/** Feed URL */
 	protected String mFeedURL = "";
 	
@@ -171,6 +170,11 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 			emptyTextView.setText(R.string.empty_list);
+		}
+		else
+		{
+			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView.setText(mbIsLoadingCachedFeed?R.string.refreshing_lable_cached:R.string.refreshing_lable);
 		}
 		
 		// Look if we need to request a stop for the current caching thread
@@ -452,7 +456,6 @@ abstract public class FeedActivity extends ListActivity {
         {
         	// Nothing to do here :P
         }  
-        ((ApplicationMNM) getApplication()).getHttpClient();
 		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getFeedURL(), mSemaphore );
 	}
 	
@@ -532,13 +535,22 @@ abstract public class FeedActivity extends ListActivity {
 				// Set the new adapter!		
 				if ( this.mFeed != null )
 				{
-					ArticlesAdapter listAdapter = (ArticlesAdapter) Class.forName( mListAdapterClass ).newInstance();
+					ArticlesAdapter listAdapter = (ArticlesAdapter) Class.forName( getListAdapterClassName() ).newInstance();
+					ApplicationMNM.logCat(TAG, "Created list adapter: "+listAdapter.getClass().toString());
 					listAdapter.setupAdapter(this, this.mFeed);
 					setListAdapter(listAdapter);
 				}
 			} catch ( Exception e ) {
 				onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
 			}
+	}
+	
+	/**
+	 * Returns the class name of the list adapter we should use
+	 * @return
+	 */
+	public String getListAdapterClassName() {
+		return "com.dcg.meneame.ArticlesAdapter";
 	}
 	
 	/**
@@ -716,8 +728,42 @@ abstract public class FeedActivity extends ListActivity {
      * Open notame activity
      */
     public void openNotameScreen() {
-    	Intent notameActivity = new Intent( this, NotameActivity.class);
-    	startActivityForResult(notameActivity, SUB_ACT_NOTAME_ID);
+    	if ( hasNotameDataSetup() )
+    	{
+    		Intent notameActivity = new Intent( this, NotameActivity.class);
+    		startActivityForResult(notameActivity, SUB_ACT_NOTAME_ID);
+    	}
+    	else
+    	{
+    		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.notame_setup_data)
+				.setCancelable(false)
+				.setTitle(R.string.notame_setup_data_tilte)
+				.setPositiveButton(R.string.generic_ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						openSettingsScreen();
+						dialog.dismiss();
+					}
+				})
+				.setNegativeButton(R.string.generic_no, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+			AlertDialog openSettingsDialog = builder.create();
+			openSettingsDialog.show();
+    	}
+    }
+    
+    /**
+     * Did the user set the needed notame data or not?
+     * @return
+     */
+    public boolean hasNotameDataSetup() {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+		String userName = prefs.getString("pref_account_user", "");
+		String APIKey = prefs.getString("pref_account_apikey", "");
+		return userName.compareTo("") != 0 && APIKey.compareTo("") != 0;
     }
     
     /**

@@ -40,7 +40,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public static final int ERROR_NO_INPUT_STREAM_EXCEPTION = ERROR_NO_INPUT_STREAM+1;
 	public static final int ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND = ERROR_NO_INPUT_STREAM_EXCEPTION+1;
 	public static final int ERROR_NO_INPUT_STREAM_UNKOWN_HOST = ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND+1;
-	public static final int ERROR_CREATE_FEEDITEM_ACCESS = ERROR_NO_INPUT_STREAM_UNKOWN_HOST+1;
+	public static final int ERROR_NO_INPUT_STREAM_ILLEGAL_STATE = ERROR_NO_INPUT_STREAM_UNKOWN_HOST+1;
+	public static final int ERROR_CREATE_FEEDITEM_ACCESS = ERROR_NO_INPUT_STREAM_ILLEGAL_STATE+1;
 	public static final int ERROR_CREATE_FEEDITEM_INSTANCE = ERROR_CREATE_FEEDITEM_ACCESS+1;
 	public static final int ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND = ERROR_CREATE_FEEDITEM_INSTANCE+1;
 	public static final int ERROR_RSS_SAX = ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND+1;
@@ -225,6 +226,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					ApplicationMNM.warnCat(TAG, "Failed to parse: " + mFeedURL);
 					setError(ERROR_NO_INPUT_STREAM);
 				}
+			} catch ( IllegalStateException e ) {
+				ApplicationMNM.warnCat(TAG, "(IllegalStateException) Failed to parse: " + e.toString());
+				setError(ERROR_NO_INPUT_STREAM_ILLEGAL_STATE);
 			} catch ( UnknownHostException e ) {
 				ApplicationMNM.warnCat(TAG, "(UnknownHostException) Failed to parse: " + e.toString());
 				setError(ERROR_NO_INPUT_STREAM_UNKOWN_HOST);
