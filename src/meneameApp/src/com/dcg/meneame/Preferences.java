@@ -2,10 +2,13 @@ package com.dcg.meneame;
 
 import com.dcg.app.ApplicationMNM;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 
 /**
  * Our preference activity
@@ -38,8 +41,40 @@ public class Preferences extends PreferenceActivity {
 			VersionChangesDialog versionDialog = new VersionChangesDialog(this);
         	versionDialog.show();
 		}
+		else if ( preference.getKey().compareTo("pref_app_clearcache") == 0 )
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(this.getResources().getString(R.string.confirm_clear_cache))
+				.setCancelable(false)
+				.setPositiveButton(this.getResources().getString(R.string.generic_ok), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						clearFeedCache();
+						dialog.dismiss();
+					}
+				})
+				.setNegativeButton(this.getResources().getString(R.string.generic_no), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+			AlertDialog clearCacheDialog = builder.create();
+			clearCacheDialog.show();
+		}
 		// TODO Auto-generated method stub
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
+	}
+	
+	public void clearFeedCache() {
+		if ( ApplicationMNM.clearFeedCache() )
+		{
+			ApplicationMNM.logCat(TAG, "Cache has been cleared!");
+			ApplicationMNM.showToast(R.string.clear_cache_successfull);
+		}
+		else
+		{
+			ApplicationMNM.logCat(TAG, "Failed to clear cache!");
+			ApplicationMNM.showToast(R.string.clear_cache_failed);
+		}
 	}
 
 }
