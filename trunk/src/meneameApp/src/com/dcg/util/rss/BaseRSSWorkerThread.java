@@ -247,8 +247,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 					}
 				}
 				
-				// Send final message
-				msg.setData(mData);
+				// Send final message				
 				sendMessage(msg);
 			}
 		}
@@ -258,9 +257,11 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * Send a message to our handler
 	 * @param msg
 	 */
-	private void sendMessage( Message msg ) {
+	private void sendMessage( Message msg) {
 		if ( mHandler != null && !mbStopRequested )
 		{
+			mData.putInt(ApplicationMNM.MSG_ID_KEY, ApplicationMNM.MSG_ID_ARTICLE_PARSER);
+			msg.setData(mData);
 			mHandler.sendMessage(msg);
 		}
 	}

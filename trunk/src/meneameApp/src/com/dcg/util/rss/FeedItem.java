@@ -21,6 +21,9 @@ public class FeedItem extends Object {
 	/** Our map that holds the internal data */
 	protected Map<String, String> mItemData = null;
 	
+	/** Article ID */
+	private int mArticleID = -1;
+	
 	/** Character used to separate list items if the map type is a list */
 	public static final String LIST_SEPARATOR = ";";
 	
@@ -54,6 +57,22 @@ public class FeedItem extends Object {
 	 */
 	private void releaseSemaphore()	{
 		mSemaphore.release();
+	}
+	
+	/**
+	 * Set a new ID for this article
+	 * @param ID
+	 */
+	protected void setArticleID( int ID ) {
+		mArticleID = ID;
+	}
+	
+	/**
+	 * get the current article ID
+	 * @return
+	 */
+	public int getArticleID() {
+		return mArticleID;
 	}
 	
 	/**
