@@ -13,7 +13,7 @@ import com.dcg.app.ApplicationMNM;
  * A parsed feed of items
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class Feed extends FeedItem implements Parcelable {
+public class Feed extends FeedItem {
 	
 	/** log tag for this class */
 	private static final String TAG = "Feed";
@@ -45,17 +45,7 @@ public class Feed extends FeedItem implements Parcelable {
 		
 		mPermittedList.add("title");
 	}
-	
-	public static final Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>() {
-        public Feed createFromParcel(Parcel in) {
-            return new Feed(in);
-        }
- 
-        public Feed[] newArray(int size) {
-            return new Feed[size];
-        }
-    };
-    
+
     public int describeContents() {
 		return 0;
 	}

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpVersion;
@@ -24,11 +26,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-import com.dcg.meneame.TabActivityRecord;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
+import android.os.Parcel;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -44,9 +46,6 @@ public class ApplicationMNM extends Application {
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
 	
-	/** The actual record of activity records */
-	private List<TabActivityRecord> mTabActivityRecord = new ArrayList<TabActivityRecord>();
-
 	/** Shared HttpClient used by our application */
 	private HttpClient mHttpClient = null;
 	
@@ -75,23 +74,22 @@ public class ApplicationMNM extends Application {
 	
 	@Override
 	public void onCreate() {
-		super.onCreate();
-		
-		// Cache contentxt
-		mAppContext = getBaseContext();
+		super.onCreate();		
+		ApplicationMNM.addLogCat(TAG);
+		ApplicationMNM.logCat(TAG, "onCreate()");
 		
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		addIgnoreCat("MeneameMainActivity");
+		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
 		addIgnoreCat("FeedItem");
-		addIgnoreCat("Feed");
+		//addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
@@ -100,8 +98,22 @@ public class ApplicationMNM extends Application {
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
-		
-		ApplicationMNM.addLogCat(TAG);
+	}
+	
+	/**
+	 * Clear the cached context, called from the main activity in it's 
+	 * onDestroy() call.
+	 */
+	public void clearCachedContext() {
+		mAppContext = null;
+	}
+	
+	/**
+	 * Set cached context for the app
+	 * @param context
+	 */
+	public void setCachedContext( Context context ) {
+		mAppContext = context;
 	}
 	
 	/**
@@ -165,94 +177,11 @@ public class ApplicationMNM extends Application {
 		Log.w(cat, msg);
 	}
 	
-	/**
-	 * Add a new activity we use in our main tab to the global registry
-	 * @param String - tag
-	 * @param Activity - activity
-	 */
-	public void addTabActivity( String  tag, Activity activity ) {
-		if ( !isTabActivityRegistered( tag ) )
-		{
-			mTabActivityRecord.add(new TabActivityRecord( tag, activity ));
-		}
-	}
-	
-	/**
-	 * Removes the activity linked to a tag
-	 * @param tag
-	 */
-	public void removeTabActivity( String tag ) {
-		int index = getTabActivityIndex(tag);
-		if ( index != -1 )
-		{
-			mTabActivityRecord.remove( index );
-		}
-	}
-	
-	/**
-	 * Returns an iterator to navigate through the list of registered tab activities
-	 * @return Iterator of TabActivityRecords
-	 */
-	public Iterator<TabActivityRecord> getTabActivityRecordIterator() {
-		return (Iterator<TabActivityRecord>)mTabActivityRecord.iterator();
-	}
-	
-	/**
-	 * Will return the Activity linked to a tag
-	 * @param tag
-	 * @return Activity
-	 */
-	public Activity getTabActivity( String tag ) {
-		if ( isTabActivityRegistered( tag ) )
-		{
-			return mTabActivityRecord.get( getTabActivityIndex( tag ) ).getTabActivity();
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns the index of the tab activity registered with a sepcifc tag
-	 * @param tag
-	 * @return int - index
-	 */
-	public int getTabActivityIndex( String tag ) {
-		// Iterate through the list
-		Iterator<TabActivityRecord> it = getTabActivityRecordIterator();
-		int i = 0;
-		
-		while(it.hasNext())
-		{
-			TabActivityRecord tabRecord = it.next();
-			if ( tabRecord.getTabTag().compareTo( tag ) == 0 )
-			{
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-	
-	/**
-	 * 
-	 * @param tag
-	 * @return true if an activity with the same tag is already registred
-	 */
-	public boolean isTabActivityRegistered( String tag ) {
-		return getTabActivityIndex( tag ) != -1;
-	}
-	
-	/**
-	 * Clears all registered activities
-	 */
-	public void clearTabActivityRecord() {
-		mTabActivityRecord.clear();
-		ApplicationMNM.logCat(TAG, "Clearing TabActivityRecord...");
-	}
-	
 	@Override
 	public void onLowMemory()
 	{
 		super.onLowMemory();
+		ApplicationMNM.logCat(TAG, "onLowMemory()");
 		shutdownHttpClient();
 	}
 	
@@ -260,10 +189,14 @@ public class ApplicationMNM extends Application {
 	public void onTerminate()
 	{
 		super.onTerminate();
+		ApplicationMNM.logCat(TAG, "onLowMemory()");
 		shutdownHttpClient();
-		clearTabActivityRecord();
 	}
 	
+	/**
+	 * Create and configura a httpclient
+	 * @return
+	 */
 	private HttpClient createHttpClient()
 	{
 		ApplicationMNM.logCat(TAG,"createHttpClient()");
@@ -315,6 +248,9 @@ public class ApplicationMNM extends Application {
 		mHttpClient = createHttpClient();
 	}
 	
+	/**
+	 * Clear any pending http connections
+	 */
 	public void clearHttpClientConnections()
 	{
 		if(mHttpClient!=null && mHttpClient.getConnectionManager()!=null)
