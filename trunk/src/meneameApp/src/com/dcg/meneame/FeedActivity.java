@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Xml;
@@ -60,6 +61,9 @@ abstract public class FeedActivity extends ListActivity {
 	
 	/** Worker thread which will do the async operations */
 	private BaseRSSWorkerThread mRssThread = null;
+	
+	/** Worker thread used for voting and such */
+	private MenealoThread mMenealoThread = null;
 	
 	/** Our cached main list view */
 	private ListView mListView = null;
@@ -292,17 +296,49 @@ abstract public class FeedActivity extends ListActivity {
 		super.onRestoreInstanceState(state);
 	}
 	
+	/**
+	 * IF we touch the screen and we do not have any feed and no request has been
+	 * made refresh the feed from the net
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onTouchEvent()");
 		// If the users touches the screen and no feed is setup refresh it!
-		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
+		if ( (mFeed == null || mFeed.getArticleCount() == 0) && !isRssThreadAlive() )
 		{
 			refreshFeed( false );
 		}
 		return super.onTouchEvent(event);
 	}
 	
+	/**
+	 * Look if the rss thread is currently doing something
+	 * @return
+	 */
+	public boolean isRssThreadAlive() {
+		return isThreadAlive(mRssThread);
+	}
+	
+	/**
+	 * Are we currently voting or not
+	 * @return
+	 */
+	public boolean isMenealoThreadAlive() {
+		return isThreadAlive(mMenealoThread);
+	}
+	
+	/**
+	 * Checks if a specific thread is alife
+	 * @param thread
+	 * @return
+	 */
+	private boolean isThreadAlive( Thread thread ) {
+		return (thread == null || !thread.isAlive());
+	}
+	
+	/**
+	 * Refresh from an existing feed or should we start a new request?
+	 */
 	private void _conditionRefreshFeed() {
 		if ( mFeed != null )
 		{
@@ -470,13 +506,6 @@ abstract public class FeedActivity extends ListActivity {
         	// Nothing to do here :P
         }  
 		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getFeedURL(), mSemaphore );
-	}
-	
-	/**
-	 * Will refresh the current feed but taken the data from the cache
-	 */
-	public void buildFromCache() {
-		
 	}
 	
 	/**

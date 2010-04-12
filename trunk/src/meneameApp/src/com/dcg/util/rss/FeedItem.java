@@ -7,13 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.dcg.app.ApplicationMNM;
 
 /**
  * Base item our feed parser will return, must be subclassed to own types.
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class FeedItem extends Object {
+public class FeedItem implements Parcelable {
 	
 	/** log tag for this class */
 	private static final String TAG = "FeedItem";
@@ -44,6 +47,8 @@ public class FeedItem extends Object {
 		mItemData = new HashMap<String, String>();
 	}
     
+	public FeedItem(Parcel in) {}
+
 	/**
 	 * Will acquire internal semaphore
 	 * @throws InterruptedException
@@ -306,4 +311,23 @@ public class FeedItem extends Object {
 	public int size() {
 		return mItemData.size();
 	}
+	
+	public static final Parcelable.Creator<FeedItem> CREATOR
+	    	= new Parcelable.Creator<FeedItem>() {
+		public FeedItem createFromParcel(Parcel in) {
+		    return new FeedItem(in);
+		}
+		
+		public FeedItem[] newArray(int size) {
+		    return new FeedItem[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {}
 }

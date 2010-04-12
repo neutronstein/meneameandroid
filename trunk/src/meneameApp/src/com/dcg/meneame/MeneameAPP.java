@@ -18,7 +18,7 @@ import android.widget.TabHost.TabSpec;
 public class MeneameAPP extends TabActivity  {
 	
 	/** Class tag used for it's logs */
-	private static final String TAG = "MeneameMainActivity";
+	private static final String TAG = "MeneameAPP";
 	
 	/** Main app TabHost*/
 	private TabHost mTabHost;
@@ -95,6 +95,7 @@ public class MeneameAPP extends TabActivity  {
 	@Override
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, "onPause()");
+		((ApplicationMNM) getApplication()).clearCachedContext();
 		super.onPause();
 	}
 	
@@ -130,6 +131,7 @@ public class MeneameAPP extends TabActivity  {
     protected void onResume() {
     	super.onResume();
     	ApplicationMNM.logCat(TAG, "onStop()");
+    	((ApplicationMNM) getApplication()).setCachedContext(getBaseContext());
     	
     	// Start animation stuff
     	initAnim();
