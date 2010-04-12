@@ -2,15 +2,11 @@ package com.dcg.meneame;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.dcg.app.ApplicationMNM;
@@ -62,7 +58,7 @@ abstract public class FeedActivity extends ListActivity {
 	private BaseRSSWorkerThread mRssThread = null;
 	
 	/** Worker thread used for voting and such */
-	private MenealoThread mMenealoThread = null;
+	//private MenealoThread mMenealoThread = null;
 	
 	/** Our cached main list view */
 	private ListView mListView = null;
@@ -109,9 +105,9 @@ abstract public class FeedActivity extends ListActivity {
     private Feed mFeed = null;
     
     /** The following constants will define all basic URL's meneame will handle */
-    private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
-    private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
-    private static final String MENEALO_RESULT_KEY = "menealo_result_key";
+    //private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
+    //private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
+    //private static final String MENEALO_RESULT_KEY = "menealo_result_key";
 	
     public FeedActivity() {
 		super();
@@ -322,9 +318,11 @@ abstract public class FeedActivity extends ListActivity {
 	 * Are we currently voting or not
 	 * @return
 	 */
+	/*
 	public boolean isMenealoThreadAlive() {
 		return isThreadAlive(mMenealoThread);
 	}
+	/**/
 	
 	/**
 	 * Checks if a specific thread is alife
@@ -738,7 +736,8 @@ abstract public class FeedActivity extends ListActivity {
 		    		
 		        	return true;
 		    	case CONTEXT_MENU_VOTE:
-		    		menealo(selecteItem);
+		    		ApplicationMNM.showToast(R.string.advice_not_implemented);
+		    		//menealo(selecteItem);
 		        	return true;
 		        }
     		}
@@ -946,17 +945,20 @@ abstract public class FeedActivity extends ListActivity {
 	/**
 	 * Will vote an article/comment
 	 */
+	/*
 	public void menealo( FeedItem item ) {
 		if ( hasMenealoDataSetup() )
 		{
 			String menealoURL = buildMenealoURL();
 		}
 	}
+	/**/
 	
 	/**
      * Did the user set the needed notame data or not?
      * @return
      */
+	/*
     public boolean hasMenealoDataSetup() {
     	try {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
@@ -969,11 +971,13 @@ abstract public class FeedActivity extends ListActivity {
     		return false;
     	}
     }
+    /**/
 	
 	/**
 	 * Will retunr the full menealo url used send votes for articles
 	 * @return
 	 */
+    /*
 	private String buildMenealoURL() {
 		try {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
@@ -983,11 +987,13 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		return "";
 	}
+	/**/
 	
 	/**
 	 * Thread responsible to vote an articel and respond :P
 	 * @author Moritz Wundke (b.thax.dcg@gmail.com)
 	 */
+	/*
 	public class MenealoThread extends Thread {
 		private HttpClient mHttpClient = null;
 		private String mURL = "";
@@ -1044,4 +1050,5 @@ abstract public class FeedActivity extends ListActivity {
 	    	}	    	
 	    }
 	}
+	/**/
 }
