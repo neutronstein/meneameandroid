@@ -210,7 +210,7 @@ public class Feed extends FeedItem {
 	 * @param key
 	 * @return
 	 */
-	protected boolean isKeyListValue( String key )
+	public boolean isKeyListValue( String key )
 	{
 		return super.isKeyListValue(key);
 	}

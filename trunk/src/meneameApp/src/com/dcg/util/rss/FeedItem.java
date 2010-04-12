@@ -112,7 +112,7 @@ public class FeedItem implements Parcelable {
 	 * @param key
 	 * @return
 	 */
-	protected boolean isKeyListValue( String key ) {
+	public boolean isKeyListValue( String key ) {
 		return false;
 	}
 	

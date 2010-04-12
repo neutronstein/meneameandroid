@@ -72,6 +72,8 @@ public class ApplicationMNM extends Application {
 		ApplicationMNM.addLogCat(TAG);
 		ApplicationMNM.logCat(TAG, "onCreate()");
 		
+		mAppContext = getBaseContext();
+		
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
