@@ -1,19 +1,11 @@
 package com.dcg.meneame;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.util.rss.BaseRSSWorkerThread;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -23,12 +15,9 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 /**
  * Notame activity that handles all actions the notame api can handle
@@ -42,8 +31,7 @@ public class NotameActivity extends Activity {
 	private static final String NOTAME_RESULT_KEY = "notame_result";
 	
 	/** Result codes used by this activity */
-	private static int NOTAME_RESULT_CODE_SEND = 0;
-	private static int NOTAME_RESULT_CODE_BACK = 1;
+	private static int NOTAME_RESULT_CODE_BACK = 0;
 	
 	/** thread msg handler */
 	private Handler mHandler = null;
@@ -198,7 +186,7 @@ public class NotameActivity extends Activity {
     			String APIKey = prefs.getString("pref_account_apikey", "");
     			String text = mEditTextView.getText().toString();
 	    		
-	    		String URL = NOTAME_URL + "?user=" + userName + "&key=" + APIKey + "&charset=utf-8&text=" + encodeNotameText(text);
+	    		String URL = NOTAME_URL + "?"+NOTAME_USER_FIELD+"=" + userName + "&"+NOTAME_API_KEY+"=" + APIKey + "&charset=utf-8&"+NOTAME_MSG+"=" + encodeNotameText(text);
 	    		HttpGet httpGet = new HttpGet(URL);
 	    		try {
 	    			
@@ -214,7 +202,6 @@ public class NotameActivity extends Activity {
 	    					data = inputStream.read();
 	    				}
 	    				inputStream.close();
-	    				Log.d(TAG,finalData);
 	    				// Did we got an ok?
 	    				bResult = finalData.startsWith("OK");
 	    			}

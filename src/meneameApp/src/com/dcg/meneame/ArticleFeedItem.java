@@ -1,7 +1,5 @@
 package com.dcg.meneame;
 
-import android.util.Log;
-
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.FeedItem;
 
