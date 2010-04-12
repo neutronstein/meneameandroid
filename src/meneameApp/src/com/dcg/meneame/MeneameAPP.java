@@ -95,13 +95,13 @@ public class MeneameAPP extends TabActivity  {
 	@Override
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, "onPause()");
-		((ApplicationMNM) getApplication()).clearCachedContext();
 		super.onPause();
 	}
 	
 	@Override
 	protected void onDestroy() {
 		ApplicationMNM.logCat(TAG, "onDestroy()");
+		((ApplicationMNM) getApplication()).clearCachedContext();
 		super.onDestroy();
 	}
     

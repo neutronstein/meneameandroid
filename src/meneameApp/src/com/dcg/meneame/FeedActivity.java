@@ -3,6 +3,7 @@ package com.dcg.meneame;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -299,7 +300,7 @@ abstract public class FeedActivity extends ListActivity {
 	public boolean onTouchEvent(MotionEvent event) {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onTouchEvent()");
 		// If the users touches the screen and no feed is setup refresh it!
-		if ( (mFeed == null || mFeed.getArticleCount() == 0) && !isRssThreadAlive() )
+		if ( mFeed == null && !isRssThreadAlive() )
 		{
 			refreshFeed( false );
 		}
@@ -330,7 +331,7 @@ abstract public class FeedActivity extends ListActivity {
 	 * @return
 	 */
 	private boolean isThreadAlive( Thread thread ) {
-		return (thread == null || !thread.isAlive());
+		return (thread != null && thread.isAlive());
 	}
 	
 	/**
@@ -846,7 +847,8 @@ abstract public class FeedActivity extends ListActivity {
      * @param feed
      * @return
      */
-    private String createXMLFeed( Feed feed ){
+    @SuppressWarnings("unchecked")
+	private String createXMLFeed( Feed feed ){
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
         try {
@@ -878,9 +880,26 @@ abstract public class FeedActivity extends ListActivity {
 	            	// Add item data
 	            	Map<String, String> itemData = item.getAllData();
 	                for (String s: itemData.keySet()) {
-	                	serializer.startTag("", s);
-	                	serializer.text(itemData.get(s));
-	                	serializer.endTag("", s);
+	                	if ( !item.isKeyListValue(s) )
+	                	{
+	                		serializer.startTag("", s);
+		                	serializer.text(itemData.get(s));
+		                	serializer.endTag("", s);
+	                	}
+	                	else
+	                	{
+	                		ArrayList<String> listItems = (ArrayList<String>)item.getKeyData(s);
+	        				if ( listItems != null )
+	        				{
+	        					int itemNum = listItems.size();
+	        					for (int j = 0; j < itemNum; j++ )
+	        					{
+	        						serializer.startTag("", s);
+	        						serializer.text(listItems.get(j));
+	        						serializer.endTag("", s);
+	        					}
+	        				}
+	                	}
 	                }
 	            	serializer.endTag("", "item");
             	}
