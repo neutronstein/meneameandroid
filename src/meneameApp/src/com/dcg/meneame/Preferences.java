@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 
 /**
  * Our preference activity
@@ -24,6 +26,21 @@ public class Preferences extends PreferenceActivity {
 		
 		// Add prefs from xml
 		addPreferencesFromResource(R.xml.preferences);
+		
+		// TODO: Set the right version text for the version preference!
+		PreferenceScreen prefScreen = getPreferenceScreen();
+		if ( prefScreen != null )
+		{
+			PreferenceGroup appPrefernce = (PreferenceGroup)prefScreen.getPreference(1);
+			if ( appPrefernce != null )
+			{
+				Preference versionPrefernce = appPrefernce.getPreference(0);
+				if ( versionPrefernce != null )
+				{
+					versionPrefernce.setTitle("TODO: Set the right version from code!");
+				}
+			}
+		}
 	}
 	
 	public void  onContentChanged()

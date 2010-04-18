@@ -71,6 +71,7 @@ public class MeneameDbAdapter {
 
         DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+            ApplicationMNM.addLogCat(TAG);
         }
 
         @Override
