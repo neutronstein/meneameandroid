@@ -23,6 +23,9 @@ public class ArticlesAdapter extends BaseAdapter {
 	private Feed mFeed=null;
 	private LayoutInflater mInflater;
 	
+	/** Last position we created a view for */
+	private int mLastPosition;
+	
 	/** layout used to each item */
 	protected int mItenLayoutID;
 	
@@ -82,6 +85,14 @@ public class ArticlesAdapter extends BaseAdapter {
 	}
 	
 	/**
+	 * Will return the last position we created/refreshed a view for
+	 * @return
+	 */
+	public int getLastPosition() {
+		return mLastPosition;
+	}
+	
+	/**
 	 * Make a view to hold each row.
 	 *
 	 * @see android.widget.ListAdapter#getView(int, android.view.View,
@@ -89,7 +100,10 @@ public class ArticlesAdapter extends BaseAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
-		try {			
+		try {
+			// Cache this position so we can restore the location on the view
+			mLastPosition = position;
+			
 			// A ViewHolder keeps references to children views to avoid unnecessary calls
 			// to findViewById() on each row.
 			ViewHolder holder;
@@ -138,8 +152,11 @@ public class ArticlesAdapter extends BaseAdapter {
 				feedItem = (FeedItem)getItem(position);
 				
 				// Now get data
-				// TODO: Control null return values!
 				title = feedItem.getRawKeyData("title");
+				if ( ApplicationMNM.mbShowArticlePositions )
+				{
+					title = "["+position+"] "+title;
+				}
 				description = feedItem.getRawKeyData("description");
 				votes = feedItem.getRawKeyData("votes");
 				url = feedItem.getRawKeyData("url");

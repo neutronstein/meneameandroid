@@ -22,6 +22,9 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+
+import com.dcg.meneame.MeneameDbAdapter;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
@@ -35,7 +38,7 @@ import android.widget.Toast;
 public class ApplicationMNM extends Application {
 	
 	/** Current version of the app*/
-	private static final int mAppVersion = 3;
+	private static final int mAppVersion = 4;
 	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
@@ -53,10 +56,16 @@ public class ApplicationMNM extends Application {
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
 	
 	/** Enable logging or not */
-	private static boolean mbEnableLogging = true;
+	public static final boolean mbEnableLogging = true;
+	
+	/** Will add the position of the each article in the list, useful for debugging */
+	public static final boolean mbShowArticlePositions = true;
 	
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
+	
+	/** Cached database helper */
+	private static MeneameDbAdapter mDBHelper = null;
 	
 	/** IDs used to handle diffrenet messages comming from different threads */
 	public static final String MSG_ID_KEY = "msg_id_key";
@@ -85,12 +94,13 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
+		//addIgnoreCat("MeneameDbAdapter");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
@@ -100,7 +110,7 @@ public class ApplicationMNM extends Application {
 	 * Clear the cached context, called from the main activity in it's 
 	 * onDestroy() call.
 	 */
-	public void clearCachedContext() {
+	public static void clearCachedContext() {
 		mAppContext = null;
 	}
 	
@@ -108,8 +118,23 @@ public class ApplicationMNM extends Application {
 	 * Set cached context for the app
 	 * @param context
 	 */
-	public void setCachedContext( Context context ) {
+	public static void setCachedContext( Context context ) {
 		mAppContext = context;
+	}
+	
+	/**
+	 * Set Database Helper
+	 */
+	public static void setDBHelper( MeneameDbAdapter dbHelper ) {
+		mDBHelper = dbHelper;
+	}
+	
+	/**
+	 * Get the currently used db helper
+	 * @return
+	 */
+	public static MeneameDbAdapter getDBHelper() {
+		return mDBHelper;
 	}
 	
 	/**

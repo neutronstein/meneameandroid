@@ -12,7 +12,7 @@ public class QueueActivity extends FeedActivity {
 		super();
 		
 		// Set feed
-		mFeedURL = "http://feeds.feedburner.com/MeneameEnCola?format=xml";
+		mFeedURL = "http://feeds.feedburner.com/MeneameEnCola?format=xml?local";
 	}
 	
 	/** Called when the activity is first created. */

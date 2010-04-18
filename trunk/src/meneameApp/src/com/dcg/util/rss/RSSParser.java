@@ -266,7 +266,7 @@ abstract public class RSSParser extends DefaultHandler {
 				
 				// Check if we reached the max articles permitted
 				// NOTE: The last article will be added by the parser 'always!'
-				if ( this.mMaxItems > 0 && this.mItemCount >= this.mMaxItems )
+				if ( this.mMaxItems > 0 && this.mItemCount > this.mMaxItems )
 				{
 					throw new RSSParserMaxElementsException("MAX ELEMENTS REACHED: " + mItemCount, null);
 				}
