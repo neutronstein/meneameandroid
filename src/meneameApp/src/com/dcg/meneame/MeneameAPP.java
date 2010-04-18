@@ -25,7 +25,10 @@ public class MeneameAPP extends TabActivity  {
     
     /** Main animation */
     private Animation mMainAnimation = null;
-
+    
+    /** Database helper */
+    private MeneameDbAdapter mDBHelper = null;
+    
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,9 @@ public class MeneameAPP extends TabActivity  {
         
         setContentView(R.layout.main);
         
+        // Create databse helper
+		mDBHelper = new MeneameDbAdapter(this);
+
         // Get some global stuff
         mTabHost = getTabHost();
         
@@ -95,13 +101,18 @@ public class MeneameAPP extends TabActivity  {
 	@Override
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, "onPause()");
+		
+		// Close database
+		mDBHelper.close();
+		ApplicationMNM.setDBHelper(null);
+		
 		super.onPause();
 	}
 	
 	@Override
 	protected void onDestroy() {
 		ApplicationMNM.logCat(TAG, "onDestroy()");
-		((ApplicationMNM) getApplication()).clearCachedContext();
+		ApplicationMNM.clearCachedContext();
 		super.onDestroy();
 	}
     
@@ -131,7 +142,11 @@ public class MeneameAPP extends TabActivity  {
     protected void onResume() {
     	super.onResume();
     	ApplicationMNM.logCat(TAG, "onStop()");
-    	((ApplicationMNM) getApplication()).setCachedContext(getBaseContext());
+    	ApplicationMNM.setCachedContext(getBaseContext());
+    	
+    	// Open db connection
+    	mDBHelper.open();
+		ApplicationMNM.setDBHelper(mDBHelper);
     	
     	// Start animation stuff
     	initAnim();

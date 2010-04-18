@@ -123,10 +123,13 @@ public class FeedItem implements Parcelable {
 	 * @return true if added and valid or false if not valid or adding failed
 	 */
 	public boolean setValue( String key, Object value ) {
-		try {
-			return (isKeyListValue(key))?setListItemValue(key, (String) value):setStringValue(key, (String) value);
-		} catch ( Exception e) {
-			e.printStackTrace();
+		if ( isKeyValid(key) )
+		{
+			try {
+				return (isKeyListValue(key))?setListItemValue(key, (String) value):setStringValue(key, (String) value);
+			} catch ( Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

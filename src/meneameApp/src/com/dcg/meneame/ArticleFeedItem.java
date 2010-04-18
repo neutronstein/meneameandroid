@@ -23,6 +23,7 @@ public class ArticleFeedItem extends FeedItem {
 		mPermittedList.add("category");
 		mPermittedList.add("link");
 		mPermittedList.add("commentRss");
+		mPermittedList.add("link_id");
 	}
 	/**
 	 * tranform the data from a raw value into a valid value
@@ -85,9 +86,9 @@ public class ArticleFeedItem extends FeedItem {
 		}
 		else if( key.equalsIgnoreCase("commentRss") )
 		{
+			// TODO: use link_id as article ID!
 			try {
 				String articleID = value.substring(44);
-				//tmpValue = value.replaceAll("http://www.meneame.net/comments_rss2.php?id","joder");
 				ApplicationMNM.logCat(TAG,"ArticleID: "+articleID);
 				setArticleID(Integer.parseInt(articleID));
 			} catch ( Exception e ) {

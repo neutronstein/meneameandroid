@@ -153,6 +153,14 @@ public class Feed extends FeedItem {
 	}
 	
 	/**
+	 * Return the current max number of data each child items has
+	 * @return
+	 */
+	public int getMaxItemData() {
+		return mMaxItemData;
+	}
+	
+	/**
 	 * Clears the whole article list out
 	 */
 	public void clearArticleList() {

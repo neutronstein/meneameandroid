@@ -12,7 +12,7 @@ public class NewsActivity extends FeedActivity {
 		super();
 		
 		// Set feed
-		mFeedURL = "http://feeds.feedburner.com/MeneamePublicadas?format=xml";
+		mFeedURL = "http://feeds.feedburner.com/MeneamePublicadas?format=xml?local";
 	}
 	
 	/** Called when the activity is first created. */

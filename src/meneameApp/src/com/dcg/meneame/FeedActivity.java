@@ -153,6 +153,9 @@ abstract public class FeedActivity extends ListActivity {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onResume()");		
 		super.onResume();
 		
+		// Restore app state if any
+		restoreState();
+		
 		// Unpause
 		mbIsPaused = false;
 		
@@ -222,6 +225,9 @@ abstract public class FeedActivity extends ListActivity {
 	protected void onPause() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onPause()");
 		
+		// Save state
+		saveState();
+		
 		// Look if we need to request a stop for the current caching thread
 		if ( mbIsLoadingCachedFeed && mRssThread != null )
 		{
@@ -272,24 +278,48 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onSaveInstanceState()");
-		/*
-		if ( mFeed != null )
-		{
-			ApplicationMNM.logCat(TAG, " saving feed...");
-			outState.putParcelable("currentlySavedFeed", mFeed);
-		}
-		*/
 		super.onSaveInstanceState(outState);
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onSaveInstanceState()");
 	}
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle state) {
-		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onRestoreInstanceState()");
-		/*
-		mFeed = state.getParcelable("currentlySavedFeed");
-		*/
 		super.onRestoreInstanceState(state);
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onRestoreInstanceState()");	
+	}
+	
+	/**
+	 * Save the apps state into the database to be able to recover it again later
+	 */
+	private void saveState() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::saveState()");
+		ApplicationMNM.logCat(TAG, " - First visible position: " + mListView.getFirstVisiblePosition());
+		try {
+			MeneameDbAdapter dbHelper = ApplicationMNM.getDBHelper();
+			if ( dbHelper != null ) 
+			{
+				dbHelper.setSystemValueBool(getTabActivityTag()+"SaveState", true);
+			}
+		} catch( Exception e) {
+			ApplicationMNM.warnCat(TAG, "Failed to save app state: "+e.toString());
+		}
+	}
+	
+	/**
+	 * Restores a previously saved state into the database and will erase the cached
+	 * data after restoring
+	 */
+	private void restoreState() {
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::restoreState()");
+		MeneameDbAdapter dbHelper = ApplicationMNM.getDBHelper();
+		try {
+			if ( dbHelper != null && dbHelper.getSystemValueBool(getTabActivityTag()+"SaveState", false)) 
+			{
+				ApplicationMNM.logCat(TAG, " Starting to restore saved state!");
+			}
+		} catch( Exception e) {
+			ApplicationMNM.warnCat(TAG, "Failed to restore app state: "+e.toString());
+		}
 	}
 	
 	/**
@@ -392,7 +422,7 @@ abstract public class FeedActivity extends ListActivity {
 			case ApplicationMNM.MSG_ID_ARTICLE_PARSER:
 				int msgKey = data.getInt( BaseRSSWorkerThread.COMPLETED_KEY);
 				int errorKey = data.getInt( BaseRSSWorkerThread.ERROR_KEY);
-				Log.d(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
+				ApplicationMNM.logCat(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
 				
 				String errorMsg = "";
 				// Check if it completed ok or not
