@@ -94,13 +94,14 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		//addIgnoreCat("FeedActivity");
+		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
-		//addIgnoreCat("MeneameDbAdapter");
+		addIgnoreCat("MeneameDbAdapter");
+		//addIgnoreCat("VersionChangesDialog");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

@@ -1,16 +1,22 @@
 package com.dcg.meneame;
 
+import com.dcg.app.ApplicationMNM;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class VersionChangesDialog extends Dialog {
-
+	/** Log tag */
+	private static final String TAG = "VersionChangesDialog";
+	
 	public VersionChangesDialog(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
+		ApplicationMNM.addLogCat(TAG);
 	}
 	
 	@Override
@@ -26,6 +32,12 @@ public class VersionChangesDialog extends Dialog {
 	           dismiss();
            }
         });
+        
+        // TODO: Add automatically all versions!
+        /*
+        int resID = getContext().getResources().getIdentifier("version_change_v4_title", "string", "com.dcg.meneame");
+        ApplicationMNM.logCat(TAG,getContext().getResources().getString(resID));
+		/**/
 	}
 
 }
