@@ -316,6 +316,9 @@ abstract public class FeedActivity extends ListActivity {
 			if ( dbHelper != null && dbHelper.getSystemValueBool(getTabActivityTag()+"SaveState", false)) 
 			{
 				ApplicationMNM.logCat(TAG, " Starting to restore saved state!");
+				
+				// We saved the app state to clear flag
+				dbHelper.setSystemValueBool(getTabActivityTag()+"SaveState", false);
 			}
 		} catch( Exception e) {
 			ApplicationMNM.warnCat(TAG, "Failed to restore app state: "+e.toString());
