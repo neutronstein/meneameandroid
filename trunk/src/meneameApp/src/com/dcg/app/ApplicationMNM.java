@@ -86,7 +86,7 @@ public class ApplicationMNM extends Application {
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		addIgnoreCat("MeneameAPP");
+		//addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
@@ -94,13 +94,13 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
-		addIgnoreCat("MeneameDbAdapter");
+		//addIgnoreCat("MeneameDbAdapter");
 		//addIgnoreCat("VersionChangesDialog");
 
 		// Create shared HttpClient

@@ -16,7 +16,7 @@ import com.dcg.app.ApplicationMNM;
  * Base item our feed parser will return, must be subclassed to own types.
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class FeedItem implements Parcelable {
+public class FeedItem {
 	
 	/** log tag for this class */
 	private static final String TAG = "FeedItem";
@@ -46,8 +46,6 @@ public class FeedItem implements Parcelable {
 		ApplicationMNM.addLogCat(TAG);		
 		mItemData = new HashMap<String, String>();
 	}
-    
-	public FeedItem(Parcel in) {}
 
 	/**
 	 * Will acquire internal semaphore
@@ -202,7 +200,7 @@ public class FeedItem implements Parcelable {
 			
 			// Before we let any child class transform our value
 			// we need to get rid of any LIST_SEPARATOR character
-			// value could contain! It' a drawback but thats life
+			// value could contain! It's a drawback but thats life
 			// hehehe.
 			value = value.replaceAll(LIST_SEPARATOR, "");
 			
@@ -314,23 +312,4 @@ public class FeedItem implements Parcelable {
 	public int size() {
 		return mItemData.size();
 	}
-	
-	public static final Parcelable.Creator<FeedItem> CREATOR
-	    	= new Parcelable.Creator<FeedItem>() {
-		public FeedItem createFromParcel(Parcel in) {
-		    return new FeedItem(in);
-		}
-		
-		public FeedItem[] newArray(int size) {
-		    return new FeedItem[size];
-		}
-	};
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {}
 }

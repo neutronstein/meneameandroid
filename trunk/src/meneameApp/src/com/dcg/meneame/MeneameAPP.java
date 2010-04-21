@@ -38,9 +38,11 @@ public class MeneameAPP extends TabActivity  {
         ApplicationMNM.logCat(TAG, "onCreate()");
         
         setContentView(R.layout.main);
-        
+
         // Create databse helper
 		mDBHelper = new MeneameDbAdapter(this);
+		mDBHelper.open();
+		ApplicationMNM.setDBHelper(mDBHelper);
 
         // Get some global stuff
         mTabHost = getTabHost();
@@ -70,7 +72,7 @@ public class MeneameAPP extends TabActivity  {
         // Check version number and if we change the version show a nice dialog
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
         int savedVersion = prefs.getInt("pref_app_version_number", 0);
-        ApplicationMNM.logCat(TAG, ""+savedVersion);
+        ApplicationMNM.logCat(TAG, "Current version: "+savedVersion);
         if ( ApplicationMNM.getVersionNumber() > savedVersion )
         {
         	VersionChangesDialog versionDialog = new VersionChangesDialog(this);
@@ -145,6 +147,7 @@ public class MeneameAPP extends TabActivity  {
     	ApplicationMNM.setCachedContext(getBaseContext());
     	
     	// Open db connection
+    	mDBHelper.close();
     	mDBHelper.open();
 		ApplicationMNM.setDBHelper(mDBHelper);
     	
