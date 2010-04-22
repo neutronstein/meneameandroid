@@ -12,7 +12,7 @@ public class QueueActivity extends FeedActivity {
 		super();
 		
 		// Set feed
-		mFeedURL = "http://feeds.feedburner.com/MeneameEnCola?format=xml?local";
+		mFeedURL = "http://www.meneame.net/rss2.php?status=queued?local";
 	}
 	
 	/** Called when the activity is first created. */
