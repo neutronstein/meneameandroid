@@ -64,9 +64,6 @@ public class ApplicationMNM extends Application {
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
 	
-	/** Cached database helper */
-	private static MeneameDbAdapter mDBHelper = null;
-	
 	/** IDs used to handle diffrenet messages comming from different threads */
 	public static final String MSG_ID_KEY = "msg_id_key";
 	public static final int MSG_ID_ARTICLE_PARSER = 0;
@@ -86,7 +83,7 @@ public class ApplicationMNM extends Application {
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		//addIgnoreCat("MeneameAPP");
+		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
@@ -101,7 +98,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
 		//addIgnoreCat("MeneameDbAdapter");
-		//addIgnoreCat("VersionChangesDialog");
+		addIgnoreCat("VersionChangesDialog");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();
@@ -121,21 +118,6 @@ public class ApplicationMNM extends Application {
 	 */
 	public static void setCachedContext( Context context ) {
 		mAppContext = context;
-	}
-	
-	/**
-	 * Set Database Helper
-	 */
-	public static void setDBHelper( MeneameDbAdapter dbHelper ) {
-		mDBHelper = dbHelper;
-	}
-	
-	/**
-	 * Get the currently used db helper
-	 * @return
-	 */
-	public static MeneameDbAdapter getDBHelper() {
-		return mDBHelper;
 	}
 	
 	/**

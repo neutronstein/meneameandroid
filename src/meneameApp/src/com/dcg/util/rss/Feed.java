@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 
 import com.dcg.app.ApplicationMNM;
@@ -22,6 +24,15 @@ public class Feed extends FeedItem {
 	
 	/** This is the maximum number of data one article will hold */
 	private int mMaxItemData;
+	
+	/** ID this feed will use to identify it self in the database*/
+	private String mID = "";
+	
+	/** The source URL this feed uses */
+	private String mURL = "";
+	
+	/** Last visible position */
+	private int mLastPosition;
 	
 	/**
 	 * Empty constructor
@@ -43,6 +54,48 @@ public class Feed extends FeedItem {
 		readFromParcel(in);
 		
 		mPermittedList.add("title");
+	}
+	
+	/**
+	 * Set last position
+	 * @param lastPosition
+	 */
+	public void setLastPosition( int lastPosition ) {
+		mLastPosition = lastPosition;
+	}
+	
+	/**
+	 * Return the currently set last position
+	 * @return
+	 */
+	public int getLastPosition() {
+		return mLastPosition;
+	}
+	
+	/**
+	 * Sets the database identification for the feed
+	 * @param id
+	 * @param url
+	 */
+	public void setIdentification( String id, String url ) {
+		mID = id;
+		mURL = url;
+	}
+	
+	/**
+	 * Return ID for this feed
+	 * @return
+	 */
+	public String getFeedID() {
+		return mID;
+	}
+	
+	/**
+	 * return the URL the feed comes from
+	 * @return
+	 */
+	public String getURL() {
+		return mURL;
 	}
 
     public int describeContents() {

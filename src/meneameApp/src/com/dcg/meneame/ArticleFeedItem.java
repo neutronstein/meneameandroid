@@ -84,13 +84,10 @@ public class ArticleFeedItem extends FeedItem {
 			value = value.replaceAll("&#62;",">");
 			value = value.replaceAll("&#63;","?");
 		}
-		else if( key.equalsIgnoreCase("commentRss") )
+		else if( key.equalsIgnoreCase("link_id") )
 		{
-			// TODO: use link_id as article ID!
 			try {
-				String articleID = value.substring(44);
-				ApplicationMNM.logCat(TAG,"ArticleID: "+articleID);
-				setArticleID(Integer.parseInt(articleID));
+				setArticleID(Integer.parseInt(value));
 			} catch ( Exception e ) {
 				// Nothing to be done here
 				ApplicationMNM.warnCat(TAG,"ERROR: "+e.toString());

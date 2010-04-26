@@ -105,6 +105,9 @@ abstract public class FeedActivity extends ListActivity {
     /** Current feed we got */
     private Feed mFeed = null;
     
+    /** Database helper */
+    private MeneameDbAdapter mDBHelper = null;
+    
     /** The following constants will define all basic URL's meneame will handle */
     //private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
     //private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
@@ -120,6 +123,9 @@ abstract public class FeedActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onCreate()");
+		
+		// Create databse helper
+		mDBHelper = new MeneameDbAdapter(this);
 		
 		// Unpause
 		mbIsPaused = false;
@@ -294,15 +300,20 @@ abstract public class FeedActivity extends ListActivity {
 	private void saveState() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::saveState()");
 		ApplicationMNM.logCat(TAG, " - First visible position: " + mListView.getFirstVisiblePosition());
+		// Open DB
+		mDBHelper.open();
 		try {
-			MeneameDbAdapter dbHelper = ApplicationMNM.getDBHelper();
-			if ( dbHelper != null ) 
+			if ( mDBHelper != null ) 
 			{
-				dbHelper.setSystemValueBool(getTabActivityTag()+"SaveState", true);
+				saveFeedIntoDB();
+				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", true);
 			}
 		} catch( Exception e) {
 			ApplicationMNM.warnCat(TAG, "Failed to save app state: "+e.toString());
 		}
+		
+		// Close it
+		mDBHelper.close();
 	}
 	
 	/**
@@ -310,19 +321,43 @@ abstract public class FeedActivity extends ListActivity {
 	 * data after restoring
 	 */
 	private void restoreState() {
+		// Open DB
+		mDBHelper.open();
+		
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::restoreState()");
-		MeneameDbAdapter dbHelper = ApplicationMNM.getDBHelper();
 		try {
-			if ( dbHelper != null && dbHelper.getSystemValueBool(getTabActivityTag()+"SaveState", false)) 
+			if (  mDBHelper.getSystemValueBool(getTabActivityTag()+"SaveState", false)) 
 			{
 				ApplicationMNM.logCat(TAG, " Starting to restore saved state!");
 				
+				// Read the feed from the database
+				mFeed = readFeedFromDB();
+				
 				// We saved the app state to clear flag
-				dbHelper.setSystemValueBool(getTabActivityTag()+"SaveState", false);
+				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", false);
 			}
 		} catch( Exception e) {
 			ApplicationMNM.warnCat(TAG, "Failed to restore app state: "+e.toString());
 		}
+		
+		// Close it
+		mDBHelper.close();
+	}
+	
+	/**
+	 * Saves the current feed into the db
+	 */
+	public void saveFeedIntoDB() {
+		mFeed.setLastPosition(mListView.getFirstVisiblePosition());
+		mDBHelper.saveFeed(mFeed);
+	}
+	
+	/**
+	 * Reeds a feed from the database
+	 * @return
+	 */
+	public Feed readFeedFromDB() {
+		return mDBHelper.getFeed(getTabActivityTag());
 	}
 	
 	/**
@@ -596,7 +631,7 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	private void _updateFeedList()
 	{
-		// TODO: Need a methos to update just the adapter to add single items!
+		// TODO: Need a method to update just the adapter to add single items!
 		// http://www.softwarepassion.com/android-series-custom-listview-items-and-adapters/
 		
 		// Clear out list adapter
@@ -649,6 +684,7 @@ abstract public class FeedActivity extends ListActivity {
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.logCat(TAG,"Completed!");
 			this.mFeed = parsedFeed;
+			this.mFeed.setIdentification(getTabActivityTag(),getFeedURL());			
 			
 			emptyTextView = (TextView) findViewById(android.R.id.empty);
 			emptyTextView.setText(R.string.empty_list);
