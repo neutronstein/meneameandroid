@@ -23,8 +23,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-import com.dcg.meneame.MeneameDbAdapter;
-
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
@@ -91,13 +89,13 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		//addIgnoreCat("FeedActivity");
+		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
-		//addIgnoreCat("MeneameDbAdapter");
+		addIgnoreCat("MeneameDbAdapter");
 		addIgnoreCat("VersionChangesDialog");
 
 		// Create shared HttpClient

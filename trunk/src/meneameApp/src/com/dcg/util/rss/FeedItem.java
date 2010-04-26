@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.dcg.app.ApplicationMNM;
 
 /**
