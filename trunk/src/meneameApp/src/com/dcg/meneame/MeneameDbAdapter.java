@@ -1,6 +1,7 @@
 package com.dcg.meneame;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.util.rss.Feed;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -164,7 +165,7 @@ public class MeneameDbAdapter {
 	    	if (getSystemValue(key) != null )
 	    	{
 	    		// Update key!
-	            return mDb.update(SYSTEM_DATABASE_TABLE, args, SYSTEM_KEY_KEY + "=" + key, null) > 0;
+	            return mDb.update(SYSTEM_DATABASE_TABLE, args, SYSTEM_KEY_KEY + "='" + key +"'", null) > 0;
 	    	}
 	    	else
 	    	{
@@ -172,6 +173,7 @@ public class MeneameDbAdapter {
 	            return mDb.insert(SYSTEM_DATABASE_TABLE, null, args) > 0;
 	    	}
 		} catch( Exception e ) {
+			ApplicationMNM.warnCat(TAG, "setSystemValue() failed: "+e.toString());
 			return false;
 		}
     }
@@ -213,14 +215,20 @@ public class MeneameDbAdapter {
      * @return
      */    
     public String getSystemValue( String key ) {
-    	Cursor mCursor = mDb.query(true, SYSTEM_DATABASE_TABLE,
-    			new String[] {SYSTEM_KEY_VALUE}, 
-            	SYSTEM_KEY_KEY + "=" + key,
-            	null, null, null, null, null);
-	    if (mCursor != null) 
+    	try {
+	    	Cursor mCursor = mDb.query(true, SYSTEM_DATABASE_TABLE,
+	    			new String[] {SYSTEM_KEY_VALUE}, 
+	    			SYSTEM_KEY_KEY + "='" + key +"'",
+	            	null, null, null, null, null);
+		    if (mCursor != null) 
+		    {
+		        mCursor.moveToFirst();
+		        return mCursor.getString(0);
+		    }
+    	}
+	    catch( Exception e )
 	    {
-	        mCursor.moveToFirst();
-	        return mCursor.getString(0);
+	    	// Nothing to be done
 	    }
 	    return null;
     }
@@ -234,6 +242,7 @@ public class MeneameDbAdapter {
     	try {
 	    	return Boolean.valueOf(getSystemValue( key ));
     	} catch( Exception e) {
+    		ApplicationMNM.warnCat(TAG, "getSystemValueBool() failed: "+e.toString());
     		return defaultValue;
     	}
     }
@@ -247,6 +256,7 @@ public class MeneameDbAdapter {
     	try {
 	    	return Integer.valueOf(getSystemValue( key ));
     	} catch( Exception e) {
+    		ApplicationMNM.warnCat(TAG, "getSystemValueInt() failed: "+e.toString());
     		return defaultValue;
     	}
     }
@@ -260,8 +270,92 @@ public class MeneameDbAdapter {
     	try {
 	    	return Float.valueOf(getSystemValue( key ));
     	} catch( Exception e) {
+    		ApplicationMNM.warnCat(TAG, "getSystemValueFloat() failed: "+e.toString());
     		return defaultValue;
     	}
+    }
+    
+    /**
+     * Get the row ID of a feed
+     * @param feed
+     * @return
+     */
+    public long getFeedRowID( Feed feed ) {
+    	try {
+	    	Cursor mCursor = mDb.query(true, FEED_DATABASE_TABLE,
+	    			new String[] {FEED_KEY_ROWID}, 
+	    			FEED_KEY_TAG + "='" + feed.getFeedID() +"'",
+	            	null, null, null, null, null);
+		    if (mCursor != null) 
+		    {
+		        mCursor.moveToFirst();
+		        return mCursor.getLong(0);
+		    }
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
+    	}
+	    return -1;
+    }
+    
+    /**
+     * Saves the feed into the db, but only if not already in the db.
+     * We always save the last positio!
+     * @param feed
+     * @param lastPosition
+     * @return
+     */
+    public boolean saveFeed( Feed feed ) {
+    	try {
+	    	long rowId = getFeedRowID(feed);
+	    	
+	    	if ( rowId == -1 )
+	    	{
+	    		// Add a new feed!
+	    		rowId = createFeed(feed);
+	    		
+	    		// Now we need to add all articles and the 
+	    		// the feeds dataset
+	    	}
+	    	else
+	    	{
+	    		// Update only last position
+	    		updateFeed(feed,rowId);
+	    	}
+	
+	    	return true;
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not save Feed into DB: "+e.toString());
+    	}
+    	return false;
+    }
+    
+    public Feed getFeed( String id ) {
+    	Feed feed = new Feed();
+    	
+    	return feed;
+    }
+    
+    /**
+     * Add a new feed to the DB
+     * @param feed
+     * @return
+     */
+    public long createFeed(Feed feed) {
+    	ContentValues initialValues = new ContentValues();
+        initialValues.put(FEED_KEY_TAG, feed.getFeedID());
+        initialValues.put(FEED_KEY_URL, feed.getURL());
+        initialValues.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
+
+        return mDb.insert(FEED_DATABASE_TABLE, null, initialValues);
+    }
+    
+    public boolean updateFeed(Feed feed, long rowId) {
+    	ContentValues args = new ContentValues();
+    	args.put(FEED_KEY_TAG, feed.getFeedID());
+    	args.put(FEED_KEY_URL, feed.getURL());
+    	args.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
+    	
+    	return mDb.update(FEED_DATABASE_TABLE, args, FEED_KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     /**
