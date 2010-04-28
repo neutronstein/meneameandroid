@@ -35,6 +35,7 @@
 	<string name="generic_send">Send</string>
 	<string name="generic_back">Back</string>
 	<string name="generic_ok">Ok</string>
+	<string name="generic_yes">Yes</string>
 	<string name="generic_no">No</string>
 	
     <!-- Messages and Info -->
@@ -47,6 +48,7 @@
     <string name="clear_cache_successfull">Cache has been deleted!</string>
     <string name="notame_setup_data">You need to setup your Username and API Key before using Nótame.\nWould you like to configure it now?</string>
     <string name="notame_setup_data_tilte">Nótame configuration</string>
+    <string name="crash_report_question">The app detected a crash! Do you want to send the log file to the developer?</string>
     
     <!-- Version changeset -->
     <string name="version_change_title">Version Changes</string>

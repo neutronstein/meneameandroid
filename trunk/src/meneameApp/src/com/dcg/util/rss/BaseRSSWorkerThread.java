@@ -64,6 +64,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	/** Feed URL */
 	protected String mFeedURL = "";
 	
+	/** Feed ID */
+	protected String mFeedID = "";
+	
 	/** Handler used to send messages to the activity that will handle our work */
 	private Handler mHandler;
 	
@@ -98,8 +101,9 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param feedURL
 	 * @param threadSemaphore
 	 */
-	public void setupWorker( HttpClient HTTPClient, int maxItems, Handler handler, String feedURL, Semaphore threadSemaphore ) {
+	public void setupWorker( HttpClient HTTPClient, int maxItems, Handler handler, String feedID, String feedURL, Semaphore threadSemaphore ) {
 		mFeedURL = feedURL;
+		mFeedID = feedID;
 		mSemaphore = threadSemaphore;
 		mHTTPClient = HTTPClient;
 		mHandler = handler;
@@ -182,7 +186,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		}
 		return null;
 	}
-	
+
 	private void guardedRun() throws InterruptedException {
 		// At this point we are thread safe
 		if ( mHandler != null && !mbStopRequested )
@@ -193,11 +197,14 @@ abstract public class BaseRSSWorkerThread extends Thread {
 			mData.putInt(ERROR_KEY, ERROR_SUCCESSFULL);
 			InputStreamReader streamReader = null;
 			try {
+				preInputStream();
 				streamReader = getInputStreamReader();
+				postInputStream( streamReader );
 
 				if ( streamReader != null )
 				{
 					// Start processing the RSS file
+					preProcessResult();
 					processResult(msg, streamReader);				
 					
 					// look for any error
@@ -305,6 +312,18 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 */
 	protected void postProcessResult( Message msg, Feed parsedFeed ) {
 		// Nothing to be done by default
+	}
+	
+	protected void preInputStream() {
+		// Nothing by default
+	}
+	
+	protected void postInputStream( InputStreamReader streamReader ) {
+		// Nothing by default
+	}
+	
+	protected void preProcessResult() {
+		// Nothing by default
 	}
 	
 	/**

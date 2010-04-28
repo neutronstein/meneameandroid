@@ -26,9 +26,24 @@ public class MeneameDbAdapter {
     private static final String FEED_DATABASE_CREATE =
             "create table "+FEED_DATABASE_TABLE+" " +
     		"("+FEED_KEY_ROWID+" integer primary key autoincrement, " +
-    		FEED_KEY_TAG+" text not null, " +
+    		FEED_KEY_TAG+" text not null unique, " +
     		FEED_KEY_LAST_VISIBLE_POSITION+" integer not null," +
-    		FEED_KEY_URL+" text not null);";
+    		FEED_KEY_URL+" text not null unique);";
+    
+    /**
+     * TABLE: feed_data
+     */
+    public static final String FEED_DATA_DATABASE_TABLE = "feed_data";
+    public static final String FEED_DATA_KEY_FEED_ID = "feedID";
+    public static final String FEED_DATA_KEY_KEY = "key";
+    public static final String FEED_DATA_KEY_VALUE = "value";
+    public static final String FEED_DATA_KEY_ROWID = "_id";
+    private static final String FEED_DATA_DATABASE_CREATE =
+        "create table "+FEED_DATA_DATABASE_TABLE+" " +
+		"("+FEED_DATA_KEY_ROWID+" integer primary key autoincrement, " +
+		FEED_DATA_KEY_FEED_ID+" integer not null, " +
+		FEED_DATA_KEY_KEY+" text not null," +
+		FEED_DATA_KEY_VALUE+" text not null);";
     
     /**
      * TABLE: items_cache
@@ -44,14 +59,15 @@ public class MeneameDbAdapter {
     public static final String SYSTEM_KEY_VALUE = "value";
     private static final String SYSTEM_DATABASE_CREATE =
     	"create table "+SYSTEM_DATABASE_TABLE+" " +
-    	"("+SYSTEM_KEY_KEY+" text primary key, " +
+    	"("+SYSTEM_KEY_KEY+" text primary key unique, " +
     	SYSTEM_KEY_VALUE+" text);";
     
     /** List of tables */
     public static final String[] DATABASE_TABLES = { 
     	FEED_DATABASE_TABLE, 
     	ITEMS_DATABASE_TABLE, 
-    	SYSTEM_DATABASE_CREATE };
+    	SYSTEM_DATABASE_TABLE,
+    	FEED_DATA_DATABASE_TABLE};
     
     /** List of create table statements
      * NOTE: Needs to be in the same order as the table list above! 
@@ -59,11 +75,12 @@ public class MeneameDbAdapter {
     private static final String[] DATABASE_CREATE_STATEMENTS = { 
     	FEED_DATABASE_CREATE, 
     	ITEMS_DATABASE_CREATE, 
-    	SYSTEM_DATABASE_CREATE };
+    	SYSTEM_DATABASE_CREATE,
+    	FEED_DATA_DATABASE_CREATE};
     
     /** Internal DB name and version */
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private final Context mCtx;
 
@@ -214,22 +231,34 @@ public class MeneameDbAdapter {
      * @return
      */    
     public String getSystemValue( String key ) {
+    	Cursor mCursor = null;
+    	String data = null;
     	try {
-	    	Cursor mCursor = mDb.query(true, SYSTEM_DATABASE_TABLE,
+    		
+	    	mCursor = mDb.query(true, SYSTEM_DATABASE_TABLE,
 	    			new String[] {SYSTEM_KEY_VALUE}, 
 	    			SYSTEM_KEY_KEY + "='" + key +"'",
 	            	null, null, null, null, null);
 		    if (mCursor != null) 
 		    {
 		        mCursor.moveToFirst();
-		        return mCursor.getString(0);
+		        data = mCursor.getString(0);
+		        mCursor.close();
 		    }
     	}
 	    catch( Exception e )
 	    {
 	    	// Nothing to be done
+	    	ApplicationMNM.warnCat(TAG, "getSystemValue() failed: "+e.toString());
 	    }
-	    return null;
+	    finally
+	    {
+	    	if ( mCursor != null )
+	    	{
+	    		mCursor.close();
+	    	}
+	    }
+	    return data;
     }
     
     /**
@@ -279,21 +308,30 @@ public class MeneameDbAdapter {
      * @param feed
      * @return
      */
-    public long getFeedRowID( Feed feed ) {
-    	try {
-	    	Cursor mCursor = mDb.query(true, FEED_DATABASE_TABLE,
+    public long getFeedRowID( String id) {
+    	Cursor mCursor = null;
+    	long data = -1;
+    	try {    		
+    		mCursor = mDb.query(true, FEED_DATABASE_TABLE,
 	    			new String[] {FEED_KEY_ROWID}, 
-	    			FEED_KEY_TAG + "='" + feed.getFeedID() +"'",
+	    			FEED_KEY_TAG + "='" + id +"'",
 	            	null, null, null, null, null);
 		    if (mCursor != null) 
 		    {
 		        mCursor.moveToFirst();
-		        return mCursor.getLong(0);
+		        data = mCursor.getLong(0);
 		    }
     	} catch( Exception e ) {
     		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
     	}
-	    return -1;
+    	finally
+	    {
+	    	if ( mCursor != null )
+	    	{
+	    		mCursor.close();
+	    	}
+	    }
+	    return data;
     }
     
     /**
@@ -305,23 +343,30 @@ public class MeneameDbAdapter {
      */
     public boolean saveFeed( Feed feed ) {
     	try {
-	    	long rowId = getFeedRowID(feed);
-	    	
-	    	if ( rowId == -1 )
-	    	{
-	    		// Add a new feed!
-	    		rowId = createFeed(feed);
-	    		
-	    		// Now we need to add all articles and the 
-	    		// the feeds dataset
-	    	}
-	    	else
-	    	{
-	    		// Update only last position
-	    		updateFeed(feed,rowId);
-	    	}
-	
-	    	return true;
+    		if ( feed.getFeedID().compareTo("") != 0)
+    		{
+		    	long rowId = getFeedRowID( feed.getFeedID() );
+		    	ApplicationMNM.logCat(TAG, "saveFeed("+feed.getFeedID()+"): Start saving process...");
+		    	
+		    	if ( rowId == -1 )
+		    	{
+		    		// Add a new feed!
+		    		rowId = createFeed(feed);
+		    		
+		    		ApplicationMNM.logCat(TAG, "  Feed created: " + rowId);
+		    		
+		    		// Now we need to add all articles and the 
+		    		// the feeds dataset
+		    	}
+		    	else
+		    	{
+		    		ApplicationMNM.logCat(TAG, "  Updating feed: " + rowId);
+		    		// Update only last position
+		    		updateFeed(feed,rowId);
+		    	}		
+		    	return true;
+    		}
+    		return false;
     	} catch( Exception e ) {
     		ApplicationMNM.warnCat(TAG,"Can not save Feed into DB: "+e.toString());
     	}
@@ -329,9 +374,32 @@ public class MeneameDbAdapter {
     }
     
     public Feed getFeed( String id ) {
-    	Feed feed = new Feed();
+    	Feed feed = null;
+    	try {
+	    	long rowId = getFeedRowID( id );
+	    	ApplicationMNM.logCat(TAG, "getFeed("+id+"): Start restore process...");
+	    	
+	    	// Check if got something to be restored
+	    	if ( rowId != -1 )
+	    	{
+	    		// Now create the feed
+	    		feed = new Feed();    		
+	    		ApplicationMNM.logCat(TAG, "  Feed found: " + rowId);   		
+	    	}
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not save Feed into DB: "+e.toString());
+    	}
     	
     	return feed;
+    }
+    
+    /**
+     * Will delete the cache of a feed from the db
+     * @param id
+     * @return
+     */
+    public boolean deleteFeedCache( String id ) {
+    	return mDb.delete(FEED_DATABASE_TABLE, FEED_KEY_TAG + "='" + id+"'", null) > 0;
     }
     
     /**

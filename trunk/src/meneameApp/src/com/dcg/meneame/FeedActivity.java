@@ -570,7 +570,7 @@ abstract public class FeedActivity extends ListActivity {
         {
         	// Nothing to do here :P
         }  
-		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getFeedURL(), mSemaphore );
+		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getTabActivityTag(), getFeedURL(), mSemaphore );
 	}
 	
 	/**

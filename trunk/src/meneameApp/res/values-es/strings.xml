@@ -34,7 +34,8 @@
 	<!-- Button Callouts -->
 	<string name="generic_send">Enviar</string>
 	<string name="generic_back">Atrás</string>
-	<string name="generic_ok">Si</string>
+	<string name="generic_ok">Ok</string>
+	<string name="generic_yes">Si</string>
 	<string name="generic_no">No</string>
 
     <!-- Messages and Info -->
@@ -47,6 +48,7 @@
     <string name="clear_cache_successfull">Los feeds descargados han sido borrados!</string>
     <string name="notame_setup_data">Antes de usar Nótame has de configurar tu nombre de usario y clave de API\n¿Quieres configurarlos ahora?</string>
     <string name="notame_setup_data_tilte">Configuración Nótame</string>
+    <string name="crash_report_question">¡La app ha detectado un crash! ¿Quieres enviar los archivos de log a los desarrolladores?</string>
     
     <!-- Version changeset -->
     <string name="version_change_title">Cambios de Versiones</string>
