@@ -1,7 +1,10 @@
 package com.dcg.meneame;
 
 import com.dcg.app.ApplicationMNM;
+
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -65,6 +68,7 @@ public class MeneameAPP extends TabActivity  {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
         int savedVersion = prefs.getInt("pref_app_version_number", 0);
         ApplicationMNM.logCat(TAG, "Current version: "+savedVersion);
+        // Did we made any update?
         if ( ApplicationMNM.getVersionNumber() > savedVersion )
         {
         	VersionChangesDialog versionDialog = new VersionChangesDialog(this);
@@ -78,11 +82,30 @@ public class MeneameAPP extends TabActivity  {
             // Don't forget to commit your edits!!!
             editor.commit();
         }
+        // Did we got a crash last time?
+        else if( !hasExitedSuccessfully() )
+        {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        	builder.setMessage(R.string.crash_report_question)
+        	       .setCancelable(false)
+        	       .setPositiveButton(R.string.generic_yes, new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	        	   sendCrashReport();
+        	           }
+        	       })
+        	       .setNegativeButton(R.string.generic_no, new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	AlertDialog alert = builder.create();
+        	alert.show();
+        }
     }
     
     @Override
 	protected void onStart() {
-		ApplicationMNM.logCat(TAG, "onStart()");		
+		ApplicationMNM.logCat(TAG, "onStart()");
 		super.onStart();
 	}
 	
@@ -101,9 +124,46 @@ public class MeneameAPP extends TabActivity  {
 	@Override
 	protected void onDestroy() {
 		ApplicationMNM.logCat(TAG, "onDestroy()");
-		ApplicationMNM.clearCachedContext();	
+		ApplicationMNM.clearCachedContext();
+		
+		// Before we destroy the app we need to save our system value to 
+		// say that we closed the app properly!
+		setExitSuccessfull();
+		
 		// Destroy app
 		super.onDestroy();
+	}
+	
+	/** Marks tghe exit as ok */
+	private void setExitSuccessfull() {
+		if ( ApplicationMNM.mAllowCrashReport )
+		{
+			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
+			dBHelper.open();		
+			dBHelper.setSystemValueBool("com.dcg.meneame.exit.ok", true);		
+			dBHelper.close();
+		}
+	}
+	
+	/** Looks if we exited successfully the app last time */
+	public boolean hasExitedSuccessfully() {
+		if ( ApplicationMNM.mAllowCrashReport )
+		{
+			boolean bResult = false;
+			
+			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
+			dBHelper.open();		
+			bResult = dBHelper.getSystemValueBool("com.dcg.meneame.exit.ok", bResult);		
+			dBHelper.close();
+			
+			return bResult;
+		}
+		return true;
+	}
+	
+	/** Sends a crash report to us */
+	public void sendCrashReport() {
+		// TODO: Send the log file to us!
 	}
     
     /** Refresh the animation we will use for the tab page */
@@ -125,7 +185,7 @@ public class MeneameAPP extends TabActivity  {
     @Override
     protected void onStop() {
     	ApplicationMNM.logCat(TAG, "onStop()");
-    	
+
     	super.onStop();    	
     }
     

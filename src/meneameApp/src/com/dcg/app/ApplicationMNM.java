@@ -57,7 +57,10 @@ public class ApplicationMNM extends Application {
 	public static final boolean mbEnableLogging = true;
 	
 	/** Will add the position of the each article in the list, useful for debugging */
-	public static final boolean mbShowArticlePositions = true;
+	public static final boolean mbShowArticlePositions = false;
+	
+	/** Should we use the crash report functionality? */
+	public static final boolean mAllowCrashReport = false;
 	
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
@@ -116,6 +119,14 @@ public class ApplicationMNM extends Application {
 	 */
 	public static void setCachedContext( Context context ) {
 		mAppContext = context;
+	}
+	
+	/**
+	 * return the current context
+	 * @return
+	 */
+	public static Context getCachedContext() {
+		return mAppContext;
 	}
 	
 	/**
