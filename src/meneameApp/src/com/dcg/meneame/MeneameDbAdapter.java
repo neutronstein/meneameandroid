@@ -19,37 +19,48 @@ public class MeneameDbAdapter {
      * TABLE: feed_cache
      */
     public static final String FEED_DATABASE_TABLE = "feed_cache";
+    public static final String FEED_KEY_ROWID = "_id";
     public static final String FEED_KEY_TAG = "tag";
+	public static final String FEED_KEY_FEED_URL = "feedUrl";
+	public static final String FEED_KEY_TITLE = "title";
+	public static final String FEED_KEY_DESCRIPTION = "description";
 	public static final String FEED_KEY_URL = "url";
 	public static final String FEED_KEY_LAST_VISIBLE_POSITION = "lastVisible";
-    public static final String FEED_KEY_ROWID = "_id";
     private static final String FEED_DATABASE_CREATE =
             "create table "+FEED_DATABASE_TABLE+" " +
     		"("+FEED_KEY_ROWID+" integer primary key autoincrement, " +
     		FEED_KEY_TAG+" text not null unique, " +
     		FEED_KEY_LAST_VISIBLE_POSITION+" integer not null," +
-    		FEED_KEY_URL+" text not null unique);";
-    
-    /**
-     * TABLE: feed_data
-     */
-    public static final String FEED_DATA_DATABASE_TABLE = "feed_data";
-    public static final String FEED_DATA_KEY_FEED_ID = "feedID";
-    public static final String FEED_DATA_KEY_KEY = "key";
-    public static final String FEED_DATA_KEY_VALUE = "value";
-    public static final String FEED_DATA_KEY_ROWID = "_id";
-    private static final String FEED_DATA_DATABASE_CREATE =
-        "create table "+FEED_DATA_DATABASE_TABLE+" " +
-		"("+FEED_DATA_KEY_ROWID+" integer primary key autoincrement, " +
-		FEED_DATA_KEY_FEED_ID+" integer not null, " +
-		FEED_DATA_KEY_KEY+" text not null," +
-		FEED_DATA_KEY_VALUE+" text not null);";
+    		FEED_KEY_TITLE+" text not null, " +
+    		FEED_KEY_DESCRIPTION+" text not null, " +
+    		FEED_KEY_FEED_URL+" text not null unique);";
     
     /**
      * TABLE: items_cache
      */
     public static final String ITEMS_DATABASE_TABLE = "items_cache";
-    private static final String ITEMS_DATABASE_CREATE = "";
+    public static final String ITEMS_KEY_ROWID = "_id";
+    public static final String ITEMS_KEY_FEEDID = "feedId";
+    public static final String ITEMS_KEY_LINK_ID = "link_id";
+    public static final String ITEMS_KEY_COMMENT_RSS = "commentRss";
+    public static final String ITEMS_KEY_TITLE = "title";
+    public static final String ITEMS_KEY_VOTES = "votes";
+    public static final String ITEMS_KEY_LINK = "link";
+    public static final String ITEMS_KEY_DESCRIPTION = "description";
+    public static final String ITEMS_KEY_CATEGORY = "category";
+    public static final String ITEMS_KEY_URL = "url";
+    private static final String ITEMS_DATABASE_CREATE =
+        "create table "+ITEMS_DATABASE_TABLE+" " +
+		"("+ITEMS_KEY_ROWID+" integer primary key autoincrement, " +
+		ITEMS_KEY_FEEDID+" integer not null," +
+		ITEMS_KEY_LINK_ID+" integer not null," +
+		ITEMS_KEY_COMMENT_RSS+" text not null, " +
+		ITEMS_KEY_TITLE+" text not null, " +
+		ITEMS_KEY_VOTES+" integer not null," +
+		ITEMS_KEY_LINK+" text not null, " +
+		ITEMS_KEY_DESCRIPTION+" text not null, " +
+		ITEMS_KEY_CATEGORY+" text not null, " +
+		ITEMS_KEY_URL+" text not null);";
     
     /**
      * TABLE: system
@@ -66,8 +77,7 @@ public class MeneameDbAdapter {
     public static final String[] DATABASE_TABLES = { 
     	FEED_DATABASE_TABLE, 
     	ITEMS_DATABASE_TABLE, 
-    	SYSTEM_DATABASE_TABLE,
-    	FEED_DATA_DATABASE_TABLE};
+    	SYSTEM_DATABASE_TABLE};
     
     /** List of create table statements
      * NOTE: Needs to be in the same order as the table list above! 
@@ -75,12 +85,11 @@ public class MeneameDbAdapter {
     private static final String[] DATABASE_CREATE_STATEMENTS = { 
     	FEED_DATABASE_CREATE, 
     	ITEMS_DATABASE_CREATE, 
-    	SYSTEM_DATABASE_CREATE,
-    	FEED_DATA_DATABASE_CREATE};
+    	SYSTEM_DATABASE_CREATE};
     
     /** Internal DB name and version */
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private final Context mCtx;
 
@@ -384,7 +393,7 @@ public class MeneameDbAdapter {
 	    	{
 	    		// Now create the feed
 	    		feed = new Feed();    		
-	    		ApplicationMNM.logCat(TAG, "  Feed found: " + rowId);   		
+	    		ApplicationMNM.logCat(TAG, "  Feed found: " + rowId);
 	    	}
     	} catch( Exception e ) {
     		ApplicationMNM.warnCat(TAG,"Can not save Feed into DB: "+e.toString());
@@ -412,7 +421,10 @@ public class MeneameDbAdapter {
         initialValues.put(FEED_KEY_TAG, feed.getFeedID());
         initialValues.put(FEED_KEY_URL, feed.getURL());
         initialValues.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
-
+        initialValues.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
+        initialValues.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
+        initialValues.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
+        
         return mDb.insert(FEED_DATABASE_TABLE, null, initialValues);
     }
     
@@ -421,6 +433,9 @@ public class MeneameDbAdapter {
     	args.put(FEED_KEY_TAG, feed.getFeedID());
     	args.put(FEED_KEY_URL, feed.getURL());
     	args.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
+    	args.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
+    	args.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
+    	args.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
     	
     	return mDb.update(FEED_DATABASE_TABLE, args, FEED_KEY_ROWID + "=" + rowId, null) > 0;
     }
