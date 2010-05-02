@@ -1,13 +1,18 @@
 package com.dcg.meneame;
 
+import java.io.File;
+
 import com.dcg.app.ApplicationMNM;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 /**
@@ -26,7 +31,7 @@ public class Preferences extends PreferenceActivity {
 		// Add prefs from xml
 		addPreferencesFromResource(R.xml.preferences);
 		
-		// TODO: Set the right version text for the version preference!
+		// Set version title!
 		PreferenceScreen prefScreen = getPreferenceScreen();
 		if ( prefScreen != null )
 		{
@@ -36,10 +41,54 @@ public class Preferences extends PreferenceActivity {
 				Preference versionPrefernce = appPrefernce.getPreference(0);
 				if ( versionPrefernce != null )
 				{
-					versionPrefernce.setTitle("TODO: Set the right version from code!");
+					int resID = getResources().getIdentifier("version_change_v"+ApplicationMNM.getVersionNumber()+"_title", "string", "com.dcg.meneame");
+					versionPrefernce.setTitle(resID);
 				}
 			}
 		}
+		
+		// Set callback to know when we change our storage method
+		Preference storagePref = findPreference("pref_app_storage");
+		storagePref.setOnPreferenceChangeListener( new OnPreferenceChangeListener() {
+
+			public boolean onPreferenceChange(Preference preference,
+					Object newValue) {
+				boolean bResult = true;
+				String testValue = newValue.toString();
+				
+				// To use the SD card cache we need to have access to the SD card.
+				if ( testValue.compareTo("SDCard") == 0 )
+				{
+					try
+					{
+						File directory = new File(ApplicationMNM.getRootSDcardFolder());
+						bResult = directory.canWrite();
+					} catch( Exception e ) {
+						bResult = false;
+					}
+					if ( !bResult )
+					{
+						// Not writeable
+						ApplicationMNM.showToast(R.string.clear_cache_sdcard_notwritebale);
+					}
+				}
+				if ( bResult )
+				{
+					clearFeedCache();
+				}
+				return bResult;
+			}
+			
+		});
+	}
+	
+	/**
+	 * Return storage type used
+	 * @return
+	 */
+	public String getStorageType() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        return prefs.getString("pref_app_storage", "SDCard");
 	}
 	
 	public void  onContentChanged()
@@ -79,8 +128,31 @@ public class Preferences extends PreferenceActivity {
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}
 	
-	public void clearFeedCache() {
-		if ( ApplicationMNM.clearFeedCache() )
+	/**
+	 * Worker method that clears the current feed cache
+	 * @return
+	 */
+	public boolean clearFeedCacheWorker() {
+		boolean bResult = false;
+		if ( getStorageType().compareTo("Internal") == 0 )
+		{
+			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
+			dBHelper.open();		
+			bResult = dBHelper.deleteCompleteFeedCache();
+			dBHelper.close();
+		}
+		else
+		{
+			bResult = ApplicationMNM.clearFeedCache();
+		}
+		return bResult;
+	}
+	
+	/**
+	 * Clear feed cache, file or DB.
+	 */
+	public void clearFeedCache() {		
+		if ( clearFeedCacheWorker() )
 		{
 			ApplicationMNM.logCat(TAG, "Cache has been cleared!");
 			ApplicationMNM.showToast(R.string.clear_cache_successfull);

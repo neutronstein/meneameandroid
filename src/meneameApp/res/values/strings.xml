@@ -73,6 +73,7 @@
     
     <!-- Errors -->
     <string name="clear_cache_failed">Failed to delete cache!</string>
+    <string name="clear_cache_sdcard_notwritebale">SD-Card not writebale or not present!</string>
     <string name="error_unknown">Unkown Error</string>
     <string name="msg_obj_wrong_type_unknown">msg.obj is not a Feed object</string>
     <string name="msg_obj_null">msg.obj is null!</string>    
@@ -125,14 +126,14 @@
     
     <string name="pref_app">App</string>
     
-    <string name="pref_app_version_number">Version 4 (0.1.4)</string>
+    <string name="pref_app_version_number">TITLE</string>
     <string name="pref_app_version_number_summary">Application version</string>
     
     <string name="pref_app_refreshonlaunch">Refresh on launch</string>
     <string name="pref_app_refreshonlaunch_summary">Refresh feeds when app launches?</string>
     
     <string name="pref_app_clearcache">Clear cache</string>
-    <string name="pref_app_clearcache_summary">Will clear the cache of feeds (TODO:Use custom dialog for this)</string>
+    <string name="pref_app_clearcache_summary">Will clear the cache of feeds</string>
     
     <string name="pref_app_storage">Prefered storage method</string>
     <string name="pref_app_storage_summary">Method used to store cached rss feeds</string>

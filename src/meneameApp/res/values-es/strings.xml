@@ -73,6 +73,7 @@
     
     <!-- Errors -->
     <string name="clear_cache_failed">Fallo al borrar feeds descargados!</string>
+    <string name="clear_cache_sdcard_notwritebale">No se puede escribir en la tarjeta SD o no esta presente!</string>
     <string name="error_unknown">Error desconocido</string>
     <string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de 'Feed'</string>
     <string name="msg_obj_null">¡msg.obj es nulo!</string>    
@@ -125,7 +126,7 @@
     
     <string name="pref_app">App</string>
     
-    <string name="pref_app_version_number">Version 4 (0.1.4)</string>
+    <string name="pref_app_version_number">TITLE</string>
     <string name="pref_app_version_number_summary">Version actual</string>
     
     <string name="pref_app_refreshonlaunch">Refrescar al lanzar</string>

@@ -25,16 +25,8 @@ import android.os.Message;
  */
 abstract public class BaseRSSWorkerThread extends Thread {
 	
-	/** Definitions of a completed message */
-	public static final String COMPLETED_KEY = "completed";
-	public static final int COMPLETED_OK = 0;
-	public static final int COMPLETED_FAILED = 1;
-	
-	/** Key which defines any state when caching a feed */
-	public static final String ERROR_KEY = "error";
-	public static final int ERROR_SUCCESSFULL = 0;
-	public static final int ERROR_FAILED = ERROR_SUCCESSFULL+1;
-	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ERROR_FAILED+1;
+	/** Key which defines specific errors while parsing */
+	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ApplicationMNM.ERROR_FAILED+1;
 	public static final int ERROR_INVALID_RSS_DATA = ERROR_COULD_NOT_CREATE_RSS_HANDLER+1;
 	public static final int ERROR_NO_INPUT_STREAM = ERROR_INVALID_RSS_DATA+1;
 	public static final int ERROR_NO_INPUT_STREAM_EXCEPTION = ERROR_NO_INPUT_STREAM+1;
@@ -144,7 +136,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		} catch (InterruptedException e) {
 			// fall thru and exit normally
 		} finally {
-			// Set our catched app to null so GC can clean the refernce
+			// Set our cached app to null so GC can clean the reference
 			if ( mFeedParser != null )
 			{
 				// We got all needed data, clear internal references
@@ -193,8 +185,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 		{
 			Message msg = mHandler.obtainMessage();
 			mData = new Bundle();
-			mData.putInt(COMPLETED_KEY, COMPLETED_OK);
-			mData.putInt(ERROR_KEY, ERROR_SUCCESSFULL);
+			mData.putInt(ApplicationMNM.COMPLETED_KEY, ApplicationMNM.COMPLETED_OK);
+			mData.putInt(ApplicationMNM.ERROR_KEY, ApplicationMNM.ERROR_SUCCESSFULL);
 			InputStreamReader streamReader = null;
 			try {
 				preInputStream();
@@ -278,7 +270,7 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @return 
 	 */
 	protected boolean isDataValid() {
-		return mData.getInt(ERROR_KEY) == ERROR_SUCCESSFULL;
+		return mData.getInt(ApplicationMNM.ERROR_KEY) == ApplicationMNM.ERROR_SUCCESSFULL;
 	}
 	
 	/**
@@ -286,8 +278,8 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param error
 	 */
 	protected void setError( int errorID ) {
-		mData.putInt(COMPLETED_KEY, COMPLETED_FAILED);
-		mData.putInt(ERROR_KEY, errorID);
+		mData.putInt(ApplicationMNM.COMPLETED_KEY, ApplicationMNM.COMPLETED_FAILED);
+		mData.putInt(ApplicationMNM.ERROR_KEY, errorID);
 	}
 	
 	private void createRSSHandler() {
