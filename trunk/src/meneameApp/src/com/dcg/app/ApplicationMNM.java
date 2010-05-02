@@ -54,10 +54,10 @@ public class ApplicationMNM extends Application {
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
 	
 	/** Enable logging or not */
-	public static final boolean mbEnableLogging = true;
+	public static final boolean mbEnableLogging = false;
 	
 	/** Will add the position of the each article in the list, useful for debugging */
-	public static final boolean mbShowArticlePositions = true;
+	public static final boolean mbShowArticlePositions = false;
 	
 	/** Should we use the crash report functionality? */
 	public static final boolean mAllowCrashReport = false;
