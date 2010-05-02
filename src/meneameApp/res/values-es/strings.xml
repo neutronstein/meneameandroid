@@ -53,7 +53,7 @@
     <!-- Version changeset -->
     <string name="version_change_title">Cambios de Versiones</string>
     <string name="version_change_v4_title">Version 4 (0.1.4)</string>
-    <string name="version_change_v4">- Sistema de caché en base de datos y mejora de rendimiento general\n- Añadido sistema de votos</string>
+    <string name="version_change_v4">- Sistema de caché en base de datos y mejora de rendimiento general\n- Mejora de estabilidad general\n- Primeras pruebas del sistema de reporte de errores automático</string>
     <string name="version_change_v3_title">Version 3 (0.1.3)</string>
     <string name="version_change_v3">- Implementado proceso de caché en tarjeta SD\n- Añadido vista para añadir notas a Nótame</string>
     <string name="version_change_v2_title">Version 2 (0.1.2)</string>
