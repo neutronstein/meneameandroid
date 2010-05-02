@@ -11,55 +11,10 @@
 		android:layout_height="wrap_content"
 		android:layout_weight="1" >		
 		<LinearLayout
-			android:id="@+id/widget30"
+			android:id="@+id/version_change_content"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical">
-			<!-- Version 3 (0.1.3) -->	
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v3_title" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v3_title" 
-				android:autoLink="web" android:textStyle="bold"/>
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v3" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v3" 
-				android:autoLink="web" android:layout_marginLeft="10px"/>
-			<!-- Version 2 (0.1.2) -->	
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v2_title" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v2_title" 
-				android:autoLink="web" android:textStyle="bold"/>
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v2" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v2" 
-				android:autoLink="web" android:layout_marginLeft="10px"/>
-			<!-- Version 1 (0.1.1) -->	
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v1_title" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v1_title" 
-				android:autoLink="web" android:textStyle="bold"/>
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:id="@+id/version_change_v1" 
-				android:singleLine="false" 
-				android:text="@string/version_change_v1" 
-				android:autoLink="web" android:layout_marginLeft="10px"/>
+			android:orientation="vertical">			
 		</LinearLayout>	
 	</ScrollView>
 	

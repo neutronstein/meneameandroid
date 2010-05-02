@@ -1,7 +1,11 @@
 package com.dcg.meneame;
 
+import java.util.List;
+import java.util.concurrent.Semaphore;
+
 import com.dcg.app.ApplicationMNM;
 import com.dcg.util.rss.Feed;
+import com.dcg.util.rss.FeedItem;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,14 +29,15 @@ public class MeneameDbAdapter {
 	public static final String FEED_KEY_TITLE = "title";
 	public static final String FEED_KEY_DESCRIPTION = "description";
 	public static final String FEED_KEY_URL = "url";
-	public static final String FEED_KEY_LAST_VISIBLE_POSITION = "lastVisible";
+	public static final String FEED_KEY_FIRT_VISIBLE_POSITION = "firstVisible";
     private static final String FEED_DATABASE_CREATE =
             "create table "+FEED_DATABASE_TABLE+" " +
     		"("+FEED_KEY_ROWID+" integer primary key autoincrement, " +
     		FEED_KEY_TAG+" text not null unique, " +
-    		FEED_KEY_LAST_VISIBLE_POSITION+" integer not null," +
+    		FEED_KEY_FIRT_VISIBLE_POSITION+" integer not null," +
     		FEED_KEY_TITLE+" text not null, " +
     		FEED_KEY_DESCRIPTION+" text not null, " +
+    		FEED_KEY_URL+" text not null, " +
     		FEED_KEY_FEED_URL+" text not null unique);";
     
     /**
@@ -89,9 +94,12 @@ public class MeneameDbAdapter {
     
     /** Internal DB name and version */
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 8;
 
     private final Context mCtx;
+    
+    /** Semaphore used by the activities feed worker thread */
+	private static Semaphore mSemaphore = new Semaphore(1);
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -166,12 +174,19 @@ public class MeneameDbAdapter {
      * @throws SQLException if the database could be neither opened or created
      */
     public MeneameDbAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
+    	try {
+			mSemaphore.acquire();
+			mDbHelper = new DatabaseHelper(mCtx);
+	        mDb = mDbHelper.getWritableDatabase();
+	        return this;
+		} catch (InterruptedException e) {
+			return null;
+		}
+        
     }
     
     public void close() {
+    	mSemaphore.release();
         mDbHelper.close();
     }
     
@@ -354,8 +369,8 @@ public class MeneameDbAdapter {
     	try {
     		if ( feed.getFeedID().compareTo("") != 0)
     		{
+    			ApplicationMNM.logCat(TAG, "saveFeed("+feed.getFeedID()+"): Start saving process...");
 		    	long rowId = getFeedRowID( feed.getFeedID() );
-		    	ApplicationMNM.logCat(TAG, "saveFeed("+feed.getFeedID()+"): Start saving process...");
 		    	
 		    	if ( rowId == -1 )
 		    	{
@@ -364,13 +379,17 @@ public class MeneameDbAdapter {
 		    		
 		    		ApplicationMNM.logCat(TAG, "  Feed created: " + rowId);
 		    		
-		    		// Now we need to add all articles and the 
-		    		// the feeds dataset
+		    		if ( rowId != -1 )
+		    		{		    		
+			    		// Now we need to add all articles and the 
+			    		addFeedItems(rowId,feed);
+		    		}
 		    	}
 		    	else
 		    	{
 		    		ApplicationMNM.logCat(TAG, "  Updating feed: " + rowId);
-		    		// Update only last position
+		    		
+		    		// We only update the feed data, not it's articles!
 		    		updateFeed(feed,rowId);
 		    	}		
 		    	return true;
@@ -392,8 +411,11 @@ public class MeneameDbAdapter {
 	    	if ( rowId != -1 )
 	    	{
 	    		// Now create the feed
-	    		feed = new Feed();    		
+	    		feed = recoverFeed( rowId );	    		
+	    		// recover articles
+	    		recoverFeedItems(rowId, feed);
 	    		ApplicationMNM.logCat(TAG, "  Feed found: " + rowId);
+	    		ApplicationMNM.logCat(TAG, "   Items: " + feed.getArticleCount());
 	    	}
     	} catch( Exception e ) {
     		ApplicationMNM.warnCat(TAG,"Can not save Feed into DB: "+e.toString());
@@ -403,12 +425,32 @@ public class MeneameDbAdapter {
     }
     
     /**
+     * Delete the whole feed cache, this is just as easy as dropping and creating some tables
+     * @return
+     */
+    public boolean deleteCompleteFeedCache() {
+    	mDb.delete(FEED_DATABASE_TABLE, null, null);
+    	mDb.delete(ITEMS_DATABASE_TABLE, null, null);
+    	return true;
+    }
+    
+    /**
      * Will delete the cache of a feed from the db
      * @param id
      * @return
      */
     public boolean deleteFeedCache( String id ) {
-    	return mDb.delete(FEED_DATABASE_TABLE, FEED_KEY_TAG + "='" + id+"'", null) > 0;
+    	// Delete feed items
+    	long rowId = getFeedRowID( id );
+    	if ( rowId != -1 )
+    	{
+    		deleteFeedItems(rowId);
+    		// Delete feed    	
+        	return mDb.delete(FEED_DATABASE_TABLE, FEED_KEY_TAG + "='" + id+"'", null) > 0;
+    	}
+    	
+    	// Nothing to be deleted!
+    	return false;    	
     }
     
     /**
@@ -420,7 +462,7 @@ public class MeneameDbAdapter {
     	ContentValues initialValues = new ContentValues();
         initialValues.put(FEED_KEY_TAG, feed.getFeedID());
         initialValues.put(FEED_KEY_URL, feed.getURL());
-        initialValues.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
+        initialValues.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
         initialValues.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
         initialValues.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
         initialValues.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
@@ -428,103 +470,166 @@ public class MeneameDbAdapter {
         return mDb.insert(FEED_DATABASE_TABLE, null, initialValues);
     }
     
+    /**
+     * Update a feed in the DB
+     * @param feed
+     * @param rowId
+     * @return
+     */
     public boolean updateFeed(Feed feed, long rowId) {
     	ContentValues args = new ContentValues();
     	args.put(FEED_KEY_TAG, feed.getFeedID());
     	args.put(FEED_KEY_URL, feed.getURL());
-    	args.put(FEED_KEY_LAST_VISIBLE_POSITION, feed.getLastPosition());
+    	args.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
     	args.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
     	args.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
     	args.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
     	
     	return mDb.update(FEED_DATABASE_TABLE, args, FEED_KEY_ROWID + "=" + rowId, null) > 0;
     }
-
+    
     /**
-     * Create a new note using the title and body provided. If the note is
-     * successfully created return the new rowId for that note, otherwise return
-     * a -1 to indicate failure.
-     * 
-     * @param title the title of the note
-     * @param body the body of the note
-     * @return rowId or -1 if failed
+     * Create a feed from the database
+     * @return
      */
-    /*
-    public long createNote(String title, String body) {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(KEY_TITLE, title);
-        initialValues.put(KEY_BODY, body);
-
-        return mDb.insert(DATABASE_TABLE, null, initialValues);
+    public Feed recoverFeed( long feedRowID ) {
+    	Feed feed = new Feed();    	
+    	Cursor mCursor = null;
+    	try {    		
+    		mCursor = mDb.query(true, FEED_DATABASE_TABLE,
+	    			new String[] 
+    			           	{
+    						FEED_KEY_TAG,
+    						FEED_KEY_FEED_URL,
+    						FEED_KEY_FIRT_VISIBLE_POSITION,
+    						FEED_KEY_TITLE,
+    						FEED_KEY_DESCRIPTION,
+    						FEED_KEY_FEED_URL
+    			           	}, 
+		           	FEED_KEY_ROWID + "=" + feedRowID,
+		           	null, null, null, null, null);
+		    if (mCursor != null) 
+		    {
+		        mCursor.moveToFirst();
+		        feed.setIdentification(mCursor.getString(0), mCursor.getString(1));
+		        feed.setFirstVisiblePosition(mCursor.getInt(2));
+		        feed.setValue("title", mCursor.getString(3));
+		        feed.setValue("description", mCursor.getString(4));
+		        feed.setValue("url", mCursor.getString(5));
+		    }
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
+    	}
+    	finally
+	    {
+	    	if ( mCursor != null )
+	    	{
+	    		mCursor.close();
+	    	}
+	    }    	
+    	return feed;
     }
-    /**/
-
+    
     /**
-     * Delete the note with the given rowId
-     * 
-     * @param rowId id of note to delete
-     * @return true if deleted, false otherwise
+     * Will add all articles found in the DB to the feed
+     * @param feedRowID
+     * @param feed
      */
-    /*
-    public boolean deleteNote(long rowId) {
-
-        return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+    public void recoverFeedItems( long feedRowID, Feed feed ) {
+    	Cursor mCursor = null;
+    	try {    		
+    		mCursor = mDb.query(true, ITEMS_DATABASE_TABLE,
+	    			new String[]
+							{
+							ITEMS_KEY_TITLE,
+							ITEMS_KEY_DESCRIPTION,
+							ITEMS_KEY_VOTES,
+							ITEMS_KEY_URL,
+							ITEMS_KEY_CATEGORY,
+							FEED_KEY_DESCRIPTION,
+							ITEMS_KEY_COMMENT_RSS,
+							ITEMS_KEY_LINK_ID
+							},
+		           	ITEMS_KEY_FEEDID + "=" + feedRowID,
+	           		null, null, null, null, null);
+		    if (mCursor != null) 
+		    {
+		        mCursor.moveToFirst();		        
+		        while(!mCursor.isAfterLast()) {
+		        	// We found and article, add it!
+		        	ArticleFeedItem feedItem = new ArticleFeedItem();
+		        	feedItem.setValue("title", mCursor.getString(0));
+		        	feedItem.setValue("description", mCursor.getString(1));
+		        	feedItem.setValue("votes", mCursor.getInt(2));
+		        	feedItem.setValue("url", mCursor.getString(3));
+		        	feedItem.setList("category", mCursor.getString(4));
+		        	feedItem.setValue("link", mCursor.getString(5));
+		        	feedItem.setValue("commentRss", mCursor.getString(6));
+		        	feedItem.setValue("link_id", mCursor.getInt(7));
+		        	feed.addArticle(feedItem);
+		        	// Move to next one
+		        	mCursor.moveToNext();
+		        }
+		    }
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
+    	}
+    	finally
+	    {
+	    	if ( mCursor != null )
+	    	{
+	    		mCursor.close();
+	    	}
+	    }
     }
-    /**/
-
+    
     /**
-     * Return a Cursor over the list of all notes in the database
-     * 
-     * @return Cursor over all notes
+     * Add all articles of a feed into the DB, will clean them up first
+     * @param feedRowID
+     * @param feed
      */
-    /*
-    public Cursor fetchAllNotes() {
-
-        return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_BODY}, null, null, null, null, null);
+    public void addFeedItems( long feedRowID, Feed feed ) {
+    	// Clear any previous articles
+    	deleteFeedItems( feedRowID );
+    	
+    	// Add the new ones!
+    	List<FeedItem> feedItems = feed.getArticleList();
+    	int feedItemNum = feed.getArticleCount();    	
+    	for(int i = 0; i < feedItemNum; i++ )
+    	{
+    		// Add feed item!
+    		long rowId = addFeedItem(feedRowID, feedItems.get(i));
+    		if ( rowId != -1 )
+    		{
+    			ApplicationMNM.logCat(TAG, " ["+rowId+"] Article("+i+")");
+    		}
+    	}
     }
-    /**/
-
+    
     /**
-     * Return a Cursor positioned at the note that matches the given rowId
-     * 
-     * @param rowId id of note to retrieve
-     * @return Cursor positioned to matching note, if found
-     * @throws SQLException if note could not be found/retrieved
+     * Delete all feed items related to a feed
+     * @param feedRowId
      */
-    /*
-    public Cursor fetchNote(long rowId) throws SQLException {
-
-        Cursor mCursor =
-
-                mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                        KEY_TITLE, KEY_BODY}, KEY_ROWID + "=" + rowId, null,
-                        null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-
+    public boolean deleteFeedItems( long feedRowId ) {
+    	return mDb.delete(ITEMS_DATABASE_TABLE, ITEMS_KEY_FEEDID + "=" + feedRowId, null) > 0;
     }
-    /**/
-
+    
     /**
-     * Update the note using the details provided. The note to be updated is
-     * specified using the rowId, and it is altered to use the title and body
-     * values passed in
-     * 
-     * @param rowId id of note to update
-     * @param title value to set note title to
-     * @param body value to set note body to
-     * @return true if the note was successfully updated, false otherwise
+     * Add a feed item to the database
+     * @return
      */
-    /*
-    public boolean updateNote(long rowId, String title, String body) {
-        ContentValues args = new ContentValues();
-        args.put(KEY_TITLE, title);
-        args.put(KEY_BODY, body);
-
-        return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+    public long addFeedItem( long feedRowId, FeedItem feedItem ) {
+    	ContentValues initialValues = new ContentValues();
+    	initialValues.put(ITEMS_KEY_FEEDID, feedRowId);
+        initialValues.put(ITEMS_KEY_TITLE, feedItem.getRawKeyData("title"));
+        initialValues.put(ITEMS_KEY_DESCRIPTION, feedItem.getRawKeyData("description"));
+        initialValues.put(ITEMS_KEY_VOTES, Integer.parseInt(feedItem.getRawKeyData("votes")));
+        initialValues.put(ITEMS_KEY_URL, feedItem.getRawKeyData("url"));
+        initialValues.put(ITEMS_KEY_CATEGORY, feedItem.getRawKeyData("category"));
+        initialValues.put(ITEMS_KEY_LINK, feedItem.getRawKeyData("link"));
+        initialValues.put(ITEMS_KEY_COMMENT_RSS, feedItem.getRawKeyData("commentRss"));
+        initialValues.put(ITEMS_KEY_LINK_ID, Integer.parseInt(feedItem.getRawKeyData("link_id")));
+        
+        return mDb.insert(ITEMS_DATABASE_TABLE, null, initialValues);
     }
-    /**/
 }

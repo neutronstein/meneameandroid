@@ -57,7 +57,7 @@ public class ApplicationMNM extends Application {
 	public static final boolean mbEnableLogging = true;
 	
 	/** Will add the position of the each article in the list, useful for debugging */
-	public static final boolean mbShowArticlePositions = false;
+	public static final boolean mbShowArticlePositions = true;
 	
 	/** Should we use the crash report functionality? */
 	public static final boolean mAllowCrashReport = false;
@@ -66,9 +66,20 @@ public class ApplicationMNM extends Application {
 	private static Context mAppContext = null;
 	
 	/** IDs used to handle diffrenet messages comming from different threads */
-	public static final String MSG_ID_KEY = "msg_id_key";
+	public static final String MSG_ID_KEY = "msg.id.key";
 	public static final int MSG_ID_ARTICLE_PARSER = 0;
 	public static final int MSG_ID_MENEALO = 1;
+	public static final int MSG_ID_DB_PARSER = 2;
+	
+	/** Definitions of a completed message */
+	public static final String COMPLETED_KEY = "msg.completed.key";
+	public static final int COMPLETED_OK = 0;
+	public static final int COMPLETED_FAILED = 1;
+	
+	/** base error for thread messages  */
+	public static final String ERROR_KEY = "error";
+	public static final int ERROR_SUCCESSFULL = 0;
+	public static final int ERROR_FAILED = ERROR_SUCCESSFULL+1;
 	
 	/** Some global definitions */
 	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
@@ -95,11 +106,12 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
-		addIgnoreCat("Preferences");
+		//addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
 		addIgnoreCat("MeneameDbAdapter");
 		addIgnoreCat("VersionChangesDialog");
+		addIgnoreCat("ArticleDBCacheThread");
 
 		// Create shared HttpClient
 		mHttpClient = createHttpClient();

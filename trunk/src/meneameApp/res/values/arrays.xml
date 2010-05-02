@@ -16,12 +16,12 @@
 
 <array name="pref_app_storage_entries">
 	<item>@string/pref_app_storage_none</item>
-	<!--<item>@string/pref_app_storage_internal</item>-->
+	<item>@string/pref_app_storage_internal</item>
 	<item>@string/pref_app_storage_sdcard</item>
 </array>
 <string-array name="pref_app_storage_values">
 	<item>None</item>
-	<!--<item>Internal</item>-->
+	<item>Internal</item>
 	<item>SDCard</item>
 </string-array>
 

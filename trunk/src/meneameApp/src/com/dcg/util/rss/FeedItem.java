@@ -121,10 +121,25 @@ public class FeedItem {
 		if ( isKeyValid(key) )
 		{
 			try {
-				return (isKeyListValue(key))?setListItemValue(key, (String) value):setStringValue(key, (String) value);
+				return (isKeyListValue(key))?setListItemValue(key, value.toString()):setStringValue(key, value.toString());
 			} catch ( Exception e) {
-				e.printStackTrace();
+				ApplicationMNM.warnCat(TAG, "FeedItem::setValue("+key+","+value+") faled: "+e.toString());
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Will just update a value as a raw string list.
+	 * @param key
+	 * @param StringList
+	 * @return
+	 */
+	public boolean setList( String key, String StringList ) {
+		if ( isKeyValid(key) && isKeyListValue(key) )
+		{
+			setKeyValue(key,StringList);
+			return true;
 		}
 		return false;
 	}

@@ -57,6 +57,9 @@ abstract public class FeedActivity extends ListActivity {
 	/** Worker thread which will do the async operations */
 	private BaseRSSWorkerThread mRssThread = null;
 	
+	/** Worker thread which will do the async operations in our DB */
+	private ArticleDBCacheThread mDBThread = null;
+	
 	/** Worker thread used for voting and such */
 	//private MenealoThread mMenealoThread = null;
 	
@@ -103,6 +106,9 @@ abstract public class FeedActivity extends ListActivity {
     
     /** Current feed we got */
     private Feed mFeed = null;
+    
+    /** Last visible item when we entered the pause state */
+    private int mFirstVisiblePosition= -1;
     
     /** Database helper */
     private MeneameDbAdapter mDBHelper = null;
@@ -158,6 +164,9 @@ abstract public class FeedActivity extends ListActivity {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onResume()");		
 		super.onResume();
 		
+		// Open database
+		mDBHelper.open();
+		
 		// Restore app state if any
 		restoreState();
 		
@@ -201,10 +210,10 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			// If the refresh thread is active kill it in case it's a cached one
 			String storageType = getStorageType();
-	        if ( storageType.compareTo("SDCard") == 0 )
+	        if ( storageType.compareTo("None") != 0 )
 	        {
 	        	// Do we got a valid cache file?
-	        	if ( hasCachedFeed() )
+	        	if ( hasCachedFeed( storageType ) )
 		        	try {
 						//InputStreamReader reader = new InputStreamReader(new FileInputStream ( this.getSDCardCacheFilePath()), "UTF-8");
 		        		refreshFeed( true );
@@ -263,6 +272,9 @@ abstract public class FeedActivity extends ListActivity {
 		// Cleanup
 		System.gc();
 		
+		// Close it
+		mDBHelper.close();
+		
 		super.onPause();
 	}
 	
@@ -299,20 +311,20 @@ abstract public class FeedActivity extends ListActivity {
 	private void saveState() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::saveState()");
 		ApplicationMNM.logCat(TAG, " - First visible position: " + mListView.getFirstVisiblePosition());
-		// Open DB
-		mDBHelper.open();
 		try {
 			if ( mDBHelper != null ) 
 			{
-				saveFeedIntoDB();
+				String storageType = getStorageType();
+				if ( storageType.compareTo("Internal") == 0 )
+				{
+					saveFeedIntoDB();
+				}
+				mDBHelper.setSystemValueInt(getTabActivityTag()+"FirstVisiblePosition", mListView.getFirstVisiblePosition());
 				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", true);
 			}
 		} catch( Exception e) {
 			ApplicationMNM.warnCat(TAG, "Failed to save app state: "+e.toString());
 		}
-		
-		// Close it
-		mDBHelper.close();
 	}
 	
 	/**
@@ -320,17 +332,12 @@ abstract public class FeedActivity extends ListActivity {
 	 * data after restoring
 	 */
 	private void restoreState() {
-		// Open DB
-		mDBHelper.open();
-		
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::restoreState()");
 		try {
 			if (  mDBHelper.getSystemValueBool(getTabActivityTag()+"SaveState", false)) 
 			{
 				ApplicationMNM.logCat(TAG, " Starting to restore saved state!");
-				
-				// Read the feed from the database
-				mFeed = readFeedFromDB();
+				mFirstVisiblePosition = mDBHelper.getSystemValueInt(getTabActivityTag()+"FirstVisiblePosition", -1);
 				
 				// We saved the app state to clear flag
 				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", false);
@@ -338,17 +345,17 @@ abstract public class FeedActivity extends ListActivity {
 		} catch( Exception e) {
 			ApplicationMNM.warnCat(TAG, "Failed to restore app state: "+e.toString());
 		}
-		
-		// Close it
-		mDBHelper.close();
 	}
 	
 	/**
 	 * Saves the current feed into the db
 	 */
 	public void saveFeedIntoDB() {
-		mFeed.setLastPosition(mListView.getFirstVisiblePosition());
-		mDBHelper.saveFeed(mFeed);
+		if ( mFeed != null )
+		{
+			mFeed.setFirstVisiblePosition(mListView.getFirstVisiblePosition());
+			mDBHelper.saveFeed(mFeed);
+		}
 	}
 	
 	/**
@@ -455,15 +462,15 @@ abstract public class FeedActivity extends ListActivity {
 		
 		// Check who has send the msg
 		int msgID = data.getInt( ApplicationMNM.MSG_ID_KEY );
+		int completeKey = data.getInt( ApplicationMNM.COMPLETED_KEY);
+		int errorKey = data.getInt( ApplicationMNM.ERROR_KEY);
+		boolean bSuccess = false;
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::handleThreadMessage() > Thread: "+ msgID +" Key: " + completeKey + " ErrorKey: " + errorKey);
 		switch(msgID) {
-			case ApplicationMNM.MSG_ID_ARTICLE_PARSER:
-				int msgKey = data.getInt( BaseRSSWorkerThread.COMPLETED_KEY);
-				int errorKey = data.getInt( BaseRSSWorkerThread.ERROR_KEY);
-				ApplicationMNM.logCat(TAG, getTabActivityTag()+"::handleThreadMessage() > Key: " + msgKey + " ErrorKey: " + errorKey);
-				
+			case ApplicationMNM.MSG_ID_ARTICLE_PARSER:				
 				String errorMsg = "";
 				// Check if it completed ok or not
-				if ( msgKey == BaseRSSWorkerThread.COMPLETED_OK )
+				if ( completeKey == ApplicationMNM.COMPLETED_OK )
 				{
 					try {
 						onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
@@ -476,18 +483,30 @@ abstract public class FeedActivity extends ListActivity {
 					} finally {
 						if ( errorMsg != null && !errorMsg.equals("") )
 						{
+							// This is an error but we will treat it here instead of the normal way!
 							onRefreshCompleted(COMPLETE_ERROR, null, null, errorMsg);
 						}
 					}
-				}
-				else
-				{
-					onRefreshCompleted(COMPLETE_ERROR, null, null, getFeedErrorMessage(errorKey));
+					
+					// All fine!
+					bSuccess = true;
 				}
 				break;
 			case ApplicationMNM.MSG_ID_MENEALO:
 				// We finished a voting action
+				bSuccess = true;
 				break;
+			case ApplicationMNM.MSG_ID_DB_PARSER:
+				// We finished the refresh action from the DB
+				bSuccess = true;
+				onRefreshCompleted(COMPLETE_SUCCESSFULL, data, (Feed) msg.obj,"");
+				break;
+		}
+		
+		// If we got any error show it now!
+		if ( !bSuccess )
+		{
+			onRefreshCompleted(COMPLETE_ERROR, null, null, getFeedErrorMessage(msgID,errorKey));
 		}
 	}
 	
@@ -495,17 +514,21 @@ abstract public class FeedActivity extends ListActivity {
 	 * returns the error string
 	 * @return
 	 */
-	public String getFeedErrorMessage( int errorID ) {
+	public String getFeedErrorMessage( int msgID, int errorID ) {
 		int resID = R.string.error_unknown;
-		switch( errorID ) {
-		case BaseRSSWorkerThread.ERROR_INVALID_RSS_DATA:
-			resID = R.string.feed_invalid_data; 
-			break;
-		case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND:
-			resID = R.string.feed_cache_file_not_found; 
-			break;
-		case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_UNKOWN_HOST:
-			resID = R.string.feed_host_unavailable; 
+		switch( msgID ) {
+			case ApplicationMNM.MSG_ID_ARTICLE_PARSER:	
+				switch( errorID ) {
+				case BaseRSSWorkerThread.ERROR_INVALID_RSS_DATA:
+					resID = R.string.feed_invalid_data; 
+					break;
+				case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND:
+					resID = R.string.feed_cache_file_not_found; 
+					break;
+				case BaseRSSWorkerThread.ERROR_NO_INPUT_STREAM_UNKOWN_HOST:
+					resID = R.string.feed_host_unavailable; 
+					break;
+				}
 			break;
 		}
 		return getResources().getString(resID);
@@ -592,14 +615,28 @@ abstract public class FeedActivity extends ListActivity {
 				TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 				emptyTextView.setText(bUseCache?R.string.refreshing_lable_cached:R.string.refreshing_lable);
 				
-				// Start with our task!
-				ApplicationMNM.logCat(TAG, "Staring worker thread");
-				String threadClassName = bUseCache?mLocalRssWorkerThreadClassName:mRssWorkerThreadClassName;
-				mRssThread = (BaseRSSWorkerThread) Class.forName( threadClassName ).newInstance();
-				
-				// Give our child's a chance to setup the thread
-				setupWorkerThread();
-				mRssThread.start();
+				String storageType = getStorageType();
+				if ( mbIsLoadingCachedFeed && storageType.compareTo("Internal") == 0 )
+				{
+					// Take the feed from the database
+					ApplicationMNM.logCat(TAG, "Starting worker thread (DB)");
+					
+					// Start feed
+					mDBThread = new ArticleDBCacheThread();
+					mDBThread.setupWorker(mDBHelper, mHandler, getTabActivityTag(), mSemaphore);
+					mDBThread.start();
+				}
+				else
+				{
+					// Start with our task!
+					ApplicationMNM.logCat(TAG, "Staring worker thread (RSS)");
+					String threadClassName = bUseCache?mLocalRssWorkerThreadClassName:mRssWorkerThreadClassName;
+					mRssThread = (BaseRSSWorkerThread) Class.forName( threadClassName ).newInstance();
+					
+					// Give our child's a chance to setup the thread
+					setupWorkerThread();
+					mRssThread.start();
+				}
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -646,6 +683,9 @@ abstract public class FeedActivity extends ListActivity {
 					ApplicationMNM.logCat(TAG, "Created list adapter: "+listAdapter.getClass().toString());
 					listAdapter.setupAdapter(this, this.mFeed);
 					setListAdapter(listAdapter);
+					
+					// Set right item
+					mListView.setSelection(mFirstVisiblePosition);
 				}
 			} catch ( Exception e ) {
 				onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
@@ -682,30 +722,33 @@ abstract public class FeedActivity extends ListActivity {
 		case COMPLETE_SUCCESSFULL:
 			// We finished successfully!!! Yeah!
 			ApplicationMNM.logCat(TAG,"Completed!");
-			this.mFeed = parsedFeed;
-			this.mFeed.setIdentification(getTabActivityTag(),getFeedURL());			
 			
 			emptyTextView = (TextView) findViewById(android.R.id.empty);
 			emptyTextView.setText(R.string.empty_list);
 			
-			// If we are loading a cached feed do not cache it again
-			if ( !mbIsLoadingCachedFeed )
+			this.mFeed = parsedFeed;
+			if ( this.mFeed != null )
 			{
-				// Start caching process
-				String storageType = getStorageType();
-		        if ( storageType.compareTo("Internal") == 0 )
-		        {
-		        	// Make DB caching
-		        	ApplicationMNM.showToast(R.string.advice_not_implemented);
-		        }
-		        else if ( storageType.compareTo("SDCard") == 0 )
-		        {
-		        	// Make SD-card caching
-		        	startSDCardCaching( parsedFeed );
-		        }
+				this.mFeed.setIdentification(getTabActivityTag(),getFeedURL());
+				
+				// If we are loading a cached feed do not cache it again
+				if ( !mbIsLoadingCachedFeed )
+				{
+					// Start caching process
+					String storageType = getStorageType();
+			        if ( storageType.compareTo("Internal") == 0 )
+			        {
+			        	saveFeedIntoDB();
+			        }
+			        else if ( storageType.compareTo("SDCard") == 0 )
+			        {
+			        	// Make SD-card caching
+			        	startSDCardCaching( parsedFeed );
+			        }
+				}
+				// Update feed
+				_updateFeedList();
 			}
-			// Update feed
-			_updateFeedList();
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:
 			bShowToast = false;
@@ -998,9 +1041,17 @@ abstract public class FeedActivity extends ListActivity {
      * Look if we have a cache file or not
      * @return
      */
-    public boolean hasCachedFeed() {
-    	File file = new File(getSDCardCacheFilePath());
-    	return file.exists();
+    public boolean hasCachedFeed( String storageType ) {
+    	if ( storageType.compareTo("SDCard") == 0 )
+    	{
+    		File file = new File(getSDCardCacheFilePath());
+    		return file.exists();
+    	}
+    	else
+    	{
+    		// We always try to access the feed from the database! (is this ok?)
+    		return true;
+    	}
     }
     
     /**

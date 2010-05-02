@@ -29,8 +29,8 @@ public class Feed extends FeedItem {
 	/** The source URL this feed uses */
 	private String mURL = "";
 	
-	/** Last visible position */
-	private int mLastPosition;
+	/** First visible position */
+	private int mFirstVisiblePosition;
 	
 	/**
 	 * Empty constructor
@@ -58,16 +58,16 @@ public class Feed extends FeedItem {
 	 * Set last position
 	 * @param lastPosition
 	 */
-	public void setLastPosition( int lastPosition ) {
-		mLastPosition = lastPosition;
+	public void setFirstVisiblePosition( int position ) {
+		mFirstVisiblePosition = position;
 	}
 	
 	/**
 	 * Return the currently set last position
 	 * @return
 	 */
-	public int getLastPosition() {
-		return mLastPosition;
+	public int getFirstVisiblePosition() {
+		return mFirstVisiblePosition;
 	}
 	
 	/**

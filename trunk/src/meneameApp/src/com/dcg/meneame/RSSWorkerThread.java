@@ -71,10 +71,6 @@ public class RSSWorkerThread extends BaseRSSWorkerThread {
 	 * Called before we start requesting the feed source (file or online)
 	 */
 	protected void preInputStream() {
-		MeneameDbAdapter dBHelper = new MeneameDbAdapter(ApplicationMNM.getCachedContext());
-		dBHelper.open();		
-		dBHelper.deleteFeedCache(mFeedID);	
-		dBHelper.close();
 	}
 	
 	/**
