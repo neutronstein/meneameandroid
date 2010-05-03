@@ -374,7 +374,7 @@ abstract public class FeedActivity extends ListActivity {
 	public boolean onTouchEvent(MotionEvent event) {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onTouchEvent()");
 		// If the users touches the screen and no feed is setup refresh it!
-		if ( mFeed == null && !isRssThreadAlive() )
+		if ( (mFeed == null || mFeed.getArticleCount() == 0) && !isRssThreadAlive() )
 		{
 			refreshFeed( false );
 		}
@@ -731,23 +731,33 @@ abstract public class FeedActivity extends ListActivity {
 			{
 				this.mFeed.setIdentification(getTabActivityTag(),getFeedURL());
 				
-				// If we are loading a cached feed do not cache it again
-				if ( !mbIsLoadingCachedFeed )
+				// If no articles where found in the feed show an advice
+				if ( this.mFeed.getArticleCount() == 0 )
 				{
-					// Start caching process
-					String storageType = getStorageType();
-			        if ( storageType.compareTo("Internal") == 0 )
-			        {
-			        	saveFeedIntoDB();
-			        }
-			        else if ( storageType.compareTo("SDCard") == 0 )
-			        {
-			        	// Make SD-card caching
-			        	startSDCardCaching( parsedFeed );
-			        }
+					ApplicationMNM.showToast(R.string.feed_no_articles);
+					// Do not save an empty feed :P
+					this.mFeed = null;
 				}
-				// Update feed
-				_updateFeedList();
+				else
+				{				
+					// If we are loading a cached feed do not cache it again
+					if ( !mbIsLoadingCachedFeed )
+					{
+						// Start caching process
+						String storageType = getStorageType();
+				        if ( storageType.compareTo("Internal") == 0 )
+				        {
+				        	saveFeedIntoDB();
+				        }
+				        else if ( storageType.compareTo("SDCard") == 0 )
+				        {
+				        	// Make SD-card caching
+				        	startSDCardCaching( parsedFeed );
+				        }
+					}
+					// Update feed
+					_updateFeedList();
+				}
 			}
 			break;
 		case COMPLETE_ERROR_THREAD_ALIVE:

@@ -120,7 +120,7 @@ public final class R {
     ================================================================
     
          */
-        public static final int app_pref_name=0x7f08003b;
+        public static final int app_pref_name=0x7f08003c;
         /**  Errors 
  Errors 
          */
@@ -142,6 +142,7 @@ public final class R {
          */
         public static final int feed_host_unavailable=0x7f080035;
         public static final int feed_invalid_data=0x7f080037;
+        public static final int feed_no_articles=0x7f080038;
         public static final int generic_back=0x7f08000e;
         public static final int generic_no=0x7f080011;
         public static final int generic_ok=0x7f08000f;
@@ -169,54 +170,54 @@ public final class R {
         public static final int meneo_item_vote=0x7f080008;
         public static final int msg_obj_null=0x7f080031;
         public static final int msg_obj_wrong_type_unknown=0x7f080030;
-        public static final int notame_failed=0x7f08003a;
-        public static final int notame_ok=0x7f080039;
+        public static final int notame_failed=0x7f08003b;
+        public static final int notame_ok=0x7f08003a;
         /**  Nótame erros messages 
  Nótame erros messages 
          */
-        public static final int notame_sending=0x7f080038;
+        public static final int notame_sending=0x7f080039;
         public static final int notame_setup_data=0x7f080019;
         public static final int notame_setup_data_tilte=0x7f08001a;
         /**  Account Settings 
  Account Settings 
          */
-        public static final int pref_account=0x7f08003c;
-        public static final int pref_account_apikey=0x7f08003e;
-        public static final int pref_account_apikey_summary=0x7f08003d;
-        public static final int pref_account_user=0x7f080042;
-        public static final int pref_account_user_id=0x7f080040;
-        public static final int pref_account_user_id_summary=0x7f08003f;
-        public static final int pref_account_user_summary=0x7f080041;
+        public static final int pref_account=0x7f08003d;
+        public static final int pref_account_apikey=0x7f08003f;
+        public static final int pref_account_apikey_summary=0x7f08003e;
+        public static final int pref_account_user=0x7f080043;
+        public static final int pref_account_user_id=0x7f080041;
+        public static final int pref_account_user_id_summary=0x7f080040;
+        public static final int pref_account_user_summary=0x7f080042;
         /**  Application settings 
  Application settings 
          */
-        public static final int pref_app=0x7f080049;
-        public static final int pref_app_clearcache=0x7f08004e;
-        public static final int pref_app_clearcache_summary=0x7f08004f;
-        public static final int pref_app_maxarticles=0x7f080055;
-        public static final int pref_app_maxarticles_10=0x7f080057;
-        public static final int pref_app_maxarticles_20=0x7f080058;
-        public static final int pref_app_maxarticles_40=0x7f080059;
-        public static final int pref_app_maxarticles_ALL=0x7f08005a;
-        public static final int pref_app_maxarticles_summary=0x7f080056;
-        public static final int pref_app_refreshonlaunch=0x7f08004c;
-        public static final int pref_app_refreshonlaunch_summary=0x7f08004d;
-        public static final int pref_app_storage=0x7f080050;
-        public static final int pref_app_storage_internal=0x7f080053;
-        public static final int pref_app_storage_none=0x7f080052;
-        public static final int pref_app_storage_sdcard=0x7f080054;
-        public static final int pref_app_storage_summary=0x7f080051;
-        public static final int pref_app_version_number=0x7f08004a;
-        public static final int pref_app_version_number_summary=0x7f08004b;
+        public static final int pref_app=0x7f08004a;
+        public static final int pref_app_clearcache=0x7f08004f;
+        public static final int pref_app_clearcache_summary=0x7f080050;
+        public static final int pref_app_maxarticles=0x7f080056;
+        public static final int pref_app_maxarticles_10=0x7f080058;
+        public static final int pref_app_maxarticles_20=0x7f080059;
+        public static final int pref_app_maxarticles_40=0x7f08005a;
+        public static final int pref_app_maxarticles_ALL=0x7f08005b;
+        public static final int pref_app_maxarticles_summary=0x7f080057;
+        public static final int pref_app_refreshonlaunch=0x7f08004d;
+        public static final int pref_app_refreshonlaunch_summary=0x7f08004e;
+        public static final int pref_app_storage=0x7f080051;
+        public static final int pref_app_storage_internal=0x7f080054;
+        public static final int pref_app_storage_none=0x7f080053;
+        public static final int pref_app_storage_sdcard=0x7f080055;
+        public static final int pref_app_storage_summary=0x7f080052;
+        public static final int pref_app_version_number=0x7f08004b;
+        public static final int pref_app_version_number_summary=0x7f08004c;
         /**  Style customizations 
  Style customizations 
          */
-        public static final int pref_style=0x7f080043;
-        public static final int pref_style_mainanimation=0x7f080044;
-        public static final int pref_style_mainanimation_fadein=0x7f080047;
-        public static final int pref_style_mainanimation_none=0x7f080046;
-        public static final int pref_style_mainanimation_slidein=0x7f080048;
-        public static final int pref_style_mainanimation_summary=0x7f080045;
+        public static final int pref_style=0x7f080044;
+        public static final int pref_style_mainanimation=0x7f080045;
+        public static final int pref_style_mainanimation_fadein=0x7f080048;
+        public static final int pref_style_mainanimation_none=0x7f080047;
+        public static final int pref_style_mainanimation_slidein=0x7f080049;
+        public static final int pref_style_mainanimation_summary=0x7f080046;
         public static final int refreshing_failed=0x7f080032;
         /**  Messages and Info 
  Messages and Info 

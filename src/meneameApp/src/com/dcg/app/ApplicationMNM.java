@@ -54,7 +54,7 @@ public class ApplicationMNM extends Application {
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
 	
 	/** Enable logging or not */
-	public static final boolean mbEnableLogging = false;
+	public static final boolean mbEnableLogging = true;
 	
 	/** Will add the position of the each article in the list, useful for debugging */
 	public static final boolean mbShowArticlePositions = false;
@@ -106,7 +106,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
-		//addIgnoreCat("Preferences");
+		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
 		addIgnoreCat("MeneameDbAdapter");
