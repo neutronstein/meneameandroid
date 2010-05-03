@@ -95,7 +95,7 @@ public class ApplicationMNM extends Application {
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		//addIgnoreCat("MeneameAPP");
+		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
