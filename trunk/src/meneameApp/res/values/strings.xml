@@ -52,6 +52,8 @@
     
     <!-- Version changeset -->
     <string name="version_change_title">Version Changes</string>
+    <string name="version_change_v5_title">Version 5 (0.1.5)</string>
+    <string name="version_change_v5">- Minor bug fixes</string>
     <string name="version_change_v4_title">Version 4 (0.1.4)</string>
     <string name="version_change_v4">- Added DB caching and general speed-up\n- Stability fixes\n- First crash reporting functionality tests</string>
     <string name="version_change_v3_title">Version 3 (0.1.3)</string>

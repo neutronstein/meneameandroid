@@ -52,6 +52,8 @@
     
     <!-- Version changeset -->
     <string name="version_change_title">Cambios de Versiones</string>
+    <string name="version_change_v5_title">Version 5 (0.1.5)</string>
+    <string name="version_change_v5">- Arreglos menores</string>
     <string name="version_change_v4_title">Version 4 (0.1.4)</string>
     <string name="version_change_v4">- Sistema de caché en base de datos y mejora de rendimiento general\n- Mejora de estabilidad general\n- Primeras pruebas del sistema de reporte de errores automático</string>
     <string name="version_change_v3_title">Version 3 (0.1.3)</string>
