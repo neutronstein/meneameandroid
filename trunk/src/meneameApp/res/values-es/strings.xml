@@ -52,6 +52,8 @@
     
     <!-- Version changeset -->
     <string name="version_change_title">Cambios de Versiones</string>
+    <string name="version_change_v6_title">Version 6 (0.1.6)</string>
+    <string name="version_change_v6">- TODO!</string>
     <string name="version_change_v5_title">Version 5 (0.1.5)</string>
     <string name="version_change_v5">- Arreglos menores</string>
     <string name="version_change_v4_title">Version 4 (0.1.4)</string>
