@@ -62,6 +62,9 @@ public class ApplicationMNM extends Application {
 	/** Should we use the crash report functionality? */
 	public static final boolean mAllowCrashReport = false;
 	
+	/** Flag used to specify that this is the donation app! */
+	public static final boolean mDonationApp = false;
+	
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
 	
