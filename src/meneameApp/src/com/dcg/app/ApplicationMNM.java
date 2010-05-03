@@ -36,7 +36,7 @@ import android.widget.Toast;
 public class ApplicationMNM extends Application {
 	
 	/** Current version of the app*/
-	private static final int mAppVersion = 4;
+	private static final int mAppVersion = 5;
 	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
@@ -95,7 +95,7 @@ public class ApplicationMNM extends Application {
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		addIgnoreCat("MeneameAPP");
+		//addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
