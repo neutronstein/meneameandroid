@@ -85,6 +85,7 @@
 	<string name="feed_host_unavailable">Sin conexión de datos!</string>   
     <string name="feed_cache_file_not_found">No hay feeds descargados!</string>
     <string name="feed_invalid_data">Feed contiene errores!</string>
+    <string name="feed_no_articles">Feed no contiene artículos!</string>
     
     <!-- Nótame erros messages -->
     <string name="notame_sending">Enviando...</string>
