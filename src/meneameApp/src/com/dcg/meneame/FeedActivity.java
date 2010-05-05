@@ -1,7 +1,11 @@
 package com.dcg.meneame;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +127,14 @@ abstract public class FeedActivity extends ListActivity {
 		ApplicationMNM.addLogCat(TAG);		
 		mbIsArticleFeed = true;
 	}
+    
+    /**
+     * Return the db adapter we are currently using
+     * @return
+     */
+    public MeneameDbAdapter getDBHelper() {
+    	return mDBHelper;
+    }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +218,7 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		
 		// Should be get the feed from the cached file?
-		if ( mFeed == null && (mRssThread == null || !mRssThread.isAlive()) )
+		if ( mRssThread == null || !mRssThread.isAlive() )
 		{
 			// If the refresh thread is active kill it in case it's a cached one
 			String storageType = getStorageType();
@@ -221,11 +233,6 @@ abstract public class FeedActivity extends ListActivity {
 						// Not cached
 					}
 	        }
-		}
-		else
-		{
-			// We got a saved thread so set it again!
-			_updateFeedList();
 		}
 	}
 	
@@ -338,7 +345,6 @@ abstract public class FeedActivity extends ListActivity {
 			{
 				ApplicationMNM.logCat(TAG, " Starting to restore saved state!");
 				mFirstVisiblePosition = mDBHelper.getSystemValueInt(getTabActivityTag()+"FirstVisiblePosition", -1);
-				
 				// We saved the app state to clear flag
 				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", false);
 			}
@@ -409,6 +415,15 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * Should we refresh in launch or not?
+	 * @return
+	 */
+	public boolean shouldRefreshOnLaunch() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        return prefs.getBoolean("pref_app_refreshonlaunch", false);
+	}
+	
+	/**
 	 * Refresh from an existing feed or should we start a new request?
 	 */
 	private void _conditionRefreshFeed() {
@@ -420,7 +435,7 @@ abstract public class FeedActivity extends ListActivity {
 		else
 		{
 	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-	        if ( prefs.getBoolean("pref_app_refreshonlaunch", false) )
+	        if ( shouldRefreshOnLaunch() )
 	        {
 	        	refreshFeed( false );
 	        }
@@ -597,6 +612,24 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * Will return the feed but taken from the cache
+	 * @return
+	 */
+	public Feed getFeedFromCache() {
+		String storageType = getStorageType();
+        if ( storageType.compareTo("Internal") == 0 )
+        {
+        	return mDBHelper.getFeed(getTabActivityTag());
+        }
+        else if ( storageType.compareTo("SDCard") == 0 )
+        {
+        	// Make SD-card caching
+        	return getFeedFromCacheSDCard();
+        }
+        return null;
+	}
+	
+	/**
 	 * Will refresh the current feed
 	 */
 	public void refreshFeed( boolean bUseCache ) {		
@@ -615,23 +648,20 @@ abstract public class FeedActivity extends ListActivity {
 				TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 				emptyTextView.setText(bUseCache?R.string.refreshing_lable_cached:R.string.refreshing_lable);
 				
-				String storageType = getStorageType();
-				if ( mbIsLoadingCachedFeed && storageType.compareTo("Internal") == 0 )
+				// Refresh from source or from cache
+				if ( mbIsLoadingCachedFeed )
 				{
-					// Take the feed from the database
-					ApplicationMNM.logCat(TAG, "Starting worker thread (DB)");
+					// Start cache process
+					onRefreshCompleted(COMPLETE_SUCCESSFULL,null, getFeedFromCache(), "");
 					
-					// Start feed
-					mDBThread = new ArticleDBCacheThread();
-					mDBThread.setupWorker(mDBHelper, mHandler, getTabActivityTag(), mSemaphore);
-					mDBThread.start();
+					// Cache loaded!
+					mbIsLoadingCachedFeed = false;
 				}
 				else
 				{
 					// Start with our task!
 					ApplicationMNM.logCat(TAG, "Staring worker thread (RSS)");
-					String threadClassName = bUseCache?mLocalRssWorkerThreadClassName:mRssWorkerThreadClassName;
-					mRssThread = (BaseRSSWorkerThread) Class.forName( threadClassName ).newInstance();
+					mRssThread = (BaseRSSWorkerThread) Class.forName( mRssWorkerThreadClassName ).newInstance();
 					
 					// Give our child's a chance to setup the thread
 					setupWorkerThread();
@@ -667,9 +697,6 @@ abstract public class FeedActivity extends ListActivity {
 	 */
 	private void _updateFeedList()
 	{
-		// TODO: Need a method to update just the adapter to add single items!
-		// http://www.softwarepassion.com/android-series-custom-listview-items-and-adapters/
-		
 		// Clear out list adapter
 		setListAdapter(null);
 		
@@ -686,6 +713,9 @@ abstract public class FeedActivity extends ListActivity {
 					
 					// Set right item
 					mListView.setSelection(mFirstVisiblePosition);
+					
+					// List adapter now able to get data!
+					listAdapter.mInitialized = true;
 				}
 			} catch ( Exception e ) {
 				onRefreshCompleted(COMPLETE_ERROR, null, null, e.toString());
@@ -752,7 +782,7 @@ abstract public class FeedActivity extends ListActivity {
 				        else if ( storageType.compareTo("SDCard") == 0 )
 				        {
 				        	// Make SD-card caching
-				        	startSDCardCaching( parsedFeed );
+				        	startSDCardCaching();
 				        }
 					}
 					// Update feed
@@ -928,22 +958,105 @@ abstract public class FeedActivity extends ListActivity {
     }
     
     /**
+     * Return a feed from the SD Card cache
+     * @return
+     */
+    public Feed getFeedFromCacheSDCard() {
+    	Feed feed = null;
+    	try {
+    		feed = new Feed();
+    		FileInputStream feedFile = new FileInputStream(getSDCardCacheFilePath());
+    		DataInputStream fileStream = new DataInputStream(feedFile);
+    		BufferedReader bufferReader = new BufferedReader(new InputStreamReader(fileStream));
+    		String strLine;
+    		// The definition file has 7 lines!
+    		int lineNumber = 0;
+    		String feedID = "";
+    		while((strLine = bufferReader.readLine()) != null)
+    		{
+    			if ( lineNumber < 7 )
+    			{
+    				// Parse item depending on line
+    				switch(lineNumber) {
+    					case 0:
+    						feedID = strLine.trim();
+    						break;
+    					case 1:
+    						feed.setIdentification(feedID, strLine.trim());
+    						break;
+    				}
+    			}
+    			else
+    			{
+    				break;
+    			}
+    			lineNumber++;
+    		}
+    		fileStream.close();
+    	} catch( Exception e ) {
+    		// nothing to be done
+    	}
+    	return feed;
+    }
+    
+    /**
      * Starts the internal caching process to the SD-card
      */
-    private void startSDCardCaching( Feed feed ) {
+    private void startSDCardCaching() {
     	// Start creating the cache folders
     	if ( prepareSDCard() )
     	{
     		FileWriter feedFile = null;
     		try {
-	    		// Create the xml content
-	    		String feedXML = createXMLFeed( feed );
-	    		
-	    		// Save it to disc
-	    		feedFile = new FileWriter( getSDCardCacheFilePath() );	    		
-	    		feedFile.write(feedXML);
-	    		ApplicationMNM.logCat(TAG, "Feed written to: "+getSDCardCacheFilePath());
-			} catch (Exception e) {
+    			// Create feed definition file
+    			feedFile = new FileWriter( getSDCardCacheFilePath() );    			
+    			if (feedFile != null)
+				{
+    				// Order is important!
+    				feedFile.write(mFeed.getFeedID() + "\n");
+    				feedFile.write(mFeed.getURL() + "\n");
+    				feedFile.write(mFeed.getFirstVisiblePosition() + "\n");
+    				feedFile.write(mFeed.getArticleCount() + "\n");
+    				feedFile.write(mFeed.getRawKeyData("title") + "\n");
+    				feedFile.write(mFeed.getRawKeyData("description") + "\n");
+    				feedFile.write(mFeed.getRawKeyData("url")); 
+    				
+    				// Close file
+					feedFile.close();
+				}
+    			
+    			// Create article files
+    			List<FeedItem> articles =  mFeed.getArticleList();
+                int articlesNum = articles.size();
+                for ( int i = 0; i < articlesNum; i++ )
+                {
+                	FeedItem item = articles.get(i);
+                	if ( item != null )
+                	{
+	                	feedFile = new FileWriter( getSDCardCacheItemFilePath(i) );   
+	                	if (feedFile != null)
+	                	{
+	                		// Order is important
+	                		feedFile.write(i + "\n");
+	                		feedFile.write(item.getRawKeyData("title") + "\n");
+	                		feedFile.write(item.getRawKeyData("description") + "\n");
+	                		feedFile.write(item.getRawKeyData("votes") + "\n");
+	                		feedFile.write(item.getRawKeyData("url") + "\n");
+	                		feedFile.write(item.getRawKeyData("category") + "\n");
+	                		feedFile.write(item.getRawKeyData("link") + "\n");
+	                		feedFile.write(item.getRawKeyData("commentRss") + "\n");
+	                		feedFile.write(item.getRawKeyData("link_id"));
+	                		
+	                		// Close file
+	    					feedFile.close();
+	                	}
+                	}
+                }
+    			
+    			ApplicationMNM.logCat(TAG, "Feed written to: "+getSDCardCacheFolderPath()+File.separator);
+    			// Caching finished so delete article references, we need to save memory!
+    			mFeed.clearArticleList();
+    		} catch (Exception e) {
 				ApplicationMNM.showToast("Failed to save feed to SD-Card");
 				e.printStackTrace();
 			} finally {
@@ -1044,7 +1157,16 @@ abstract public class FeedActivity extends ListActivity {
      * Returns the path to the feed cache file in the SD-Card
      * */
     private String getSDCardCacheFilePath() {
-    	return getSDCardCacheFolderPath()+File.separator+"feed.rss";
+    	return getSDCardCacheFolderPath()+File.separator+"feed.definition";
+    }
+    
+    /**
+     * Get the path to cache file of a feed item
+     * @param itemID
+     * @return
+     */
+    private String getSDCardCacheItemFilePath( int itemID ) {
+    	return getSDCardCacheFolderPath()+File.separator+"feed."+itemID+".item";
     }
     
     /**
@@ -1068,9 +1190,15 @@ abstract public class FeedActivity extends ListActivity {
 	 * Prepares the SDCard with all we need for the caching process
 	 */
 	protected boolean prepareSDCard() {
-		try {			
+		try {
 			// Create app dir in SDCard if possible
 			File path = new File( getSDCardCacheFolderPath() );
+			try {
+				// Before we create the directory we purge it's content!
+				ApplicationMNM.fileDelete( path );
+			} catch( Exception e ) {
+				// Nothing to be done!
+			}
 			if(!path.isDirectory()) {
 				if ( path.mkdirs() )
 				{
@@ -1080,7 +1208,7 @@ abstract public class FeedActivity extends ListActivity {
 				{
 					ApplicationMNM.warnCat(TAG,"Failed to create directory: " + path);
 				}
-			}
+			}			
 			return true;
 		} catch( Exception e )
 		{

@@ -29,6 +29,12 @@ public class ArticlesAdapter extends BaseAdapter {
 	/** layout used to each item */
 	protected int mItenLayoutID;
 	
+	/** refernce to the parent context */
+	protected FeedActivity mFeedActivity;
+	
+	/** Tells us when we are done with our initialization */
+	public boolean mInitialized;
+	
 	public ArticlesAdapter() {
 		ApplicationMNM.addLogCat(TAG);
 		
@@ -54,6 +60,9 @@ public class ArticlesAdapter extends BaseAdapter {
 		
 		// Save feed instance!
 		mFeed = feed;
+		
+		// Save parent activity!
+		mFeedActivity = (FeedActivity)context;
 	}
 	
 	/**
@@ -72,7 +81,13 @@ public class ArticlesAdapter extends BaseAdapter {
 	 * @see android.widget.ListAdapter#getItem(int)
 	 */
 	public Object getItem(int position) {
-		return mFeed.getArticle(position);
+		if ( mInitialized )
+		{
+			MeneameDbAdapter dbHelper = mFeedActivity.getDBHelper();
+			return dbHelper.getFeedItem(mFeed.getRowID(), position);
+		}
+		return null;
+		//return mFeed.getArticle(position);
 	}
 	
 	/**
@@ -101,6 +116,8 @@ public class ArticlesAdapter extends BaseAdapter {
 	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		try {
+			
+			ApplicationMNM.logCat(TAG,"Creating view for position: " +mLastPosition);
 			// Cache this position so we can restore the location on the view
 			mLastPosition = position;
 			
@@ -150,37 +167,37 @@ public class ArticlesAdapter extends BaseAdapter {
 			try {
 				// Get item
 				feedItem = (FeedItem)getItem(position);
-				
-				// Now get data
-				title = feedItem.getRawKeyData("title");
-				if ( ApplicationMNM.mbShowArticlePositions )
-				{
-					title = "["+position+"] "+title;
-				}
-				description = feedItem.getRawKeyData("description");
-				votes = feedItem.getRawKeyData("votes");
-				url = feedItem.getRawKeyData("url");
-				
-				ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
-				if ( tags != null )
-				{
-					int tagsNum = tags.size();
-					for (int i = 0; i < tagsNum; i++ )
+				if ( feedItem != null )
+				{				
+					// Now get data
+					title = feedItem.getRawKeyData("title");
+					if ( ApplicationMNM.mbShowArticlePositions )
 					{
-						category += tags.get(i);
-						// Add separator if needed
-						if ( i < tagsNum - 1 )
+						title = "["+position+"] "+title;
+					}
+					description = feedItem.getRawKeyData("description");
+					votes = feedItem.getRawKeyData("votes");
+					url = feedItem.getRawKeyData("url");
+					
+					ArrayList<String> tags = (ArrayList<String>)feedItem.getKeyData("category");
+					if ( tags != null )
+					{
+						int tagsNum = tags.size();
+						for (int i = 0; i < tagsNum; i++ )
 						{
-							category += ", ";
+							category += tags.get(i);
+							// Add separator if needed
+							if ( i < tagsNum - 1 )
+							{
+								category += ", ";
+							}
 						}
 					}
 				}
 				
-			} catch ( ClassCastException  e )
-			{
+			} catch ( ClassCastException  e ) {
 				// What the hell!
 				ApplicationMNM.logCat(TAG, "Failed to ceate view for item at position ["+position+"]");
-				e.printStackTrace();
 			}
 			
 			if ( feedItem != null )

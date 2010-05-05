@@ -46,7 +46,7 @@
 			android:title="@string/pref_app_storage" 
 			android:entries="@array/pref_app_storage_entries" 
 			android:entryValues="@array/pref_app_storage_values" 
-			android:defaultValue="SDCard" />
+			android:defaultValue="Internal" />
 		<Preference 
 			android:key="pref_app_clearcache"
 			android:title="@string/pref_app_clearcache"
