@@ -107,7 +107,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("RSSWorkerThread");
 		addIgnoreCat("FeedItem");
 		addIgnoreCat("Feed");
-		//addIgnoreCat("BaseRSSWorkerThread");
+		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
 		addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
@@ -115,7 +115,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Preferences");
 		addIgnoreCat("NotameActivity");
 		addIgnoreCat("ArticleFeedItem");
-		//addIgnoreCat("MeneameDbAdapter");
+		addIgnoreCat("MeneameDbAdapter");
 		addIgnoreCat("VersionChangesDialog");
 		addIgnoreCat("ArticleDBCacheThread");
 
