@@ -30,15 +30,17 @@ public class MeneameDbAdapter {
 	public static final String FEED_KEY_DESCRIPTION = "description";
 	public static final String FEED_KEY_URL = "url";
 	public static final String FEED_KEY_FIRT_VISIBLE_POSITION = "firstVisible";
+	public static final String FEED_KEY_ITEMS = "items";
     private static final String FEED_DATABASE_CREATE =
             "create table "+FEED_DATABASE_TABLE+" " +
     		"("+FEED_KEY_ROWID+" integer primary key autoincrement, " +
     		FEED_KEY_TAG+" text not null unique, " +
-    		FEED_KEY_FIRT_VISIBLE_POSITION+" integer not null," +
-    		FEED_KEY_TITLE+" text not null, " +
-    		FEED_KEY_DESCRIPTION+" text not null, " +
-    		FEED_KEY_URL+" text not null, " +
-    		FEED_KEY_FEED_URL+" text not null unique);";
+    		FEED_KEY_FIRT_VISIBLE_POSITION+" integer," +
+    		FEED_KEY_ITEMS+" integer," +
+    		FEED_KEY_TITLE+" text, " +
+    		FEED_KEY_DESCRIPTION+" text, " +
+    		FEED_KEY_URL+" tex, " +
+    		FEED_KEY_FEED_URL+" text);";
     
     /**
      * TABLE: items_cache
@@ -46,6 +48,7 @@ public class MeneameDbAdapter {
     public static final String ITEMS_DATABASE_TABLE = "items_cache";
     public static final String ITEMS_KEY_ROWID = "_id";
     public static final String ITEMS_KEY_FEEDID = "feedId";
+    public static final String ITEMS_KEY_ITEMID = "itemId";
     public static final String ITEMS_KEY_LINK_ID = "link_id";
     public static final String ITEMS_KEY_COMMENT_RSS = "commentRss";
     public static final String ITEMS_KEY_TITLE = "title";
@@ -58,6 +61,7 @@ public class MeneameDbAdapter {
         "create table "+ITEMS_DATABASE_TABLE+" " +
 		"("+ITEMS_KEY_ROWID+" integer primary key autoincrement, " +
 		ITEMS_KEY_FEEDID+" integer not null," +
+		ITEMS_KEY_ITEMID+" integer not null," +
 		ITEMS_KEY_LINK_ID+" integer not null," +
 		ITEMS_KEY_COMMENT_RSS+" text not null, " +
 		ITEMS_KEY_TITLE+" text not null, " +
@@ -94,7 +98,7 @@ public class MeneameDbAdapter {
     
     /** Internal DB name and version */
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = ApplicationMNM.mDatabaseVersion;
 
     private final Context mCtx;
     
@@ -360,9 +364,10 @@ public class MeneameDbAdapter {
     
     /**
      * Saves the feed into the db, but only if not already in the db.
-     * We always save the last positio!
+     * We always save the last position! If we mark the feed as
+     * cached from the sdcard we do not save the feed ietm
      * @param feed
-     * @param lastPosition
+     * @param bSDCardCache
      * @return
      */
     public boolean saveFeed( Feed feed ) {
@@ -391,7 +396,12 @@ public class MeneameDbAdapter {
 		    		
 		    		// We only update the feed data, not it's articles!
 		    		updateFeed(feed,rowId);
-		    	}		
+		    	}
+		    	// Set the feeds row ID!
+		    	feed.setRowID(rowId);
+		    	
+		    	// once the feed has been cached we clear it out!
+		    	feed.clearArticleList();
 		    	return true;
     		}
     		return false;
@@ -411,9 +421,12 @@ public class MeneameDbAdapter {
 	    	if ( rowId != -1 )
 	    	{
 	    		// Now create the feed
-	    		feed = recoverFeed( rowId );	    		
+	    		feed = recoverFeed( rowId );
+	    		// Set the feeds row ID!
+		    	feed.setRowID(rowId);
 	    		// recover articles
-	    		recoverFeedItems(rowId, feed);
+		    	// NOTE: We do not recover them all at once!
+	    		//recoverFeedItems(rowId, feed);
 	    		ApplicationMNM.logCat(TAG, "  Feed found: " + rowId);
 	    		ApplicationMNM.logCat(TAG, "   Items: " + feed.getArticleCount());
 	    	}
@@ -463,9 +476,10 @@ public class MeneameDbAdapter {
         initialValues.put(FEED_KEY_TAG, feed.getFeedID());
         initialValues.put(FEED_KEY_URL, feed.getURL());
         initialValues.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
+        initialValues.put(FEED_KEY_ITEMS, feed.getArticleCount());
         initialValues.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
         initialValues.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
-        initialValues.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
+        initialValues.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));        
         
         return mDb.insert(FEED_DATABASE_TABLE, null, initialValues);
     }
@@ -481,6 +495,7 @@ public class MeneameDbAdapter {
     	args.put(FEED_KEY_TAG, feed.getFeedID());
     	args.put(FEED_KEY_URL, feed.getURL());
     	args.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
+    	args.put(FEED_KEY_ITEMS, feed.getArticleCount());
     	args.put(FEED_KEY_TITLE, feed.getRawKeyData("title"));
     	args.put(FEED_KEY_DESCRIPTION, feed.getRawKeyData("description"));
     	args.put(FEED_KEY_FEED_URL, feed.getRawKeyData("url"));
@@ -504,7 +519,8 @@ public class MeneameDbAdapter {
     						FEED_KEY_FIRT_VISIBLE_POSITION,
     						FEED_KEY_TITLE,
     						FEED_KEY_DESCRIPTION,
-    						FEED_KEY_FEED_URL
+    						FEED_KEY_FEED_URL,
+    						FEED_KEY_ITEMS
     			           	}, 
 		           	FEED_KEY_ROWID + "=" + feedRowID,
 		           	null, null, null, null, null);
@@ -516,6 +532,7 @@ public class MeneameDbAdapter {
 		        feed.setValue("title", mCursor.getString(3));
 		        feed.setValue("description", mCursor.getString(4));
 		        feed.setValue("url", mCursor.getString(5));
+		        feed.setArticleCount(mCursor.getInt(6));
 		    }
     	} catch( Exception e ) {
     		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
@@ -572,7 +589,7 @@ public class MeneameDbAdapter {
 		        }
 		    }
     	} catch( Exception e ) {
-    		ApplicationMNM.warnCat(TAG,"Can not find feed in database: "+e.toString());
+    		ApplicationMNM.warnCat(TAG,"Can not find feed items in database: "+e.toString());
     	}
     	finally
 	    {
@@ -581,6 +598,60 @@ public class MeneameDbAdapter {
 	    		mCursor.close();
 	    	}
 	    }
+    }
+    
+    /**
+     * Get a feed item from the database
+     * @param feedId
+     * @param itemId
+     * @return
+     */
+    public ArticleFeedItem getFeedItem( long feedRowID, long itemID )
+    {
+    	Cursor mCursor = null;
+    	ArticleFeedItem feedItem = null;
+    	try {    		
+    		mCursor = mDb.query(true, ITEMS_DATABASE_TABLE,
+	    			new String[]
+							{
+							ITEMS_KEY_TITLE,
+							ITEMS_KEY_DESCRIPTION,
+							ITEMS_KEY_VOTES,
+							ITEMS_KEY_URL,
+							ITEMS_KEY_CATEGORY,
+							FEED_KEY_DESCRIPTION,
+							ITEMS_KEY_COMMENT_RSS,
+							ITEMS_KEY_LINK_ID
+							},
+		           	ITEMS_KEY_FEEDID + "=" + feedRowID + " AND " + ITEMS_KEY_ITEMID + "=" + itemID,
+	           		null, null, null, null, null);
+		    if (mCursor != null) 
+		    {
+		        mCursor.moveToFirst();
+		        
+	        	// We found and article, add it!
+		        feedItem = new ArticleFeedItem();
+	        	feedItem.setValue("title", mCursor.getString(0));
+	        	feedItem.setValue("description", mCursor.getString(1));
+	        	feedItem.setValue("votes", mCursor.getInt(2));
+	        	feedItem.setValue("url", mCursor.getString(3));
+	        	feedItem.setList("category", mCursor.getString(4));
+	        	feedItem.setValue("link", mCursor.getString(5));
+	        	feedItem.setValue("commentRss", mCursor.getString(6));
+	        	feedItem.setValue("link_id", mCursor.getInt(7));
+	        	
+		    }
+    	} catch( Exception e ) {
+    		ApplicationMNM.warnCat(TAG,"Can not find feed item in database: "+e.toString());
+    	}
+    	finally
+	    {
+	    	if ( mCursor != null )
+	    	{
+	    		mCursor.close();
+	    	}
+	    }
+    	return feedItem;
     }
     
     /**
@@ -598,7 +669,7 @@ public class MeneameDbAdapter {
     	for(int i = 0; i < feedItemNum; i++ )
     	{
     		// Add feed item!
-    		long rowId = addFeedItem(feedRowID, feedItems.get(i));
+    		long rowId = addFeedItem(feedRowID, i, feedItems.get(i));
     		if ( rowId != -1 )
     		{
     			ApplicationMNM.logCat(TAG, " ["+rowId+"] Article("+i+")");
@@ -618,9 +689,10 @@ public class MeneameDbAdapter {
      * Add a feed item to the database
      * @return
      */
-    public long addFeedItem( long feedRowId, FeedItem feedItem ) {
+    public long addFeedItem( long feedRowId, int itemId, FeedItem feedItem ) {
     	ContentValues initialValues = new ContentValues();
     	initialValues.put(ITEMS_KEY_FEEDID, feedRowId);
+    	initialValues.put(ITEMS_KEY_ITEMID, itemId);    	
         initialValues.put(ITEMS_KEY_TITLE, feedItem.getRawKeyData("title"));
         initialValues.put(ITEMS_KEY_DESCRIPTION, feedItem.getRawKeyData("description"));
         initialValues.put(ITEMS_KEY_VOTES, Integer.parseInt(feedItem.getRawKeyData("votes")));
