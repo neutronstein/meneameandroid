@@ -324,7 +324,7 @@ abstract public class FeedActivity extends ListActivity {
 				String storageType = getStorageType();
 				if ( storageType.compareTo("Internal") == 0 )
 				{
-					saveFeedIntoDB();
+					saveFeedIntoDB(false);
 				}
 				mDBHelper.setSystemValueInt(getTabActivityTag()+"FirstVisiblePosition", mListView.getFirstVisiblePosition());
 				mDBHelper.setSystemValueBool(getTabActivityTag()+"SaveState", true);
@@ -356,9 +356,13 @@ abstract public class FeedActivity extends ListActivity {
 	/**
 	 * Saves the current feed into the db
 	 */
-	public void saveFeedIntoDB() {
+	public void saveFeedIntoDB( boolean bClearCache ) {
 		if ( mFeed != null )
 		{
+			if ( bClearCache )
+			{
+				mDBHelper.deleteFeedCache(getTabActivityTag());
+			}
 			mFeed.setFirstVisiblePosition(mListView.getFirstVisiblePosition());
 			mDBHelper.saveFeed(mFeed);
 		}
@@ -434,8 +438,7 @@ abstract public class FeedActivity extends ListActivity {
 		}
 		else
 		{
-	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-	        if ( shouldRefreshOnLaunch() )
+	    	if ( shouldRefreshOnLaunch() )
 	        {
 	        	refreshFeed( false );
 	        }
@@ -608,7 +611,7 @@ abstract public class FeedActivity extends ListActivity {
         {
         	// Nothing to do here :P
         }  
-		mRssThread.setupWorker( ((ApplicationMNM) getApplication()).getHttpClient(), maxItems, mHandler, getTabActivityTag(), getFeedURL(), mSemaphore );
+		mRssThread.setupWorker( maxItems, mHandler, getTabActivityTag(), getFeedURL(), mSemaphore );
 	}
 	
 	/**
@@ -777,7 +780,7 @@ abstract public class FeedActivity extends ListActivity {
 						String storageType = getStorageType();
 				        if ( storageType.compareTo("Internal") == 0 )
 				        {
-				        	saveFeedIntoDB();
+				        	saveFeedIntoDB(true);
 				        }
 				        else if ( storageType.compareTo("SDCard") == 0 )
 				        {
