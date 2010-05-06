@@ -2,10 +2,11 @@ package com.dcg.meneame;
 
 import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.util.HttpManager;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -35,9 +36,6 @@ public class NotameActivity extends Activity {
 	
 	/** thread msg handler */
 	private Handler mHandler = null;
-	
-	/** Current http client */
-	private HttpClient mHttpClient = null;
 	
 	/** notame thread! */
 	private NotameThread notameThread = null;
@@ -102,9 +100,6 @@ public class NotameActivity extends Activity {
 				}
 			};
 			
-			// Get client
-			mHttpClient = ((ApplicationMNM) getApplication()).getHttpClient();
-			
 			// Send
 			notameThread = new NotameThread();
 			notameThread.start();
@@ -128,7 +123,6 @@ public class NotameActivity extends Activity {
 		mEditTextView.setText("");
 		mHandler = null;
 		notameThread = null;
-		mHttpClient = null;
 	}
 	
 	public void back() {
@@ -178,37 +172,35 @@ public class NotameActivity extends Activity {
 	    public void run() {
 	    	boolean bResult = false;
 	    	ApplicationMNM.logCat(TAG, "Sending nótame message");
-	    	
-	    	if ( mHttpClient != null )
-	    	{
-	    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-    			String userName = prefs.getString("pref_account_user", "");
-    			String APIKey = prefs.getString("pref_account_apikey", "");
-    			String text = mEditTextView.getText().toString();
-	    		
-	    		String URL = NOTAME_URL + "?"+NOTAME_USER_FIELD+"=" + userName + "&"+NOTAME_API_KEY+"=" + APIKey + "&charset=utf-8&"+NOTAME_MSG+"=" + encodeNotameText(text);
-	    		HttpGet httpGet = new HttpGet(URL);
-	    		try {
-	    			
-	    			// Execute
-	    			HttpResponse response = mHttpClient.execute(httpGet);
-	    			if ( response != null )
-	    			{
-	    				InputStreamReader inputStream = new InputStreamReader(response.getEntity().getContent());
-	    				int data = inputStream.read();
-	    				String finalData = "";
-	    				while(data != -1){
-	    					finalData += (char) data;
-	    					data = inputStream.read();
-	    				}
-	    				inputStream.close();
-	    				// Did we got an ok?
-	    				bResult = finalData.startsWith("OK");
-	    			}
-	    		} catch ( Exception e) {
-	    			// Nothing to be done
-	    		}
-	    	}
+
+    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+			String userName = prefs.getString("pref_account_user", "");
+			String APIKey = prefs.getString("pref_account_apikey", "");
+			String text = mEditTextView.getText().toString();
+    		
+    		String URL = NOTAME_URL + "?"+NOTAME_USER_FIELD+"=" + userName + "&"+NOTAME_API_KEY+"=" + APIKey + "&charset=utf-8&"+NOTAME_MSG+"=" + encodeNotameText(text);
+    		HttpGet httpGet = new HttpGet(URL);
+    		try {
+    			
+    			// Execute
+    			HttpResponse response = HttpManager.execute(httpGet);
+    			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+    			{
+    				InputStreamReader inputStream = new InputStreamReader(response.getEntity().getContent());
+    				int data = inputStream.read();
+    				String finalData = "";
+    				while(data != -1){
+    					finalData += (char) data;
+    					data = inputStream.read();
+    				}
+    				inputStream.close();
+    				// Did we got an ok?
+    				bResult = finalData.startsWith("OK");
+    			}
+    		} catch ( Exception e) {
+    			// Nothing to be done
+    			ApplicationMNM.warnCat(TAG, "Failed to send notame msg! " + e);
+    		}
 	    	
 	    	if ( mHandler != null )
 	    	{

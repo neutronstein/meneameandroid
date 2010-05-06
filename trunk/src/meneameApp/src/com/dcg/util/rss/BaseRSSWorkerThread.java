@@ -7,13 +7,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import com.dcg.app.ApplicationMNM;
+import com.dcg.util.HttpManager;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -40,9 +40,6 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	public static final int ERROR_RSS_IO_EXCEPTION = ERROR_RSS_SAX+1;
 	public static final int ERROR_RSS_PARSE_CONFIG = ERROR_RSS_IO_EXCEPTION+1;
 	public static final int ERROR_RSS_UNKOWN = ERROR_RSS_PARSE_CONFIG+1;
-	
-	/** Global Application */
-	private HttpClient mHTTPClient = null;
 	
 	/** log tag for this class */
 	private static final String TAG = "BaseRSSWorkerThread";
@@ -93,11 +90,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	 * @param feedURL
 	 * @param threadSemaphore
 	 */
-	public void setupWorker( HttpClient HTTPClient, int maxItems, Handler handler, String feedID, String feedURL, Semaphore threadSemaphore ) {
+	public void setupWorker( int maxItems, Handler handler, String feedID, String feedURL, Semaphore threadSemaphore ) {
 		mFeedURL = feedURL;
 		mFeedID = feedID;
 		mSemaphore = threadSemaphore;
-		mHTTPClient = HTTPClient;
 		mHandler = handler;
 		mMaxItems = maxItems;
 	}
@@ -163,14 +159,10 @@ abstract public class BaseRSSWorkerThread extends Thread {
 	{
 		HttpGet request = new HttpGet();
 		
-		mHTTPClient.getConnectionManager().closeExpiredConnections();
-		mHTTPClient.getConnectionManager().closeIdleConnections(10, TimeUnit.SECONDS );
-		
 		request.setURI(new URI(mFeedURL));
 		ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
 		
-		HttpResponse response = mHTTPClient.execute(request);
-		mHTTPClient = null;
+		HttpResponse response = HttpManager.execute(request);
 		
 		if ( response != null )
 		{
