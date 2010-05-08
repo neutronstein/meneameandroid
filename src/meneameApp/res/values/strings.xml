@@ -48,6 +48,9 @@
     <string name="clear_cache_successfull">Cache has been deleted!</string>
     <string name="notame_setup_data">You need to setup your Username and API Key before using Nótame.\nWould you like to configure it now?</string>
     <string name="notame_setup_data_tilte">Nótame configuration</string>
+    <string name="menealo_setup_data">You need to setup your UserID and API Key before voting an article.\nWould you like to configure it now?</string>
+    <string name="menealo_setup_data_tilte">Menealo configuration</string>
+    <string name="menealo_send">Vote has been send!</string>
     <string name="crash_report_question">The app detected a crash! Do you want to send the log file to the developer?</string>
     
     <!-- Version changeset -->
@@ -76,6 +79,8 @@
     <string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL</string>
     
     <!-- Errors -->
+    <string name="menealo_already_voted">You can only vote once!</string>
+    <string name="menealo_failed">Failed to send vote!</string>
     <string name="clear_cache_failed">Failed to delete cache!</string>
     <string name="clear_cache_sdcard_notwritebale">SD-Card not writebale or not present!</string>
     <string name="error_unknown">Unkown Error</string>
@@ -84,6 +89,7 @@
     <string name="refreshing_failed">Failed to refresh feed:</string>
     <string name="refreshing_thread_still_alive">Worker thread still alive!</string>    
     <string name="user_id_invalid">Invalid user ID! Please correct it in your preferences!</string>
+	<string name="no_data_connection">No data conection!</string>
 	
 	<!-- Feed Errors -->
 	<string name="feed_host_unavailable">No data conection!</string>
