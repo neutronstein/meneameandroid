@@ -1,20 +1,29 @@
 package com.dcg.meneame;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import org.xmlpull.v1.XmlSerializer;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.util.HttpManager;
+import com.dcg.util.IOUtilities;
+import com.dcg.util.UserTask;
 import com.dcg.util.rss.BaseRSSWorkerThread;
 import com.dcg.util.rss.Feed;
 import com.dcg.util.rss.FeedItem;
@@ -29,7 +38,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Xml;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,7 +70,7 @@ abstract public class FeedActivity extends ListActivity {
 	private BaseRSSWorkerThread mRssThread = null;
 	
 	/** Worker thread which will do the async operations in our DB */
-	private ArticleDBCacheThread mDBThread = null;
+	//private ArticleDBCacheThread mDBThread = null;
 	
 	/** Worker thread used for voting and such */
 	//private MenealoThread mMenealoThread = null;
@@ -118,9 +126,10 @@ abstract public class FeedActivity extends ListActivity {
     private MeneameDbAdapter mDBHelper = null;
     
     /** The following constants will define all basic URL's meneame will handle */
-    //private static final String MENEAME_MENEALO_API = "/backend/menealo.php";
-    //private static final String MENEAME_MENEALO_COMMENT_API = "/backend/menealo_comment.php";
-    //private static final String MENEALO_RESULT_KEY = "menealo_result_key";
+    private static final String MENEAME_MENEALO_API = "http://meneame.net/backend/menealo.php";
+    
+    /** Reference to our selfs used by our UserTask to access a valid context */
+    private FeedActivity mFeedActivity = null;
 	
     public FeedActivity() {
 		super();
@@ -181,6 +190,8 @@ abstract public class FeedActivity extends ListActivity {
 		
 		// Restore app state if any
 		restoreState();
+		
+		mFeedActivity = this;
 		
 		// Unpause
 		mbIsPaused = false;
@@ -278,6 +289,8 @@ abstract public class FeedActivity extends ListActivity {
 		
 		// Cleanup
 		System.gc();
+		
+		mFeedActivity = null;
 		
 		// Close it
 		mDBHelper.close();
@@ -891,7 +904,7 @@ abstract public class FeedActivity extends ListActivity {
 		    		
 		        	return true;
 		    	case CONTEXT_MENU_VOTE:
-		    		ApplicationMNM.showToast(R.string.advice_not_implemented);
+		    		new MenealoTask().execute(selecteItem.getArticleID());
 		    		//menealo(selecteItem);
 		        	return true;
 		        }
@@ -1079,76 +1092,6 @@ abstract public class FeedActivity extends ListActivity {
     	}
     }
     
-    /**
-     * Create an xml file for the current feed
-     * @param feed
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	private String createXMLFeed( Feed feed ){
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        try {
-        	// Create document       	
-            serializer.setOutput(writer);
-            serializer.startDocument("UTF-8", true);
-            
-            // Start channel
-            serializer.startTag("", "channel");
-            
-            // Add all feed data
-            Map<String, String> feedData = feed.getAllData();
-            for (String s: feedData.keySet()) {
-            	serializer.startTag("", s);
-            	serializer.text(feedData.get(s));
-            	serializer.endTag("", s);
-            }
-            
-            // Add all items
-            List<FeedItem> articles =  feed.getArticleList();
-            int articlesNum = articles.size();
-            for ( int i = 0; i < articlesNum; i++ )
-            {
-            	FeedItem item = articles.get(i);
-            	if ( item != null )
-            	{
-	            	serializer.startTag("", "item");
-	            	
-	            	// Add item data
-	            	Map<String, String> itemData = item.getAllData();
-	                for (String s: itemData.keySet()) {
-	                	if ( !item.isKeyListValue(s) )
-	                	{
-	                		serializer.startTag("", s);
-		                	serializer.text(itemData.get(s));
-		                	serializer.endTag("", s);
-	                	}
-	                	else
-	                	{
-	                		ArrayList<String> listItems = (ArrayList<String>)item.getKeyData(s);
-	        				if ( listItems != null )
-	        				{
-	        					int itemNum = listItems.size();
-	        					for (int j = 0; j < itemNum; j++ )
-	        					{
-	        						serializer.startTag("", s);
-	        						serializer.text(listItems.get(j));
-	        						serializer.endTag("", s);
-	        					}
-	        				}
-	                	}
-	                }
-	            	serializer.endTag("", "item");
-            	}
-            }
-            serializer.endTag("", "channel");
-            serializer.endDocument();
-            return writer.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } 
-    }
-    
     /** 
      * Returns the folder we will use to cache the feed to the SD-Card
      * */
@@ -1222,6 +1165,134 @@ abstract public class FeedActivity extends ListActivity {
 	}
 	
 	/**
+	 * User task that will perform a vote on an article
+	 * @author AriMo
+	 *
+	 */
+	private class MenealoTask extends UserTask<Integer, Void, Integer> {
+		private static final int RESULT_OK = 0;
+		private static final int RESULT_FAILED = 1;
+		private static final int RESULT_FAILED_USER_CONFIG = 2;
+		private static final int RESULT_FAILED_ALREADY_VOTED = 3;
+		private static final int RESULT_FAILED_NO_DATA_CONNECTION = 4;
+		
+		@Override
+		public Integer doInBackground(Integer... params) {
+			int result = RESULT_OK;
+			if ( hasMenealoDataSetup() )
+			{
+				// We can start sending the vote
+				Integer articleID = params[0];
+				
+				// get the user data
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+				String APIKey = prefs.getString("pref_account_apikey", "");
+				int userID = Integer.parseInt(prefs.getString("pref_account_user_id", ""));
+			
+				// Final URL
+				// NOTE: &u is empty because we do not have any document refferer!
+				String URL = MENEAME_MENEALO_API + "?id=" + articleID + "&user=" + userID + "&key=" + APIKey + "&u=";
+				
+				HttpGet httpGet = new HttpGet(URL);
+				HttpEntity entity = null;
+	    		try {	    			
+	    			// Execute
+	    			HttpResponse response = HttpManager.execute(httpGet);
+	    			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+	    				entity = response.getEntity();
+	    				InputStream in = null;
+    					OutputStream out = null;
+						try {
+							in = entity.getContent();
+							final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
+							out = new BufferedOutputStream(dataStream, IOUtilities.IO_BUFFER_SIZE);
+							IOUtilities.copy(in, out);
+							out.flush();
+							final String data = dataStream.toString();
+							
+							// Check data
+							ApplicationMNM.warnCat(TAG, "Vote sended: " + data);
+						} catch (IOException e) {
+							ApplicationMNM.warnCat(TAG, "Could not send vote " + URL + ": " + e);
+							result = RESULT_FAILED;
+						} finally {
+							IOUtilities.closeStream(in);
+							IOUtilities.closeStream(out);
+						}
+	                }
+	    		} catch( Exception e ) {
+	    			ApplicationMNM.warnCat(TAG, "Could not send vote " + URL + ": " + e);
+	    			result = RESULT_FAILED_NO_DATA_CONNECTION;
+	    		} finally {
+	                if (entity != null) {
+	                    try {
+	                        entity.consumeContent();
+	                    } catch (IOException e) {
+	                    	ApplicationMNM.warnCat(TAG, "Could not send vote " + URL + ": " + e);
+	                    }
+	                }
+	            }
+			}
+			else
+			{
+				result = RESULT_FAILED_USER_CONFIG;
+			}			
+			return result;
+		}
+		
+		public boolean hasMenealoDataSetup() {
+	    	try {
+	    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+				String APIKey = prefs.getString("pref_account_apikey", "");
+				Integer.parseInt(prefs.getString("pref_account_user_id", ""));
+				return APIKey.compareTo("") != 0;
+	    	} catch ( Exception e ) {
+	    		e.printStackTrace();
+	    		return false;
+	    	}
+		}
+		
+		@Override
+		public void onPostExecute(Integer result) {
+			switch( result ) {
+			case RESULT_OK:
+				ApplicationMNM.showToast(R.string.menealo_send);
+				break;
+			case RESULT_FAILED_USER_CONFIG:
+				AlertDialog.Builder builder = new AlertDialog.Builder(mFeedActivity);
+				builder.setMessage(R.string.menealo_setup_data)
+					.setCancelable(false)
+					.setTitle(R.string.menealo_setup_data_tilte)
+					.setPositiveButton(R.string.generic_ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							openSettingsScreen();
+							dialog.dismiss();
+						}
+					})
+					.setNegativeButton(R.string.generic_no, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
+				AlertDialog openSettingsDialog = builder.create();
+				openSettingsDialog.show();
+				break;
+			case RESULT_FAILED:
+				ApplicationMNM.showToast(R.string.menealo_failed);
+				break;
+			case RESULT_FAILED_ALREADY_VOTED:
+				ApplicationMNM.showToast(R.string.menealo_already_voted);
+				break;
+			case RESULT_FAILED_NO_DATA_CONNECTION:
+				ApplicationMNM.showToast(R.string.no_data_connection);
+				break;
+			}
+		}
+		
+	}
+
+	
+	/**
 	 * Will vote an article/comment
 	 */
 	/*
@@ -1238,18 +1309,7 @@ abstract public class FeedActivity extends ListActivity {
      * @return
      */
 	/*
-    public boolean hasMenealoDataSetup() {
-    	try {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-		String userName = prefs.getString("pref_account_user", "");
-		String APIKey = prefs.getString("pref_account_apikey", "");
-		int userID = Integer.parseInt(prefs.getString("pref_account_apikey", ""));
-		return userName.compareTo("") != 0 && APIKey.compareTo("") != 0;
-    	} catch ( Exception e ) {
-    		ApplicationMNM.showToast(R.string.user_id_invalid);
-    		return false;
-    	}
-    }
+    
     /**/
 	
 	/**
