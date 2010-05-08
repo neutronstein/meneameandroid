@@ -126,7 +126,7 @@ abstract public class FeedActivity extends ListActivity {
     private MeneameDbAdapter mDBHelper = null;
     
     /** The following constants will define all basic URL's meneame will handle */
-    private static final String MENEAME_MENEALO_API = "http://meneame.net/backend/menealo.php";
+    private static final String MENEAME_MENEALO_API = "http://www.meneame.net/backend/menealo.php";
     
     /** Reference to our selfs used by our UserTask to access a valid context */
     private FeedActivity mFeedActivity = null;
@@ -1220,6 +1220,11 @@ abstract public class FeedActivity extends ListActivity {
 							IOUtilities.closeStream(out);
 						}
 	                }
+	    			else
+	    			{
+	    				ApplicationMNM.warnCat(TAG, "Could not send vote " + URL + " code: " + response.getStatusLine().getStatusCode());
+	    				result = RESULT_FAILED;
+	    			}
 	    		} catch( Exception e ) {
 	    			ApplicationMNM.warnCat(TAG, "Could not send vote " + URL + ": " + e);
 	    			result = RESULT_FAILED_NO_DATA_CONNECTION;
