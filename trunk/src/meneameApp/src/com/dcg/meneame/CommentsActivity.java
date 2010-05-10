@@ -32,7 +32,7 @@ public class CommentsActivity extends FeedActivity {
 	 * @return
 	 */
 	public String getListAdapterClassName() {
-		return "com.dcg.meneame.CommentsAdapter";
+		return "com.dcg.adapter.CommentsAdapter";
 	}
 
 	/**

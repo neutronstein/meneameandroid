@@ -720,7 +720,7 @@ abstract public class FeedActivity extends ListActivity {
 	 * @return
 	 */
 	public String getListAdapterClassName() {
-		return "com.dcg.meneame.ArticlesAdapter";
+		return "com.dcg.adapter.ArticlesAdapter";
 	}
 	
 	/**
