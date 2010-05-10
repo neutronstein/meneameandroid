@@ -1,5 +1,7 @@
 package com.dcg.meneame;
 
+import com.dcg.meneame.R;
+
 import android.os.Bundle;
 
 /**

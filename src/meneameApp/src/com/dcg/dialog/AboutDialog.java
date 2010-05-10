@@ -1,4 +1,6 @@
-package com.dcg.meneame;
+package com.dcg.dialog;
+
+import com.dcg.meneame.R;
 
 import android.app.Dialog;
 import android.content.Context;

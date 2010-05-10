@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.util.rss.Feed;
-import com.dcg.util.rss.FeedItem;
+import com.dcg.rss.ArticleFeedItem;
+import com.dcg.rss.Feed;
+import com.dcg.rss.FeedItem;
 
 import android.content.ContentValues;
 import android.content.Context;

@@ -3,6 +3,8 @@ package com.dcg.meneame;
 import java.io.File;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.dialog.VersionChangesDialog;
+import com.dcg.meneame.R;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

@@ -1,10 +1,13 @@
-package com.dcg.meneame;
+package com.dcg.adapter;
 
 import java.util.ArrayList;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.util.rss.Feed;
-import com.dcg.util.rss.FeedItem;
+import com.dcg.meneame.FeedActivity;
+import com.dcg.meneame.MeneameDbAdapter;
+import com.dcg.meneame.R;
+import com.dcg.rss.Feed;
+import com.dcg.rss.FeedItem;
 
 import android.content.Context;
 import android.view.LayoutInflater;

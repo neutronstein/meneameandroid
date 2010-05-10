@@ -1,8 +1,10 @@
-package com.dcg.meneame;
+package com.dcg.adapter;
 
 import android.content.Context;
+
 import com.dcg.app.ApplicationMNM;
-import com.dcg.util.rss.Feed;
+import com.dcg.meneame.R;
+import com.dcg.rss.Feed;
 
 /**
  * Special adapter used by any comments activity
