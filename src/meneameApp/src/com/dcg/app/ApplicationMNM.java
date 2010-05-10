@@ -98,6 +98,9 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MeneameDbAdapter");
 		addIgnoreCat("VersionChangesDialog");
 		addIgnoreCat("ArticleDBCacheThread");
+		addIgnoreCat("MenealoTask");
+		addIgnoreCat("FeedItemAdapter");
+		addIgnoreCat("FeedItemStore");
 	}
 	
 	/**
