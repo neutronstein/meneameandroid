@@ -19,8 +19,8 @@ public class FeedItemProvider extends ContentProvider {
     
     /** Action id's */
     private static final int SEARCH = 1;
-    private static final int ITEMS = 1;
-    private static final int ITEM_ID = 2;
+    private static final int ITEMS = 2;
+    private static final int ITEM_ID = 3;
 	
 	private static final String AUTHORITY = "meneame";
     
@@ -45,9 +45,6 @@ public class FeedItemProvider extends ContentProvider {
     
     private SQLiteOpenHelper mOpenHelper;
 
-    private Pattern[] mKeyPrefixes;
-    private Pattern[] mKeySuffixes;
-
 	@Override
 	public boolean onCreate() {
 		// TODO Auto-generated method stub
@@ -60,6 +57,17 @@ public class FeedItemProvider extends ContentProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public String getType(Uri uri) {
+        switch (URI_MATCHER.match(uri)) {
+            case ITEMS:
+                return "vnd.android.cursor.dir/vnd.com.dcg.provider.feeditems";
+            case ITEM_ID:
+                return "vnd.android.cursor.item/vnd.com.dcg.provider.feeditems";
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+    }
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -68,21 +76,19 @@ public class FeedItemProvider extends ContentProvider {
 	}
 
 	@Override
-	public String getType(Uri uri) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
+		
+		if (URI_MATCHER.match(uri) != ITEMS) {
+            throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+		
 		return null;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
