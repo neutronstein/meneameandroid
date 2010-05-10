@@ -6,6 +6,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.meneame.R;
 import com.dcg.util.HttpManager;
 
 import android.app.Activity;

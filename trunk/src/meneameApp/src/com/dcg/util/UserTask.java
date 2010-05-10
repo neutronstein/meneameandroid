@@ -16,6 +16,7 @@
 
 package com.dcg.util;
 
+import android.app.Activity;
 import android.os.*;
 import android.os.Process;
 
@@ -158,6 +159,9 @@ public abstract class UserTask<Params, Progress, Result> {
     private final FutureTask<Result> mFuture;
 
     private volatile Status mStatus = Status.PENDING;
+    
+    /** Activity taht invoked the task, can be null! */
+    protected Activity mActivity = null;
 
     /**
      * Indicates the current status of the task. Each status will be set only once
@@ -177,11 +181,19 @@ public abstract class UserTask<Params, Progress, Result> {
          */
         FINISHED,
     }
+    
+    /**
+     * Empty constructor
+     */
+    public UserTask() {
+    	this(null);
+    }
 
     /**
      * Creates a new user task. This constructor must be invoked on the UI thread.
      */
-    public UserTask() {
+    public UserTask( Activity activity ) {
+    	mActivity = activity;
         mWorker = new WorkerRunnable<Params, Result>() {
             public Result call() throws Exception {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
