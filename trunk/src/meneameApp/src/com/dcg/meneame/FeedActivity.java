@@ -47,8 +47,8 @@ abstract public class FeedActivity extends ListActivity {
 	private static final String TAG = "FeedActivity";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
-	protected static String mRssWorkerThreadClassName = "com.dcg.meneame.RSSWorkerThread";
-	protected static String mLocalRssWorkerThreadClassName = "com.dcg.meneame.LocalRSSWorkerThread";
+	protected static String mRssWorkerThreadClassName = "com.dcg.rss.RSSWorkerThread";
+	protected static String mLocalRssWorkerThreadClassName = "com.dcg.rss.LocalRSSWorkerThread";
 
 	/** Feed URL */
 	protected String mFeedURL = "";
