@@ -102,7 +102,7 @@ public class ArticleDBCacheThread extends Thread {
 			mData.putInt(ApplicationMNM.ERROR_KEY, ApplicationMNM.ERROR_SUCCESSFULL);
 			try {
 				// Save feed
-				msg.obj = mDBHelper.getFeed(mFeedID);
+				msg.obj = mDBHelper.getFeed(-1);
 			} catch (Exception e) {
 				ApplicationMNM.warnCat(TAG, "(Exception) Failed recover thread from database " + e.toString());
 				setError(ApplicationMNM.ERROR_FAILED);

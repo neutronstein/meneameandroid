@@ -3,17 +3,17 @@ package com.dcg.meneame;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import com.dcg.app.ApplicationMNM;
-import com.dcg.rss.ArticleFeedItem;
-import com.dcg.rss.Feed;
-import com.dcg.rss.FeedItem;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.dcg.app.ApplicationMNM;
+import com.dcg.rss.ArticleFeedItem;
+import com.dcg.rss.Feed;
+import com.dcg.rss.FeedItem;
 
 public class MeneameDbAdapter {
     private static final String TAG = "MeneameDbAdapter";
@@ -25,7 +25,7 @@ public class MeneameDbAdapter {
      */
     public static final String FEED_DATABASE_TABLE = "feed_cache";
     public static final String FEED_KEY_ROWID = "_id";
-    public static final String FEED_KEY_TAG = "tag";
+    public static final String FEED_KEY_FEEDID = "tag";
 	public static final String FEED_KEY_FEED_URL = "feedUrl";
 	public static final String FEED_KEY_TITLE = "title";
 	public static final String FEED_KEY_DESCRIPTION = "description";
@@ -35,7 +35,7 @@ public class MeneameDbAdapter {
     private static final String FEED_DATABASE_CREATE =
             "create table "+FEED_DATABASE_TABLE+" " +
     		"("+FEED_KEY_ROWID+" integer primary key autoincrement, " +
-    		FEED_KEY_TAG+" text not null unique, " +
+    		FEED_KEY_FEEDID+" integer not null unique, " +
     		FEED_KEY_FIRT_VISIBLE_POSITION+" integer," +
     		FEED_KEY_ITEMS+" integer," +
     		FEED_KEY_TITLE+" text, " +
@@ -99,7 +99,7 @@ public class MeneameDbAdapter {
     
     /** Internal DB name and version */
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = ApplicationMNM.mDatabaseVersion;
+    private static final int DATABASE_VERSION = 8;
 
     private final Context mCtx;
     
@@ -337,13 +337,13 @@ public class MeneameDbAdapter {
      * @param feed
      * @return
      */
-    public long getFeedRowID( String id) {
+    public long getFeedRowID( int id) {
     	Cursor mCursor = null;
     	long data = -1;
     	try {    		
     		mCursor = mDb.query(true, FEED_DATABASE_TABLE,
 	    			new String[] {FEED_KEY_ROWID}, 
-	    			FEED_KEY_TAG + "='" + id +"'",
+	    			FEED_KEY_FEEDID + "=" + id,
 	            	null, null, null, null, null);
 		    if (mCursor != null) 
 		    {
@@ -373,7 +373,7 @@ public class MeneameDbAdapter {
      */
     public boolean saveFeed( Feed feed ) {
     	try {
-    		if ( feed.getFeedID().compareTo("") != 0)
+    		if ( feed.getFeedID() != -1)
     		{
     			ApplicationMNM.logCat(TAG, "saveFeed("+feed.getFeedID()+"): Start saving process...");
 		    	long rowId = getFeedRowID( feed.getFeedID() );
@@ -388,7 +388,7 @@ public class MeneameDbAdapter {
 		    		if ( rowId != -1 )
 		    		{		    		
 			    		// Now we need to add all articles and the 
-			    		addFeedItems(rowId,feed);
+			    		addFeedItems(feed.getFeedID(),feed);
 		    		}
 		    	}
 		    	else
@@ -396,7 +396,7 @@ public class MeneameDbAdapter {
 		    		ApplicationMNM.logCat(TAG, "  Updating feed: " + rowId);
 		    		
 		    		// We only update the feed data, not it's articles!
-		    		updateFeed(feed,rowId);
+		    		updateFeed(feed,feed.getFeedID());
 		    	}
 		    	// Set the feeds row ID!
 		    	feed.setRowID(rowId);
@@ -412,7 +412,7 @@ public class MeneameDbAdapter {
     	return false;
     }
     
-    public Feed getFeed( String id ) {
+    public Feed getFeed( int id ) {
     	Feed feed = null;
     	try {
 	    	long rowId = getFeedRowID( id );
@@ -453,18 +453,11 @@ public class MeneameDbAdapter {
      * @param id
      * @return
      */
-    public boolean deleteFeedCache( String id ) {
+    public boolean deleteFeedCache( int id ) {
     	// Delete feed items
-    	long rowId = getFeedRowID( id );
-    	if ( rowId != -1 )
-    	{
-    		deleteFeedItems(rowId);
-    		// Delete feed    	
-        	return mDb.delete(FEED_DATABASE_TABLE, FEED_KEY_TAG + "='" + id+"'", null) > 0;
-    	}
-    	
-    	// Nothing to be deleted!
-    	return false;    	
+		deleteFeedItems(id);
+		// Delete feed    	
+    	return mDb.delete(FEED_DATABASE_TABLE, FEED_KEY_FEEDID + "=" + id, null) > 0;  	
     }
     
     /**
@@ -474,7 +467,7 @@ public class MeneameDbAdapter {
      */
     public long createFeed(Feed feed) {
     	ContentValues initialValues = new ContentValues();
-        initialValues.put(FEED_KEY_TAG, feed.getFeedID());
+        initialValues.put(FEED_KEY_FEEDID, feed.getFeedID());
         initialValues.put(FEED_KEY_URL, feed.getURL());
         initialValues.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
         initialValues.put(FEED_KEY_ITEMS, feed.getArticleCount());
@@ -491,9 +484,9 @@ public class MeneameDbAdapter {
      * @param rowId
      * @return
      */
-    public boolean updateFeed(Feed feed, long rowId) {
+    public boolean updateFeed(Feed feed, int rowId) {
     	ContentValues args = new ContentValues();
-    	args.put(FEED_KEY_TAG, feed.getFeedID());
+    	args.put(FEED_KEY_FEEDID, feed.getFeedID());
     	args.put(FEED_KEY_URL, feed.getURL());
     	args.put(FEED_KEY_FIRT_VISIBLE_POSITION, feed.getFirstVisiblePosition());
     	args.put(FEED_KEY_ITEMS, feed.getArticleCount());
@@ -515,7 +508,7 @@ public class MeneameDbAdapter {
     		mCursor = mDb.query(true, FEED_DATABASE_TABLE,
 	    			new String[] 
     			           	{
-    						FEED_KEY_TAG,
+    						FEED_KEY_FEEDID,
     						FEED_KEY_FEED_URL,
     						FEED_KEY_FIRT_VISIBLE_POSITION,
     						FEED_KEY_TITLE,
@@ -528,7 +521,7 @@ public class MeneameDbAdapter {
 		    if (mCursor != null) 
 		    {
 		        mCursor.moveToFirst();
-		        feed.setIdentification(mCursor.getString(0), mCursor.getString(1));
+		        feed.setIdentification(mCursor.getInt(0), mCursor.getString(1));
 		        feed.setFirstVisiblePosition(mCursor.getInt(2));
 		        feed.setValue("title", mCursor.getString(3));
 		        feed.setValue("description", mCursor.getString(4));
@@ -660,9 +653,9 @@ public class MeneameDbAdapter {
      * @param feedRowID
      * @param feed
      */
-    public void addFeedItems( long feedRowID, Feed feed ) {
+    public void addFeedItems( int feedID, Feed feed ) {
     	// Clear any previous articles
-    	deleteFeedItems( feedRowID );
+    	deleteFeedItems( feedID );
     	
     	// Add the new ones!
     	List<FeedItem> feedItems = feed.getArticleList();
@@ -670,7 +663,7 @@ public class MeneameDbAdapter {
     	for(int i = 0; i < feedItemNum; i++ )
     	{
     		// Add feed item!
-    		long rowId = addFeedItem(feedRowID, i, feedItems.get(i));
+    		long rowId = addFeedItem(feedID, i, feedItems.get(i));
     		if ( rowId != -1 )
     		{
     			ApplicationMNM.logCat(TAG, " ["+rowId+"] Article("+i+")");
@@ -690,7 +683,7 @@ public class MeneameDbAdapter {
      * Add a feed item to the database
      * @return
      */
-    public long addFeedItem( long feedRowId, int itemId, FeedItem feedItem ) {
+    public long addFeedItem( int feedRowId, int itemId, FeedItem feedItem ) {
     	ContentValues initialValues = new ContentValues();
     	initialValues.put(ITEMS_KEY_FEEDID, feedRowId);
     	initialValues.put(ITEMS_KEY_ITEMID, itemId);    	

@@ -21,9 +21,6 @@ public class ApplicationMNM extends Application {
 	/** Current version of the app*/
 	private static final int mAppVersion = 6;
 	
-	/** Database version currently used. CURRENT 8 */
-	public static final int mDatabaseVersion = 12;
-	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
 	
@@ -89,7 +86,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
@@ -101,6 +98,8 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MenealoTask");
 		addIgnoreCat("FeedItemAdapter");
 		addIgnoreCat("FeedItemStore");
+		//addIgnoreCat("RequestFeedTask");
+		addIgnoreCat("MenealoTask");
 	}
 	
 	/**

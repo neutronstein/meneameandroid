@@ -24,9 +24,10 @@ import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
 import com.dcg.util.UserTask;
 
-	/**
-	 * User task that will perform a vote on an article
-	 */
+/**
+ * User task that will perform a vote on an article
+ * @author Moritz Wundke (b.thax.dcg@gmail.com)
+ */
 public class MenealoTask extends UserTask<Integer, Void, Integer> {
 	private static final String TAG = "MenealoTask";
 	
