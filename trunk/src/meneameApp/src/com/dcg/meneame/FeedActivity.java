@@ -17,6 +17,10 @@ import com.dcg.rss.BaseRSSWorkerThread;
 import com.dcg.rss.Feed;
 import com.dcg.rss.FeedItem;
 import com.dcg.task.MenealoTask;
+import com.dcg.task.RequestFeedTask;
+import com.dcg.task.RequestFeedTask.RequestFeedListener;
+import com.dcg.task.RequestFeedTaskParams;
+import com.dcg.util.UserTask;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -41,7 +45,7 @@ import android.widget.TextView;
  * Basic activity that handles feed parsing and stuff like that
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-abstract public class FeedActivity extends ListActivity {
+abstract public class FeedActivity extends ListActivity implements RequestFeedListener {
 	
 	/** Log tag */
 	private static final String TAG = "FeedActivity";
@@ -132,7 +136,7 @@ abstract public class FeedActivity extends ListActivity {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onCreate()");
 		
 		// Create databse helper
-		mDBHelper = new MeneameDbAdapter(this);
+		//mDBHelper = new MeneameDbAdapter(this);
 		
 		// Unpause
 		mbIsPaused = false;
@@ -167,7 +171,10 @@ abstract public class FeedActivity extends ListActivity {
 		super.onResume();
 		
 		// Open database
-		mDBHelper.open();
+		if ( mDBHelper != null )
+		{
+			mDBHelper.open();
+		}
 		
 		// Restore app state if any
 		restoreState();
@@ -270,7 +277,10 @@ abstract public class FeedActivity extends ListActivity {
 		System.gc();
 		
 		// Close it
-		mDBHelper.close();
+		if ( mDBHelper != null )
+		{
+			mDBHelper.close();
+		}
 		
 		super.onPause();
 	}
@@ -351,7 +361,7 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			if ( bClearCache )
 			{
-				mDBHelper.deleteFeedCache(getTabActivityTag());
+				mDBHelper.deleteFeedCache(getIndicatorStringID());
 			}
 			mFeed.setFirstVisiblePosition(mListView.getFirstVisiblePosition());
 			mDBHelper.saveFeed(mFeed);
@@ -363,7 +373,7 @@ abstract public class FeedActivity extends ListActivity {
 	 * @return
 	 */
 	public Feed readFeedFromDB() {
-		return mDBHelper.getFeed(getTabActivityTag());
+		return mDBHelper.getFeed(this.getIndicatorStringID());
 	}
 	
 	/**
@@ -612,7 +622,7 @@ abstract public class FeedActivity extends ListActivity {
 		String storageType = getStorageType();
         if ( storageType.compareTo("Internal") == 0 )
         {
-        	return mDBHelper.getFeed(getTabActivityTag());
+        	return mDBHelper.getFeed(getIndicatorStringID());
         }
         else if ( storageType.compareTo("SDCard") == 0 )
         {
@@ -633,6 +643,24 @@ abstract public class FeedActivity extends ListActivity {
 		{
 			String Error = "";
 			mbIsLoadingCachedFeed = bUseCache;
+			
+			RequestFeedTaskParams mTaskParams = new RequestFeedTaskParams();
+			mTaskParams.mMaxItems = -1;
+			mTaskParams.mItemClass = "com.dcg.rss.ArticleFeedItem";
+			mTaskParams.mURL = mFeedURL;
+			mTaskParams.mParserClass = "com.dcg.rss.FeedParser";
+			mTaskParams.mFeedListener = this;
+			mTaskParams.mFeedID = getIndicatorStringID();
+			UserTask<RequestFeedTaskParams, Void, Integer> requestTask = new RequestFeedTask(this).execute(mTaskParams);
+			
+			// Clear the current list adapter!
+			setListAdapter(null);
+			
+			// Change empty text so that the user knows when it's all done
+			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+			emptyTextView.setText(R.string.refreshing_lable);
+			
+			/*
 			try {
 				// Clear the current list adapter!
 				setListAdapter(null);
@@ -677,11 +705,23 @@ abstract public class FeedActivity extends ListActivity {
 				e.printStackTrace();
 				Error = e.toString();
 			}
+			/**/
 			if ( Error.length() > 0 ) onRefreshCompleted(COMPLETE_ERROR,null,null,Error);
 		}
 		else
 		{
 			onRefreshCompleted(COMPLETE_ERROR_THREAD_ALIVE, null, null, "");
+		}
+	}
+	
+	/**
+	 * Called once we finished requesting the feed
+	 */
+	public void onFeedFinished(Integer resultCode, Feed feed) {
+		if ( resultCode == ApplicationMNM.ERROR_SUCCESSFULL )
+		{
+			this.mFeed = feed;
+			_updateFeedList();
 		}
 	}
 	
@@ -752,7 +792,7 @@ abstract public class FeedActivity extends ListActivity {
 			this.mFeed = parsedFeed;
 			if ( this.mFeed != null )
 			{
-				this.mFeed.setIdentification(getTabActivityTag(),getFeedURL());
+				this.mFeed.setIdentification(getIndicatorStringID(),getFeedURL());
 				
 				// If no articles where found in the feed show an advice
 				if ( this.mFeed.getArticleCount() == 0 )
@@ -975,7 +1015,7 @@ abstract public class FeedActivity extends ListActivity {
     						feedID = strLine.trim();
     						break;
     					case 1:
-    						feed.setIdentification(feedID, strLine.trim());
+    						feed.setIdentification(getIndicatorStringID(), strLine.trim());
     						break;
     				}
     			}

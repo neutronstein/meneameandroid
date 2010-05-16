@@ -26,7 +26,8 @@
 		</activity>
 	<activity android:name="NotameActivity"></activity>
 	<provider
-		android:name="com.dcg.provider.FeedItemProvider"
-		android:authorities="meneame" />
+		android:name="com.dcg.provider.MeneameContentProvider"
+		android:authorities="com.dcg.meneame"
+		android:multiprocess="true"/>
 	</application>
 </manifest> 

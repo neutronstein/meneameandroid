@@ -4,8 +4,11 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class FeedItemElement implements BaseColumns {
-	public static final Uri CONTENT_URI = Uri.parse("content://meneame/content");
+	public static final Uri CONTENT_URI = Uri.parse("content://com.dcg.meneame/items");
 	public static final String DEFAULT_SORT_ORDER = "link_id DESC";
+	
+	/** DB table name */
+	public static final String TABLE = "items";
 	
 	/** Table definition */
 	public static final String LINK_ID = "link_id";
