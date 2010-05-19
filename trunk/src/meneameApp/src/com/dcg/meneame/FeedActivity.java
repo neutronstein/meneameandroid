@@ -1,26 +1,9 @@
 package com.dcg.meneame;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-
-import com.dcg.adapter.ArticlesAdapter;
-import com.dcg.app.ApplicationMNM;
-import com.dcg.dialog.AboutDialog;
-import com.dcg.meneame.R;
-import com.dcg.rss.BaseRSSWorkerThread;
-import com.dcg.rss.Feed;
-import com.dcg.rss.FeedItem;
-import com.dcg.task.MenealoTask;
-import com.dcg.task.RequestFeedTask;
-import com.dcg.task.RequestFeedTask.RequestFeedListener;
-import com.dcg.task.RequestFeedTaskParams;
-import com.dcg.util.UserTask;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -40,6 +23,17 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.dcg.adapter.ArticlesAdapter;
+import com.dcg.app.ApplicationMNM;
+import com.dcg.dialog.AboutDialog;
+import com.dcg.rss.BaseRSSWorkerThread;
+import com.dcg.rss.Feed;
+import com.dcg.rss.FeedItem;
+import com.dcg.task.MenealoTask;
+import com.dcg.task.RequestFeedTask;
+import com.dcg.task.RequestFeedTask.RequestFeedListener;
+import com.dcg.task.RequestFeedTaskParams;
 
 /**
  * Basic activity that handles feed parsing and stuff like that
@@ -651,7 +645,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			mTaskParams.mParserClass = "com.dcg.rss.FeedParser";
 			mTaskParams.mFeedListener = this;
 			mTaskParams.mFeedID = getIndicatorStringID();
-			UserTask<RequestFeedTaskParams, Void, Integer> requestTask = new RequestFeedTask(this).execute(mTaskParams);
+			new RequestFeedTask(this).execute(mTaskParams);
 			
 			// Clear the current list adapter!
 			setListAdapter(null);
@@ -997,6 +991,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     public Feed getFeedFromCacheSDCard() {
     	Feed feed = null;
     	try {
+    		/*
     		feed = new Feed();
     		FileInputStream feedFile = new FileInputStream(getSDCardCacheFilePath());
     		DataInputStream fileStream = new DataInputStream(feedFile);
@@ -1026,6 +1021,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     			lineNumber++;
     		}
     		fileStream.close();
+    		/**/
     	} catch( Exception e ) {
     		// nothing to be done
     	}

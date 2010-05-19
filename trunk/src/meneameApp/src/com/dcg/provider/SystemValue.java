@@ -11,5 +11,8 @@ public class SystemValue implements BaseColumns {
 	
 	/** Table definition */
 	public static final String KEY = "key";
-    public static final String VALUE = "value";    
+	public static final int KEY_FIELD = 0;
+	
+    public static final String VALUE = "value";
+    public static final int VALUE_FIELD = 1;
 }

@@ -85,11 +85,11 @@ public class MeneameContentProvider extends ContentProvider {
 	public String getType(Uri uri) {
         switch (URI_MATCHER.match(uri)) {
             case ITEMS:
-                return "vnd.android.cursor.dir/vnd.com.dcg.provider.feeditems";
+                return "vnd.android.cursor.dir/vnd.com.dcg.meneame.provider.feeditems";
             case ITEM_ID:
-                return "vnd.android.cursor.item/vnd.com.dcg.provider.feeditems";
+                return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.feeditems";
             case SYSTEM_VALUE:
-                return "vnd.android.cursor.item/vnd.com.dcg.provider.systemvalue";
+                return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.systemvalue";
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -161,8 +161,31 @@ public class MeneameContentProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		
-		return 0;
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        int count;
+        String segment = uri.getPathSegments().get(1);
+        switch (URI_MATCHER.match(uri)) {
+            case ITEMS:
+                count = db.update(FeedItemElement.TABLE, values, selection, selectionArgs);
+                break;
+            case ITEM_ID:
+                count = db.update(FeedItemElement.TABLE, values, FeedItemElement._ID + "=" + segment +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
+                        selectionArgs);
+                break;
+            case SYSTEM_VALUE:
+                count = db.update(SystemValue.TABLE, values, SystemValue.KEY + "=" + segment +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
+                        selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return count;
 	}
 	
 	private static class DatabaseHelper extends SQLiteOpenHelper {
