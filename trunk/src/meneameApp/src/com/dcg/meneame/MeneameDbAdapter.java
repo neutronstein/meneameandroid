@@ -181,7 +181,7 @@ public class MeneameDbAdapter {
     public MeneameDbAdapter open() throws SQLException {
     	try {
 			mSemaphore.acquire();
-			mDbHelper = new DatabaseHelper(mCtx);
+			//mDbHelper = new DatabaseHelper(mCtx);
 	        mDb = mDbHelper.getWritableDatabase();
 	        return this;
 		} catch (InterruptedException e) {

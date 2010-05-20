@@ -19,7 +19,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String TAG = "FeedItemProvider";
     
     /** Database name */
-	private static final String DATABASE_NAME = "data";
+	private static final String DATABASE_NAME = "meneame.data.db";
 	
 	/** Database version currently used. CURRENT 8 */
     private static final int DATABASE_VERSION = 1;
@@ -28,6 +28,7 @@ public class MeneameContentProvider extends ContentProvider {
     private static final int ITEMS = 1;
     private static final int ITEM_ID = 2;
     private static final int SYSTEM_VALUE = 3;
+    private static final int SYSTEM_VALUE_ID = 4;
 	
 	private static final String AUTHORITY = "com.dcg.meneame";
     
@@ -36,7 +37,8 @@ public class MeneameContentProvider extends ContentProvider {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(AUTHORITY, "item", ITEMS);
         URI_MATCHER.addURI(AUTHORITY, "item/#", ITEM_ID);
-        URI_MATCHER.addURI(AUTHORITY, "systemvalue/#", SYSTEM_VALUE);
+        URI_MATCHER.addURI(AUTHORITY, "systemvalue", SYSTEM_VALUE);
+        URI_MATCHER.addURI(AUTHORITY, "systemvalue/#", SYSTEM_VALUE_ID);
     }
     
     private SQLiteOpenHelper mOpenHelper;
@@ -52,7 +54,7 @@ public class MeneameContentProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		String orderBy = "";
-		String segment = uri.getPathSegments().get(1);
+		String segment = "";
 		switch (URI_MATCHER.match(uri)) {
 			case ITEMS:
 				qb.setTables(FeedItemElement.TABLE);
@@ -60,13 +62,20 @@ public class MeneameContentProvider extends ContentProvider {
 				break;
 			case ITEM_ID:
 				qb.setTables(FeedItemElement.TABLE);
+				segment = uri.getPathSegments().get(1);
 				qb.appendWhere(FeedItemElement._ID + "=" + segment);
 				orderBy = FeedItemElement.DEFAULT_SORT_ORDER;
 				break;
 			case SYSTEM_VALUE:
 				qb.setTables(SystemValue.TABLE);
+				break;
+			case SYSTEM_VALUE_ID:
+				qb.setTables(SystemValue.TABLE);
+				segment = uri.getPathSegments().get(1);
 				qb.appendWhere(SystemValue.KEY + "=" + segment);
 				break;
+			default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
 		}
 		
 		// If no sort order is specified use the default
@@ -89,6 +98,8 @@ public class MeneameContentProvider extends ContentProvider {
             case ITEM_ID:
                 return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.feeditems";
             case SYSTEM_VALUE:
+                return "vnd.android.cursor.dir/vnd.com.dcg.meneame.provider.systemvalue";
+            case SYSTEM_VALUE_ID:
                 return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.systemvalue";
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -145,6 +156,9 @@ public class MeneameContentProvider extends ContentProvider {
                         selectionArgs);
                 break;
             case SYSTEM_VALUE:
+            	count = db.delete(SystemValue.TABLE, selection, selectionArgs);
+                break;
+            case SYSTEM_VALUE_ID:
                 count = db.delete(SystemValue.TABLE, SystemValue.KEY + "=" + segment +
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
                         selectionArgs);
@@ -179,6 +193,9 @@ public class MeneameContentProvider extends ContentProvider {
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
                         selectionArgs);
                 break;
+            case SYSTEM_VALUE_ID:
+            	count = db.update(SystemValue.TABLE, values, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -194,7 +211,7 @@ public class MeneameContentProvider extends ContentProvider {
         }
 
         @Override
-        public void onCreate(SQLiteDatabase db) {        	
+        public void onCreate(SQLiteDatabase db) {
         	// Create items table
             db.execSQL("CREATE TABLE " + FeedItemElement.TABLE + " ("
                     + FeedItemElement._ID + " INTEGER PRIMARY KEY, "
@@ -221,8 +238,7 @@ public class MeneameContentProvider extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         	ApplicationMNM.warnCat(TAG, "Upgrading database from version " + oldVersion + " to " +
                     newVersion + ", which will destroy all old data");
-
-            db.execSQL("DROP TABLE IF EXISTS " + FeedItemElement.TABLE);
+        	db.execSQL("DROP TABLE IF EXISTS " + FeedItemElement.TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + SystemValue.TABLE);
             onCreate(db);
         }

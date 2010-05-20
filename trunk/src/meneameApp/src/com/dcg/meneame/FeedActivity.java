@@ -7,9 +7,11 @@ import java.util.concurrent.Semaphore;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import com.dcg.adapter.ArticlesAdapter;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.dialog.AboutDialog;
+import com.dcg.provider.SystemValue;
 import com.dcg.rss.BaseRSSWorkerThread;
 import com.dcg.rss.Feed;
 import com.dcg.rss.FeedItem;
@@ -128,6 +131,20 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onCreate()");
+		
+		
+		// Form an array specifying which columns to return. 
+		String[] projection = new String[] {
+				SystemValue._ID,
+				SystemValue.KEY,
+				SystemValue.VALUE
+				};
+
+		// Get the system vakue URI
+		Uri contacts =  SystemValue.CONTENT_URI;
+
+		// Make the query. 
+		Cursor cur = managedQuery(contacts, projection, null, null, null);
 		
 		// Create databse helper
 		//mDBHelper = new MeneameDbAdapter(this);
