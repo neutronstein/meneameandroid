@@ -8,6 +8,7 @@ import java.util.concurrent.Semaphore;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -140,11 +141,11 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 				SystemValue.VALUE
 				};
 
-		// Get the system vakue URI
-		Uri contacts =  SystemValue.CONTENT_URI;
+		// Get the system value URI
+		Uri AllSystemValues = ContentUris.withAppendedId(SystemValue.CONTENT_URI, 1);
 
 		// Make the query. 
-		Cursor cur = managedQuery(contacts, projection, null, null, null);
+		Cursor cur = managedQuery(AllSystemValues, projection, null, null, null);
 		
 		// Create databse helper
 		//mDBHelper = new MeneameDbAdapter(this);
