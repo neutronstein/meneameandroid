@@ -3,13 +3,14 @@ package com.dcg.adapter;
 import android.widget.TextView;
 
 public class FeedItemViewHolder {
-	TextView title;
-    TextView description;
-    TextView votes;
-    TextView url;
-    TextView category;
+	public TextView title;
+	public TextView description;
+	public TextView votes;
+	public TextView url;
+	public TextView category;
     
-    int link_id;
-    int feedid;
-    String comment_rss;
+	public int link_id;
+	public int feedid;
+	public String comment_rss;
+	public String link;
 }

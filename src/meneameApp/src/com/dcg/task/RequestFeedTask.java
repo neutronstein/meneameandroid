@@ -10,10 +10,14 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.SQLException;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.rss.Feed;
+import com.dcg.meneame.FeedActivity;
+import com.dcg.provider.FeedItemElement;
 import com.dcg.rss.RSSParser;
+import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;
 import com.dcg.util.UserTask;
 
@@ -21,12 +25,13 @@ import com.dcg.util.UserTask;
  * Will download a feed from the net and cache it to the database
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integer> {
+public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integer> implements AddFeedItemListener {
 	private static final String TAG = "RequestFeedTask";
 	
 	/** Error keys used as return types by the task */
 	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ApplicationMNM.ERROR_FAILED+1;
-	public static final int ERROR_INVALID_RSS_DATA = ERROR_COULD_NOT_CREATE_RSS_HANDLER+1;
+	public static final int ERROR_RSS_UNKOWN = ERROR_COULD_NOT_CREATE_RSS_HANDLER+1;
+	public static final int ERROR_INVALID_RSS_DATA = ERROR_RSS_UNKOWN+1;
 	public static final int ERROR_NO_INPUT_STREAM = ERROR_INVALID_RSS_DATA+1;
 	public static final int ERROR_NO_INPUT_STREAM_EXCEPTION = ERROR_NO_INPUT_STREAM+1;
 	public static final int ERROR_NO_INPUT_STREAM_FILE_NOT_FOUND = ERROR_NO_INPUT_STREAM_EXCEPTION+1;
@@ -38,19 +43,19 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	public static final int ERROR_RSS_SAX = ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND+1;
 	public static final int ERROR_RSS_IO_EXCEPTION = ERROR_RSS_SAX+1;
 	public static final int ERROR_RSS_PARSE_CONFIG = ERROR_RSS_IO_EXCEPTION+1;
-	public static final int ERROR_RSS_UNKOWN = ERROR_RSS_PARSE_CONFIG+1;
+	public static final int ERROR_NOT_A_FEED_ACTIVITY = ERROR_RSS_PARSE_CONFIG+1;
 	
 	/** data params for the task */
 	private RequestFeedTaskParams mMyParams;
 	
-	/** Parsed feed */
-	private Feed mFeed;
+	private static String[] sArguments1 = new String[1];
 	
 	/**
      * Constructor
      */
     public RequestFeedTask(Activity activity) {
 		super(activity);
+		ApplicationMNM.addLogCat(TAG);
 	}
     
 	@Override
@@ -64,15 +69,20 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 		try {
 			InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
 			try {
+				ApplicationMNM.logCat(TAG, "Requesting feed: "+mMyParams.mFeedID);
+				// Delete cache before staring the parsing process
+				if ( deleteFeedCache(mMyParams.mFeedID) )
+					ApplicationMNM.logCat(TAG, " Cache deleted");
+				else
+					ApplicationMNM.logCat(TAG, " Unable to delete cache");
+				
 				// Create the parser
 				RSSParser feedParser = getRSSParser(mMyParams.mParserClass);
 				feedParser.setInputStream(streamReader);
 				feedParser.setmFeedItemClassName(mMyParams.mItemClass);
 				feedParser.setMaxItems(mMyParams.mMaxItems);
+				feedParser.onAddFeedItemListener(this);
 				feedParser.parse();
-				mFeed = feedParser.getFeed();
-				
-				// Parsed so start caching process!
 			
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
@@ -83,6 +93,9 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
+			} catch (ClassCastException e) {
+				e.printStackTrace();
+				bResult = ERROR_NOT_A_FEED_ACTIVITY;
 			}
 		} catch (ClientProtocolException e1) {
 			e1.printStackTrace();
@@ -138,10 +151,46 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 		//ApplicationMNM.showToast("Finished with result: " + result);
 		if ( mMyParams != null )
 		{
-			mMyParams.mFeedListener.onFeedFinished(result, mFeed);
-			
-			// Clear reference to feed object
-			mFeed = null;
+			mMyParams.mFeedListener.onFeedFinished(result);
+		}
+	}
+	
+	/**
+	 * Access the current content provider
+	 * @return
+	 */
+	public ContentResolver getContentResolver() {
+		return ((FeedActivity)mActivity).getContentResolver();
+	}
+	
+	/**
+	 * Delete an entire feed cache refernced by a feed ID
+	 * @param feedID
+	 */
+	public boolean deleteFeedCache( int feedID ) {
+		final String[] arguments1 = sArguments1;
+		arguments1[0] = String.valueOf(feedID);
+		final String where = FeedItemElement.FEEDID + "=?";
+		int count = getContentResolver().delete(FeedItemElement.CONTENT_URI, where, arguments1);
+		return count > 0;
+	}
+	
+	/**
+	 * Called from the RSS parser when a feed item has been parsed
+	 */
+	public void onFeedAdded(FeedItemElement feedItem) {
+		// Set some feed specific values
+		feedItem.setFeedID(mMyParams.mFeedID);
+		
+		// Print it out
+		ApplicationMNM.logCat(TAG, "FeedParsed: "+feedItem.getLinkID());
+		
+		try {
+			// Insert the feed item
+			getContentResolver().insert(FeedItemElement.CONTENT_URI, feedItem.getContentValues());
+		} catch ( SQLException e ) {
+			// Something went wrong!
+			ApplicationMNM.warnCat(TAG, String.valueOf(e.getStackTrace()));
 		}
 	}
 	
@@ -158,7 +207,6 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 		 * @param resultCode
 		 * @param feed
 		 */
-		void onFeedFinished(Integer resultCode, Feed feed);
+		void onFeedFinished(Integer resultCode);
 	}
-
 }

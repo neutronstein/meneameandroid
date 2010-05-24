@@ -5,10 +5,12 @@ import java.io.File;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.dialog.VersionChangesDialog;
 import com.dcg.meneame.R;
+import com.dcg.provider.FeedItemElement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -135,19 +137,12 @@ public class Preferences extends PreferenceActivity {
 	 * @return
 	 */
 	public boolean clearFeedCacheWorker() {
-		boolean bResult = false;
-		if ( getStorageType().compareTo("Internal") == 0 )
-		{
-			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
-			dBHelper.open();		
-			bResult = dBHelper.deleteCompleteFeedCache();
-			dBHelper.close();
+		try {
+			getContentResolver().delete(FeedItemElement.CONTENT_URI, "", null);		
+			return true;
+		} catch( SQLException e ) {
+			return false;
 		}
-		else
-		{
-			bResult = ApplicationMNM.clearFeedCache();
-		}
-		return bResult;
 	}
 	
 	/**
@@ -161,7 +156,7 @@ public class Preferences extends PreferenceActivity {
 		}
 		else
 		{
-			ApplicationMNM.logCat(TAG, "Failed to clear cache!");
+			ApplicationMNM.logCat(TAG, "Nothing to be deleted!");
 			ApplicationMNM.showToast(R.string.clear_cache_failed);
 		}
 	}

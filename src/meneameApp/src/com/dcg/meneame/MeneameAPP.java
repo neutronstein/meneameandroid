@@ -138,26 +138,18 @@ public class MeneameAPP extends TabActivity  {
 	
 	/** Marks tghe exit as ok */
 	private void setExitSuccessfull() {
-		if ( ApplicationMNM.mAllowCrashReport )
+		if ( ApplicationMNM.mbAllowCrashReport )
 		{
-			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
-			dBHelper.open();		
-			dBHelper.setSystemValueBool("com.dcg.meneame.exit.ok", true);		
-			dBHelper.close();
+
 		}
 	}
 	
 	/** Looks if we exited successfully the app last time */
 	public boolean hasExitedSuccessfully() {
-		if ( ApplicationMNM.mAllowCrashReport )
+		if ( ApplicationMNM.mbAllowCrashReport )
 		{
 			boolean bResult = false;
-			
-			MeneameDbAdapter dBHelper = new MeneameDbAdapter(this);
-			dBHelper.open();		
-			bResult = dBHelper.getSystemValueBool("com.dcg.meneame.exit.ok", bResult);		
-			dBHelper.close();
-			
+
 			return bResult;
 		}
 		return true;

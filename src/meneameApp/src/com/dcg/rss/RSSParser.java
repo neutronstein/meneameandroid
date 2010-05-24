@@ -13,6 +13,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.provider.FeedItemElement;
+import com.dcg.task.RequestFeedTaskParams;
 
 /**
  * Class that does the parsing of an RSS file
@@ -26,11 +28,8 @@ abstract public class RSSParser extends DefaultHandler {
 	/** The stream from where to get our data */
 	private InputStreamReader mInputStreamReader = null;
 	
-	/** Our feed object where we store our parsed data */
-	private Feed mFeed = null;
-	
 	/** Current feed item  */
-	private FeedItem mFeedItem = null;
+	private FeedItemElement mFeedItem = null;
 	
 	/** class name used to create a new feed item */
 	private String mFeedItemClassName;
@@ -43,10 +42,7 @@ abstract public class RSSParser extends DefaultHandler {
 	
 	/** Count items */
 	private int mItemCount;
-	
-	/** RSS worker thread that invoked us */
-	private BaseRSSWorkerThread mParentThread;
-	
+
 	/** If true we are parsing channel data and we have not reached any item */
 	private boolean mbParsingChannel;
 	
@@ -56,6 +52,9 @@ abstract public class RSSParser extends DefaultHandler {
 	/** did we received a stop request? */
 	private boolean mbStopRequested;
 	
+	/** listener used to add feed item */
+	private AddFeedItemListener mAddFeedItemListener;
+	
 	/**
 	 * Create a RSSParser passing along a RSS RawData
 	 * @param RawFeed
@@ -63,7 +62,6 @@ abstract public class RSSParser extends DefaultHandler {
 	public RSSParser()
     {
         this.mText = new StringBuilder();
-        this.mFeed = new Feed();
         this.mItemCount = 0;
         
         // Add our tag to the category log (so it will be printed out)
@@ -75,6 +73,10 @@ abstract public class RSSParser extends DefaultHandler {
 	 */
 	public void requestStop() {
 		mbStopRequested = true;
+	}
+	
+	public void onAddFeedItemListener( AddFeedItemListener listener ) {
+		mAddFeedItemListener = listener;
 	}
 	
 	public String getmFeedItemClassName() {
@@ -93,14 +95,6 @@ abstract public class RSSParser extends DefaultHandler {
 	}
 	
 	/**
-	 * Register a worker thread for this parse
-	 * @param mParentThread
-	 */
-	public void setWorkerThread( BaseRSSWorkerThread mParentThread ) {
-		this.mParentThread = mParentThread;
-	}
-	
-	/**
 	 * Set max items we will parse
 	 * @param mMaxItems
 	 */
@@ -109,41 +103,18 @@ abstract public class RSSParser extends DefaultHandler {
 	}
 	
 	/**
-	 * Return processed feed
-	 * @return
-	 */
-	public Feed getFeed() {
-		return mFeed;
-	}
-	
-	/**
-	 * Set error in worker thread
-	 */
-	public void setError( int errorID ) {
-		if ( mParentThread != null )
-		{
-			mParentThread.setError(errorID);
-		}
-	}
-	
-	/**
 	 * Creates the feed item to be used by the parser
 	 */
 	private void createFeedItem()
 	{
-		// Try to create the RSS handler
-		try {
-			this.mFeedItem = (FeedItem)Class.forName(this.mFeedItemClassName).newInstance();
-			ApplicationMNM.logCat(TAG, "FeedItem created: " + this.mFeedItem.toString());
-		} catch (IllegalAccessException e) {
-			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
-			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_ACCESS);
-		} catch (InstantiationException e) {
-			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
-			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_INSTANCE);
-		} catch (ClassNotFoundException e) {
-			ApplicationMNM.warnCat(TAG, "Failed to create feed item: "+e.toString());
-			setError(BaseRSSWorkerThread.ERROR_CREATE_FEEDITEM_CLASS_NOT_FOUND);
+		// Create the element or clear it's data out
+		if ( this.mFeedItem == null )
+		{
+			this.mFeedItem = new FeedItemElement();
+		}
+		else
+		{
+			
 		}
 	}
 	
@@ -152,27 +123,53 @@ abstract public class RSSParser extends DefaultHandler {
 	 * @param key
 	 * @param value
 	 */
-	private boolean setItemValue( String key, Object value )
+	private boolean setItemValue( String key, String value )
 	{
+		boolean bResult = false;
 		if ( this.mFeedItem != null )
 		{
-			return this.mFeedItem.setValue(key, value);
+			if ( key.compareTo("title") == 0)
+			{
+				this.mFeedItem.setTitle(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("description") == 0)
+			{
+				this.mFeedItem.setDescription(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("votes") == 0)
+			{
+				this.mFeedItem.setVotes(Integer.parseInt(value));
+				bResult = true;
+			}
+			else if ( key.compareTo("url") == 0)
+			{
+				this.mFeedItem.setURL(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("category") == 0)
+			{
+				this.mFeedItem.addCategory(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("link") == 0)
+			{
+				this.mFeedItem.setLink(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("commentRss") == 0)
+			{
+				this.mFeedItem.setCommentRSS(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("link_id") == 0)
+			{
+				this.mFeedItem.setLinkID(Integer.parseInt(value));
+				bResult = true;
+			}
 		}
-		return false;
-	}
-	
-	/**
-	 * Sets new data to the current feed
-	 * @param key
-	 * @param value
-	 */
-	private boolean setFeedValue( String key, Object value )
-	{
-		if ( this.mFeed != null )
-		{
-			return this.mFeed.setValue(key, value);
-		}
-		return false;
+		return bResult;
 	}
 	
 	/**
@@ -182,10 +179,9 @@ abstract public class RSSParser extends DefaultHandler {
 	public void clearReferences()
 	{
 		this.mInputStreamReader = null;		
-		this.mFeed = null;
 		this.mFeedItem = null;
 		this.mText = null;
-		this.mParentThread =null;
+		this.mAddFeedItemListener = null;
 	}
 	
 	/**
@@ -216,16 +212,19 @@ abstract public class RSSParser extends DefaultHandler {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
-			setError(BaseRSSWorkerThread.ERROR_RSS_SAX);
+			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
 		} catch (IOException e) {
-			setError(BaseRSSWorkerThread.ERROR_RSS_IO_EXCEPTION);
+			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
 		} catch (ParserConfigurationException e) {
-			setError(BaseRSSWorkerThread.ERROR_RSS_PARSE_CONFIG);
+			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
 		} catch (Exception e) {
-			setError(BaseRSSWorkerThread.ERROR_RSS_UNKOWN);
+			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
 		} finally {
 			// We should add the last article to the feed (if it exists)
 			_addArticle();
+			
+			// Clear any references
+			clearReferences();
 		}
 	}
 	
@@ -236,12 +235,13 @@ abstract public class RSSParser extends DefaultHandler {
 		this.mText.append(ch, start, length);
     }
 	
-	/** Adds the current article to the feed and clears the refernce 
+	/** Adds the current article to the feed and clears the reference 
 	 * @return */
 	private void _addArticle() {
-		if ( this.mFeedItem != null )
-			this.mFeed.addArticle(this.mFeedItem);
-		this.mFeedItem = null;
+		if ( this.mFeedItem != null && mAddFeedItemListener != null)
+		{
+			mAddFeedItemListener.onFeedAdded(this.mFeedItem);
+		}
 	}
 	
 	/**
@@ -301,14 +301,7 @@ abstract public class RSSParser extends DefaultHandler {
 	public void endElement(String uri, String name, String qName) {
 		if ( name.length() > 0 )
 		{
-			if ( this.mbParsingChannel )
-			{
-				if ( setFeedValue(mCurrentTag.trim(), mText.toString()) )
-				{
-					ApplicationMNM.logCat(TAG, " [feed] " + mCurrentTag + ": " + mText.toString());
-				}
-			}
-			else
+			if ( !this.mbParsingChannel )
 			{				
 				if ( setItemValue(mCurrentTag.trim(), mText.toString()) )
 				{
@@ -316,5 +309,18 @@ abstract public class RSSParser extends DefaultHandler {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Listener invoked by
+	 * {@link com.dcg.rss.RSSParser#_addArticle}
+	 * Once we finished creating a feed item
+	 */
+	public static interface AddFeedItemListener {
+		
+		/**
+		 * Invoked when we finished to parse a single feed item
+		 */
+		void onFeedAdded(FeedItemElement feedItem);
 	}
 }

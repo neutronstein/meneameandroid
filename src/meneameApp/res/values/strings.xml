@@ -41,7 +41,7 @@
     <!-- Messages and Info -->
     <string name="refreshing_lable">Refreshing...</string>
     <string name="refreshing_lable_cached">Refreshing from cache...</string>
-    <string name="context_menu_open">Opening menèame.net</string>
+    <string name="context_menu_open">Opening meneame.net</string>
     <string name="context_menu_open_source">Opening source</string>
     <string name="advice_not_implemented">Ooops.. Not yet implemented!</string>
     <string name="confirm_clear_cache">Clear cached feeds?</string>
@@ -56,7 +56,7 @@
     <!-- Version changeset -->
     <string name="version_change_title">Version Changes</string>
     <string name="version_change_v6_title">Version 6 (0.1.6)</string>
-    <string name="version_change_v6">- App speed up using both cache methods\n- Storage type 'none' removed, we need to store feeds!\n- Implementing voting system</string>
+    <string name="version_change_v6">- App speed up</string>
     <string name="version_change_v5_title">Version 5 (0.1.5)</string>
     <string name="version_change_v5">- Minor bug fixes</string>
     <string name="version_change_v4_title">Version 4 (0.1.4)</string>
@@ -114,7 +114,7 @@
     
     <string name="pref_account">Account</string>
     
-    <string name="pref_account_apikey_summary">menèame API key (do not share, it's your personal key)</string>
+    <string name="pref_account_apikey_summary">menéame API key (do not share, it\u0027s your personal key)</string>
     <string name="pref_account_apikey">API key</string>
     
     <string name="pref_account_user_id_summary">menèame user ID (can be found in your profile)</string>
@@ -145,11 +145,6 @@
     
     <string name="pref_app_clearcache">Clear cache</string>
     <string name="pref_app_clearcache_summary">Will clear the cache of feeds</string>
-    
-    <string name="pref_app_storage">Prefered storage method</string>
-    <string name="pref_app_storage_summary">Method used to store cached rss feeds</string>
-    <string name="pref_app_storage_internal">Internal</string>
-    <string name="pref_app_storage_sdcard">SD-Card</string>
     
     <string name="pref_app_maxarticles">Articles we will take from feed</string>
     <string name="pref_app_maxarticles_summary">Method used to store cached rss feeds</string>

@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 
 import com.dcg.app.ApplicationMNM;
@@ -14,7 +13,7 @@ import com.dcg.meneame.FeedActivity;
 import com.dcg.meneame.R;
 import com.dcg.provider.FeedItemElement;
 
-public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvider {	
+public class FeedItemAdapter extends CursorAdapter  {	
 	private static final String[] PROJECTION_IDS_AND_TITLE = new String[] {
 		FeedItemElement._ID,
 		FeedItemElement.LINK_ID,
@@ -35,15 +34,15 @@ public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvide
 	
 	/** Column indexes */
 	private final int[] mColumnIndexArray = new int[9];
-	
+
 	/**
 	 * Constructor
 	 * @param activity
 	 */
-	public FeedItemAdapter(FeedActivity activity ) {
+	public FeedItemAdapter(FeedActivity activity, String selection, String[] selectionArgs) {
 		super(activity, activity.managedQuery(FeedItemElement.CONTENT_URI,
                 PROJECTION_IDS_AND_TITLE,
-                null, null, FeedItemElement.DEFAULT_SORT_ORDER), true);
+                selection, selectionArgs, FeedItemElement.DEFAULT_SORT_ORDER), true);
 		
 		ApplicationMNM.addLogCat(TAG);
 		
@@ -80,13 +79,6 @@ public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvide
         super.changeCursor(cursor);
     }
 
-	public Cursor runQuery(CharSequence constraint) {
-		// We really do not want any constraint to be used in this adapter,
-		// all feed items should be shown up!
-        return mActivity.managedQuery(FeedItemElement.CONTENT_URI, PROJECTION_IDS_AND_TITLE,
-                null, null, FeedItemElement.DEFAULT_SORT_ORDER);
-	}
-
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		FeedItemViewHolder holder = (FeedItemViewHolder) view.getTag();
@@ -95,6 +87,7 @@ public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvide
 		holder.link_id = cursor.getInt(mColumnIndexArray[FeedItemElement.LINK_ID_FIELD]);
 		holder.feedid = cursor.getInt(mColumnIndexArray[FeedItemElement.FEEDID_FIELD]);
 		holder.comment_rss = cursor.getString(mColumnIndexArray[FeedItemElement.COMMENT_RSS_FIELD]);
+		holder.link = cursor.getString(mColumnIndexArray[FeedItemElement.LINK_FIELD]);
 		
 		// Bind the data efficiently with the holder.
 		if ( holder.title != null )
@@ -102,7 +95,7 @@ public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvide
 		if ( holder.description != null )
 			holder.description.setText(cursor.getString(mColumnIndexArray[FeedItemElement.DESCRIPTION_FIELD]));
 		if ( holder.votes != null )
-			holder.votes.setText(cursor.getInt(mColumnIndexArray[FeedItemElement.VOTES_FIELD]));
+			holder.votes.setText(String.valueOf( cursor.getInt(mColumnIndexArray[FeedItemElement.VOTES_FIELD])) );
 		if ( holder.url != null )
 			holder.url.setText(cursor.getString(mColumnIndexArray[FeedItemElement.URL_FIELD]));
 		if ( holder.category != null )
@@ -120,7 +113,8 @@ public class FeedItemAdapter extends CursorAdapter implements FilterQueryProvide
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		final View view = (TextView) mInflater.inflate(getItemLayout(context,cursor,parent), parent, false);
+		// Inflate a new view
+		final View view = mInflater.inflate(getItemLayout(context,cursor,parent), parent, false);
 		
 		// Create view holder
 		FeedItemViewHolder holder = new FeedItemViewHolder();
