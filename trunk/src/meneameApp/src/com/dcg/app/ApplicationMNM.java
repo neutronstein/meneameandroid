@@ -40,10 +40,10 @@ public class ApplicationMNM extends Application {
 	public static final boolean mbShowArticlePositions = false;
 	
 	/** Should we use the crash report functionality? */
-	public static final boolean mAllowCrashReport = false;
+	public static final boolean mbAllowCrashReport = false;
 	
 	/** Flag used to specify that this is the donation app! */
-	public static final boolean mDonationApp = false;
+	public static final boolean mbDonationApp = false;
 	
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
@@ -86,7 +86,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		//addIgnoreCat("FeedActivity");
+		
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
@@ -98,8 +98,11 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MenealoTask");
 		addIgnoreCat("FeedItemAdapter");
 		addIgnoreCat("FeedItemStore");
-		//addIgnoreCat("RequestFeedTask");
 		addIgnoreCat("MenealoTask");
+		
+		// Revised class tags
+		addIgnoreCat("RequestFeedTask");
+		addIgnoreCat("FeedActivity");
 	}
 	
 	/**

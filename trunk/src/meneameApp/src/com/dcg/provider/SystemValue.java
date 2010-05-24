@@ -4,7 +4,10 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class SystemValue implements BaseColumns {
-	public static final Uri CONTENT_URI = Uri.parse("content://com.dcg.meneame/systemvalue");
+	
+	/** Define content provider connections */
+	public static final String ELEMENT_AUTHORITY = "systemvalues";
+	public static final Uri CONTENT_URI = Uri.parse("content://com.dcg.meneame/"+ELEMENT_AUTHORITY);
 	
 	/** DB table name */
 	public static final String TABLE = "system";

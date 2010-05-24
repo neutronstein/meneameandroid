@@ -22,7 +22,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "meneame.data.db";
 	
 	/** Database version currently used. CURRENT 8 */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     
     /** Action id's */
     private static final int ITEMS = 1;
@@ -35,10 +35,10 @@ public class MeneameContentProvider extends ContentProvider {
     private static final UriMatcher URI_MATCHER;
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, "item", ITEMS);
-        URI_MATCHER.addURI(AUTHORITY, "item/#", ITEM_ID);
-        URI_MATCHER.addURI(AUTHORITY, "systemvalue", SYSTEM_VALUE);
-        URI_MATCHER.addURI(AUTHORITY, "systemvalue/#", SYSTEM_VALUE_ID);
+        URI_MATCHER.addURI(AUTHORITY, FeedItemElement.ELEMENT_AUTHORITY, ITEMS);
+        URI_MATCHER.addURI(AUTHORITY, FeedItemElement.ELEMENT_AUTHORITY+"/#", ITEM_ID);
+        URI_MATCHER.addURI(AUTHORITY, SystemValue.ELEMENT_AUTHORITY, SYSTEM_VALUE);
+        URI_MATCHER.addURI(AUTHORITY, SystemValue.ELEMENT_AUTHORITY+"/#", SYSTEM_VALUE_ID);
     }
     
     private SQLiteOpenHelper mOpenHelper;
@@ -145,12 +145,12 @@ public class MeneameContentProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         int count;
-        String segment = uri.getPathSegments().get(1);
+        String segment = "";
         switch (URI_MATCHER.match(uri)) {
             case ITEMS:
                 count = db.delete(FeedItemElement.TABLE, selection, selectionArgs);
                 break;
-            case ITEM_ID:
+            case ITEM_ID:            	
                 count = db.delete(FeedItemElement.TABLE, FeedItemElement._ID + "=" + segment +
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
                         selectionArgs);
@@ -159,6 +159,7 @@ public class MeneameContentProvider extends ContentProvider {
             	count = db.delete(SystemValue.TABLE, selection, selectionArgs);
                 break;
             case SYSTEM_VALUE_ID:
+            	segment = uri.getPathSegments().get(1);
                 count = db.delete(SystemValue.TABLE, SystemValue.KEY + "=" + segment +
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
                         selectionArgs);
@@ -215,12 +216,13 @@ public class MeneameContentProvider extends ContentProvider {
         	// Create items table
             db.execSQL("CREATE TABLE " + FeedItemElement.TABLE + " ("
                     + FeedItemElement._ID + " INTEGER PRIMARY KEY, "
-                    + FeedItemElement.LINK_ID + " INTEGER, "
+                    + FeedItemElement.LINK_ID + " INTEGER UNIQUE, "
                     + FeedItemElement.FEEDID + " INTEGER, "
                     + FeedItemElement.TITLE + " TEXT, "
                     + FeedItemElement.DESCRIPTION + " TEXT, "
                     + FeedItemElement.LINK + " TEXT, "
                     + FeedItemElement.URL + " TEXT, "
+                    + FeedItemElement.COMMENT_RSS + " TEXT, "
                     + FeedItemElement.VOTES + " INTEGER, "
                     + FeedItemElement.CATEGORY + " TEXT);");
             db.execSQL("CREATE INDEX itemIndexLinkID ON " + FeedItemElement.TABLE + " (" +  FeedItemElement.LINK_ID + ");");

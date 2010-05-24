@@ -19,10 +19,8 @@ public final class R {
         /**  -1 means all 
          */
         public static final int pref_app_maxarticles_values=0x7f060001;
-        public static final int pref_app_storage_entries=0x7f060002;
-        public static final int pref_app_storage_values=0x7f060003;
-        public static final int pref_style_mainanimation_entries=0x7f060004;
-        public static final int pref_style_mainanimation_values=0x7f060005;
+        public static final int pref_style_mainanimation_entries=0x7f060002;
+        public static final int pref_style_mainanimation_values=0x7f060003;
     }
     public static final class attr {
     }
@@ -204,19 +202,14 @@ public final class R {
         public static final int pref_app=0x7f080054;
         public static final int pref_app_clearcache=0x7f080059;
         public static final int pref_app_clearcache_summary=0x7f08005a;
-        public static final int pref_app_maxarticles=0x7f08005f;
-        public static final int pref_app_maxarticles_10=0x7f080061;
-        public static final int pref_app_maxarticles_20=0x7f080062;
-        public static final int pref_app_maxarticles_40=0x7f080063;
-        public static final int pref_app_maxarticles_ALL=0x7f080064;
-        public static final int pref_app_maxarticles_summary=0x7f080060;
+        public static final int pref_app_maxarticles=0x7f08005b;
+        public static final int pref_app_maxarticles_10=0x7f08005d;
+        public static final int pref_app_maxarticles_20=0x7f08005e;
+        public static final int pref_app_maxarticles_40=0x7f08005f;
+        public static final int pref_app_maxarticles_ALL=0x7f080060;
+        public static final int pref_app_maxarticles_summary=0x7f08005c;
         public static final int pref_app_refreshonlaunch=0x7f080057;
         public static final int pref_app_refreshonlaunch_summary=0x7f080058;
-        public static final int pref_app_storage=0x7f08005b;
-        public static final int pref_app_storage_internal=0x7f08005d;
-        public static final int pref_app_storage_none=0x7f080065;
-        public static final int pref_app_storage_sdcard=0x7f08005e;
-        public static final int pref_app_storage_summary=0x7f08005c;
         public static final int pref_app_version_number=0x7f080055;
         public static final int pref_app_version_number_summary=0x7f080056;
         /**  Style customizations 

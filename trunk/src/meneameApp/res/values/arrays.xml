@@ -13,16 +13,6 @@
 	<item>40</item>
 	<item>-1</item> <!-- -1 means all -->
 </string-array>
-
-<array name="pref_app_storage_entries">
-	<item>@string/pref_app_storage_internal</item>
-	<item>@string/pref_app_storage_sdcard</item>
-</array>
-<string-array name="pref_app_storage_values">
-	<item>Internal</item>
-	<item>SDCard</item>
-</string-array>
-
 <array name="pref_style_mainanimation_entries">
 	<item>@string/pref_style_mainanimation_none</item>
 	<item>@string/pref_style_mainanimation_fadein</item>

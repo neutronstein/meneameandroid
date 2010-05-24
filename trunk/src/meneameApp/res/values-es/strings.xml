@@ -8,8 +8,8 @@
     
     <!-- Main Activity -->
     
-    <string name="app_name">menéame</string>
-    <string name="hello">¡Bienvenido a menéame!</string>
+    <string name="app_name">men\u00E9ame</string>
+    <string name="hello">¡Bienvenido a men\u00E9ame!</string>
     
     <!-- Tab Pages -->
     
@@ -66,7 +66,7 @@
     <string name="version_change_v1">- Primera version beta</string>
     
     <!-- About info -->
-    <string name="about_title">menéame para Android</string>
+    <string name="about_title">men\u0027ame para Android</string>
     <string name="about_title_faq">FAQ</string>
     <string name="about_faq_q1">¿Es la applicación totalmente gratis?</string>
     <string name="about_faq_a1">¡Sí! Si quieres ayudarnos a mejorar busca la applicación de donación que estará disponible en breve en el Market de Android!</string>
@@ -79,7 +79,7 @@
     <string name="clear_cache_failed">Fallo al borrar feeds descargados!</string>
     <string name="clear_cache_sdcard_notwritebale">No se puede escribir en la tarjeta SD o no esta presente!</string>
     <string name="error_unknown">Error desconocido</string>
-    <string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de 'Feed'</string>
+    <string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de \u0027Feed\u0027</string>
     <string name="msg_obj_null">¡msg.obj es nulo!</string>    
     <string name="refreshing_failed">No se ha podidio refrescar el feed:</string>
     <string name="refreshing_thread_still_alive">Hilo de refresco aún activo!</string>    
@@ -139,12 +139,6 @@
     
     <string name="pref_app_clearcache">Limpiar caché</string>
     <string name="pref_app_clearcache_summary">Limpiar feeds descargados</string>
-    
-    <string name="pref_app_storage">Método de almacenamiento</string>
-    <string name="pref_app_storage_summary">Método de almacenamiento usado para los feeds descargados</string>
-    <string name="pref_app_storage_none">Ninguno</string>
-    <string name="pref_app_storage_internal">Interno</string>
-    <string name="pref_app_storage_sdcard">Tarjeta SD</string>
     
     <string name="pref_app_maxarticles">Artículos descargados</string>
     <string name="pref_app_maxarticles_summary">Número de artículos que se mostrarán en pantalla</string>
