@@ -1,14 +1,13 @@
 package com.dcg.meneame;
 
-import java.io.File;
-import java.util.concurrent.Semaphore;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,15 +16,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.dcg.adapter.FeedItemAdapter;
 import com.dcg.adapter.FeedItemViewHolder;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.dialog.AboutDialog;
 import com.dcg.provider.FeedItemElement;
+import com.dcg.provider.SystemValue;
 import com.dcg.task.MenealoTask;
 import com.dcg.task.RequestFeedTask;
 import com.dcg.task.RequestFeedTaskParams;
@@ -37,8 +37,9 @@ import com.dcg.task.RequestFeedTask.RequestFeedListener;
  */
 abstract public class FeedActivity extends ListActivity implements RequestFeedListener {
 	
-	/** Log tag */
+	/** Log tags */
 	private static final String TAG = "FeedActivity";
+	private static final String SYSTEM_VALUE_TAG = "SystemValue";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
 	protected static String mRssWorkerThreadClassName = "com.dcg.rss.RSSWorkerThread";
@@ -47,8 +48,11 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	/** Feed URL */
 	protected String mFeedURL = "";
 	
-	/** Semaphore used by the activities feed worker thread */
-	private Semaphore mSemaphore = new Semaphore(1);
+	/** 
+	 * Semaphore used by the activities feed worker thread
+	 * Do we need the semaphore? 
+	 */
+	//private Semaphore mSemaphore = new Semaphore(1);
 	
 	/** Our cached main list view */
 	private ListView mListView = null;
@@ -85,16 +89,14 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     
     /** Are we loading a cached feed? */
     protected boolean mbIsLoadingCachedFeed;
-    
-    /** Last visible item when we entered the pause state */
-    private int mFirstVisiblePosition= -1;
 
     /** Request a feed from the meneame server */
     private RequestFeedTask mRequestFeedTask = null;
     
     public FeedActivity() {
 		super();
-		ApplicationMNM.addLogCat(TAG);		
+		ApplicationMNM.addLogCat(TAG);
+		ApplicationMNM.addLogCat(SYSTEM_VALUE_TAG);
 		mbIsArticleFeed = true;
 	}
 	
@@ -165,9 +167,9 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		// Unpause
 		mbIsPaused = false;
 		
-		// Set empty list text		
+		// Set empty list textor loading if we got a task running
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
-		emptyTextView.setText(R.string.empty_list);
+		emptyTextView.setText(((mRequestFeedTask == null)?R.string.empty_list:R.string.refreshing_lable));
 	}
 	
 	@Override
@@ -189,9 +191,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		// Pause
 		mbIsPaused = true;
 		
-		// Free listadapter
-		//setListAdapter(null);
-		
 		// Cleanup
 		System.gc();
 		
@@ -206,10 +205,74 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	
 	@Override
 	protected void onDestroy() {
-		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onDestroy()");
-		if (mRequestFeedTask != null)
-			mRequestFeedTask.cancel(true);
+		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onDestroy()");		
+		// We want to close
+		if ( isFinishing() )
+		{
+			// Stop current task if any
+			if (mRequestFeedTask != null)
+				mRequestFeedTask.requestStop(true);
+			mRequestFeedTask = null;		
+			// TODO: Save into the database our last viewed position to restore it later on		
+			//setSystemValue(getFirstVisiblePositionSystemKey(), String.valueOf( mListView.getFirstVisiblePosition() ));
+		}
+		
+		// Finish destroy
 		super.onDestroy();
+	}
+	
+	public String getFirstVisiblePositionSystemKey() {
+		return "FeedActivity."+getFeedID()+".FirstVisiblePosKey";
+	}
+	
+	/**
+	 * Set a persisten system value
+	 * @param key
+	 * @param value
+	 */
+	public void setSystemValue( String key, String value ) {
+		try {
+			// Delete current value
+			final String[] selectionArgs = new String[1];
+			selectionArgs[0] = key;
+			final String selection = SystemValue.KEY + "=?";
+			getContentResolver().delete(SystemValue.CONTENT_URI, selection, selectionArgs);
+			
+			// Add new value
+			final ContentValues values = new ContentValues();
+			values.put(SystemValue.KEY, key);
+			values.put(SystemValue.VALUE, value);
+			getContentResolver().insert(SystemValue.CONTENT_URI, values);
+			ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "SystemValue "+key+"("+value+") set");
+		} catch (SQLException e) {
+			ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "Failed to set system value "+key+":" + e.toString());
+		}
+	}
+	
+	/**
+	 * Get a persistent system value
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public String getSystemValue( String key, String defaultValue ) {
+		String result = defaultValue;
+		
+		String[] projection = new String[] {
+				SystemValue.VALUE
+				};		
+		final String[] selectionArgs = new String[1];
+		selectionArgs[0] = key;
+		final String selection = SystemValue.KEY + "=?";
+		
+		Cursor cur = getContentResolver().query(SystemValue.CONTENT_URI, projection, selection, selectionArgs, null);
+		if ( cur != null && cur.moveToFirst() )
+		{
+			result = cur.getString(cur.getColumnIndex(SystemValue.VALUE));
+			cur.close();
+		}
+		ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "SystemValue "+key+"("+result+") recovered");
+		return result;
 	}
 	
 	/**
@@ -259,11 +322,18 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		ApplicationMNM.logCat(TAG, getTabActivityTag()+"::onTouchEvent()");
-		// If the users touches the screen and no feed is setup refresh it!
-		// TODO: check list view items
-		if ( !mbIsPaused && mRequestFeedTask == null )
+		// Only refresh on touch if no feed items there or we are not doing any feed task
+		if ( !mbIsPaused &&
+			 (
+				 mRequestFeedTask == null &&
+				 mListView != null &&
+				 mListView.getAdapter() != null &&
+				 mListView.getAdapter().getCount() == 0
+			  )
+			)
 		{
 			refreshFeed( false );
+			return true;
 		}
 		return super.onTouchEvent(event);
 	}
@@ -291,8 +361,27 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	 * Set a cursor adapter for our list
 	 */
 	protected void setCursorAdapter() {
-		// Use: setFilterText(queryString); to set the filter.
-		mListView.setAdapter(new FeedItemAdapter(this, FeedItemElement.FEEDID+"=?",new String[]{String.valueOf(getFeedID())}));
+		// TODO: Use: setFilterText(queryString); to set the filter.
+		mListView.setAdapter(new FeedItemAdapter(
+				this, 
+				FeedItemElement.FEEDID+"=?",
+				new String[]{String.valueOf(getFeedID())},
+				getFeedItemType()));
+		
+		// TODO Look if we got any saved position to be set to!
+		/*
+		try {
+			int firstVisiblePosition = Integer.parseInt(getSystemValue(getFirstVisiblePositionSystemKey(), "-1"));
+			if ( firstVisiblePosition >= 0)
+			{
+				// Set position and reset system value
+				mListView.setSelection(firstVisiblePosition);
+				setSystemValue(getFirstVisiblePositionSystemKey(), "-1");
+			}
+		} catch ( Exception e ) {
+			// Nothing to be done here
+		}
+		/**/
 	}
 	
 	/**
@@ -333,10 +422,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	 * @return String - FeedURL
 	 */
 	public String getFeedURL() {
-		if ( mbIsLoadingCachedFeed )
-		{
-			return getSDCardCacheFilePath();
-		}
 		return mFeedURL;
 	}
 	
@@ -380,6 +465,14 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	}
 	
 	/**
+	 * By default we will use articels
+	 * @return
+	 */
+	public int getFeedItemType() {
+		return FeedItemElement.TYPE_ARTICLE;
+	}
+	
+	/**
 	 * Will refresh the current feed
 	 */
 	public void refreshFeed( boolean bUseCache ) {		
@@ -389,6 +482,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		{			
 			mbIsLoadingCachedFeed = bUseCache;
 			
+			// Create all params we need for our feed request
 			RequestFeedTaskParams mTaskParams = new RequestFeedTaskParams();
 			mTaskParams.mMaxItems = -1;
 			mTaskParams.mItemClass = "com.dcg.rss.ArticleFeedItem";
@@ -396,6 +490,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			mTaskParams.mParserClass = "com.dcg.rss.FeedParser";
 			mTaskParams.mFeedListener = this;
 			mTaskParams.mFeedID = getIndicatorStringID();
+			
 			// Create task and run it
 			mRequestFeedTask = new RequestFeedTask(this);
 			mRequestFeedTask.execute(mTaskParams);
@@ -489,52 +584,37 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-    	AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
-    	if ( mListView != null )
-    	{
-    		View view = (View)mListView.getAdapter().getItem(menuInfo.position);
-    		// Get the real item
-    		if ( view != null )
-    		{
-        		FeedItemViewHolder viewTag = (FeedItemViewHolder)view.getTag();
-	    		switch (item.getItemId()) 
-	    		{
-		    	case CONTEXT_MENU_OPEN:
-		        case CONTEXT_MENU_OPEN_SOURCE:
-		    			String url = "";
-		    			if (item.getItemId() == CONTEXT_MENU_OPEN)
-		    			{
-		    				url = viewTag.link;
-		    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
-		    			}
-		    			else
-		    			{
-		    				url = (String)viewTag.url.getText();
-		    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
-		    			}
-		    			try
-		    			{
-		    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-		    			} catch ( Exception e )
-		    			{
-		    				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
-		    			}
-		    		
-		        	return true;
-		    	case CONTEXT_MENU_VOTE:
-		    		new MenealoTask(this).execute(viewTag.link_id);
-		        	return true;
-		        }
-    		}
-    		else
-    		{
-    			ApplicationMNM.warnCat(TAG,"List item null or not a FeedItem");
-    		}
-    	}
-    	else
-    	{
-    		ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
-    	}
+    	final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+    	final FeedItemViewHolder holder = (FeedItemViewHolder) info.targetView.getTag();
+
+		switch (item.getItemId()) 
+		{
+	    	case CONTEXT_MENU_OPEN:
+	        case CONTEXT_MENU_OPEN_SOURCE:
+	    			String url = "";
+	    			if (item.getItemId() == CONTEXT_MENU_OPEN)
+	    			{
+	    				url = holder.link;
+	    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
+	    			}
+	    			else
+	    			{
+	    				url = (String)holder.url.getText();
+	    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
+	    			}
+	    			try
+	    			{
+	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+	    			} catch ( Exception e )
+	    			{
+	    				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
+	    			}
+	    		
+	        	return true;
+	    	case CONTEXT_MENU_VOTE:
+	    		new MenealoTask(this).execute(holder.link_id);
+	        	return true;
+        }
     	return false;
     }
     
@@ -544,8 +624,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     public void openSettingsScreen() {
     	Intent settingsActivity = new Intent( this, Preferences.class);
     	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
-    	
-    	// TODO: Catch result!
     }
     
     /**
@@ -589,76 +667,4 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		String APIKey = prefs.getString("pref_account_apikey", "");
 		return userName.compareTo("") != 0 && APIKey.compareTo("") != 0;
     }
-    
-    /** 
-     * Returns the folder we will use to cache the feed to the SD-Card
-     * */
-    private String getSDCardCacheFolderPath() {
-    	return ApplicationMNM.getRootCacheFolder()+getTabActivityTag();
-    }
-    
-    /** 
-     * Returns the path to the feed cache file in the SD-Card
-     * */
-    private String getSDCardCacheFilePath() {
-    	return getSDCardCacheFolderPath()+File.separator+"feed.definition";
-    }
-    
-    /**
-     * Get the path to cache file of a feed item
-     * @param itemID
-     * @return
-     */
-    private String getSDCardCacheItemFilePath( int itemID ) {
-    	return getSDCardCacheFolderPath()+File.separator+"feed."+itemID+".item";
-    }
-    
-    /**
-     * Look if we have a cache file or not
-     * @return
-     */
-    public boolean hasCachedFeed( String storageType ) {
-    	if ( storageType.compareTo("SDCard") == 0 )
-    	{
-    		File file = new File(getSDCardCacheFilePath());
-    		return file.exists();
-    	}
-    	else
-    	{
-    		// We always try to access the feed from the database! (is this ok?)
-    		return true;
-    	}
-    }
-    
-    /**
-	 * Prepares the SDCard with all we need for the caching process
-	 */
-	protected boolean prepareSDCard() {
-		try {
-			// Create app dir in SDCard if possible
-			File path = new File( getSDCardCacheFolderPath() );
-			try {
-				// Before we create the directory we purge it's content!
-				ApplicationMNM.fileDelete( path );
-			} catch( Exception e ) {
-				// Nothing to be done!
-			}
-			if(!path.isDirectory()) {
-				if ( path.mkdirs() )
-				{
-					ApplicationMNM.logCat(TAG,"Directory created: " + path);
-				}
-				else
-				{
-					ApplicationMNM.warnCat(TAG,"Failed to create directory: " + path);
-				}
-			}			
-			return true;
-		} catch( Exception e )
-		{
-			ApplicationMNM.warnCat(TAG,"Failed to prepare SD card for aching: " + e.toString());
-			e.printStackTrace();
-		}
-		return false;
-	}
 }

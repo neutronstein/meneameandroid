@@ -1,6 +1,7 @@
 package com.dcg.meneame;
 
 import com.dcg.meneame.R;
+import com.dcg.provider.FeedItemElement;
 
 import android.os.Bundle;
 
@@ -65,5 +66,13 @@ public class CommentsActivity extends FeedActivity {
 	 */
 	public static int static_getIndicatorStringID() {
 		return R.string.main_tab_comments;
+	}
+	
+	/**
+	 * By default we will use articels
+	 * @return
+	 */
+	public int getFeedItemType() {
+		return FeedItemElement.TYPE_COMMENT;
 	}
 }

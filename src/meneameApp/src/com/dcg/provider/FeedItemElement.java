@@ -16,6 +16,11 @@ public class FeedItemElement implements BaseColumns {
 	public static final Uri CONTENT_URI = Uri.parse("content://com.dcg.meneame/"+ELEMENT_AUTHORITY);
 	public static final String DEFAULT_SORT_ORDER = "_id ASC";
 	
+	/** Type definitions */
+	public static final int TYPE_ARTICLE = 0;
+	public static final int TYPE_COMMENT = 1;
+	public static final int TYPE_MAX_COUNT = TYPE_COMMENT+1;
+	
 	/** DB table name */
 	public static final String TABLE = "items";
 	
@@ -47,6 +52,9 @@ public class FeedItemElement implements BaseColumns {
     public static final String URL = "url";
     public static final int URL_FIELD = 8;
     
+    public static final String TYPE = "type";
+    public static final int TYPE_FIELD = 9;
+    
     /** Feed item data */
     private int mLinkID;
     private int mFeedID;
@@ -57,6 +65,7 @@ public class FeedItemElement implements BaseColumns {
     private String mDescription;
     private List<String> mCategories; 
     private String mURL;
+    private int mType;
     
     public FeedItemElement() {
     	mCategories = new ArrayList<String>();
@@ -184,6 +193,18 @@ public class FeedItemElement implements BaseColumns {
     	return mURL;
     }
     
+    public void setType(int type) {
+    	mType = type;
+    }
+    
+    /**
+     * Returns the type of the feed item.
+     * @return TYPE_ARTICLE or TYPE_COMMENT
+     */
+    public int getType() {
+    	return mType;
+    }
+    
     public void clear() {
     	mLinkID = -1;
         mFeedID = -1;
@@ -208,9 +229,11 @@ public class FeedItemElement implements BaseColumns {
     	values.put(DESCRIPTION, mDescription);
     	values.put(CATEGORY, TextUtilities.join(mCategories, ", "));
     	values.put(URL, mURL);
+    	values.put(TYPE, mType);
     	
     	return values;
     }
+    
     @Override
     public String toString() {
     	StringBuilder result = new StringBuilder();
@@ -229,6 +252,7 @@ public class FeedItemElement implements BaseColumns {
     	result.append(" mDescription: " + mDescription + NEW_LINE);
     	result.append(" mCategories: " + TextUtilities.join(mCategories, ", ") + NEW_LINE);
     	result.append(" mURL: " + mURL + NEW_LINE);
+    	result.append(" mTYpe: " + mType + NEW_LINE);
     	
     	// End object
     	result.append("}");

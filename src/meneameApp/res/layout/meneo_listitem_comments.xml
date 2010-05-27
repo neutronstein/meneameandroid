@@ -35,7 +35,21 @@
 		android:textColor="@color/Color.dark_blue"
 		android:textStyle="bold"
 		android:singleLine="false" />
-
+	
+	<TextView  
+		android:id="@+id/source"
+		
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		
+		android:layout_toRightOf="@id/icon"
+		android:layout_alignParentRight="true"
+		android:layout_below="@+id/title"
+		
+		android:text="http://www.mydomain.com"
+		android:textColor="@color/Color.dark_grey"
+		android:singleLine="true" />
+		
 	<TextView  
 		android:id="@+id/description"
 		
@@ -44,7 +58,7 @@
 		
 		android:layout_toRightOf="@id/icon"
 		android:layout_alignParentRight="true"
-		android:layout_below="@+id/title"
+		android:layout_below="@+id/source"
 		
 		android:text="Description"
 		android:textColor="@color/Color.black" 

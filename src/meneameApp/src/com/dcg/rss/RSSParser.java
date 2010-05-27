@@ -14,13 +14,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.dcg.app.ApplicationMNM;
 import com.dcg.provider.FeedItemElement;
-import com.dcg.task.RequestFeedTaskParams;
 
 /**
  * Class that does the parsing of an RSS file
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
-abstract public class RSSParser extends DefaultHandler {
+public class RSSParser extends DefaultHandler {
 	
 	/** log tag for this class */
 	private static final String TAG = "RSSParser";
@@ -114,7 +113,7 @@ abstract public class RSSParser extends DefaultHandler {
 		}
 		else
 		{
-			
+			this.mFeedItem.clear();
 		}
 	}
 	

@@ -1,23 +1,19 @@
 package com.dcg.meneame;
 
-import java.io.File;
-
-import com.dcg.app.ApplicationMNM;
-import com.dcg.dialog.VersionChangesDialog;
-import com.dcg.meneame.R;
-import com.dcg.provider.FeedItemElement;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+
+import com.dcg.app.ApplicationMNM;
+import com.dcg.dialog.VersionChangesDialog;
+import com.dcg.provider.FeedItemElement;
 
 /**
  * Our preference activity
@@ -50,40 +46,6 @@ public class Preferences extends PreferenceActivity {
 				}
 			}
 		}
-		
-		// Set callback to know when we change our storage method
-		Preference storagePref = findPreference("pref_app_storage");
-		storagePref.setOnPreferenceChangeListener( new OnPreferenceChangeListener() {
-
-			public boolean onPreferenceChange(Preference preference,
-					Object newValue) {
-				boolean bResult = true;
-				String testValue = newValue.toString();
-				
-				// To use the SD card cache we need to have access to the SD card.
-				if ( testValue.compareTo("SDCard") == 0 )
-				{
-					try
-					{
-						File directory = new File(ApplicationMNM.getRootSDcardFolder());
-						bResult = directory.canWrite();
-					} catch( Exception e ) {
-						bResult = false;
-					}
-					if ( !bResult )
-					{
-						// Not writeable
-						ApplicationMNM.showToast(R.string.clear_cache_sdcard_notwritebale);
-					}
-				}
-				if ( bResult )
-				{
-					clearFeedCache();
-				}
-				return bResult;
-			}
-			
-		});
 	}
 	
 	/**
