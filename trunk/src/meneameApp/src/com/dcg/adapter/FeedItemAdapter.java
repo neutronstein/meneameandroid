@@ -34,12 +34,15 @@ public class FeedItemAdapter extends CursorAdapter  {
 	
 	/** Column indexes */
 	private final int[] mColumnIndexArray = new int[9];
+	
+	/** Defines the item type we will use here */
+	private final int mItemType;
 
 	/**
 	 * Constructor
 	 * @param activity
 	 */
-	public FeedItemAdapter(FeedActivity activity, String selection, String[] selectionArgs) {
+	public FeedItemAdapter(FeedActivity activity, String selection, String[] selectionArgs, int itemType ) {
 		super(activity, activity.managedQuery(FeedItemElement.CONTENT_URI,
                 PROJECTION_IDS_AND_TITLE,
                 selection, selectionArgs, FeedItemElement.DEFAULT_SORT_ORDER), true);
@@ -50,6 +53,7 @@ public class FeedItemAdapter extends CursorAdapter  {
 		
 		mActivity = activity;
 		mInflater = LayoutInflater.from(activity);
+		mItemType = itemType;
 		
 		// Setup column index array
 		mColumnIndexArray[FeedItemElement.LINK_ID_FIELD] = 
@@ -108,7 +112,7 @@ public class FeedItemAdapter extends CursorAdapter  {
 	 */
 	public int getItemLayout(Context context, Cursor cursor, ViewGroup parent)
 	{
-		return R.layout.meneo_listitem;
+		return (mItemType == FeedItemElement.TYPE_ARTICLE)? R.layout.meneo_listitem: R.layout.meneo_listitem_comments;
 	}
 
 	@Override

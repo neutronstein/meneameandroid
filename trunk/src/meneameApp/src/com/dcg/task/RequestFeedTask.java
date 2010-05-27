@@ -16,6 +16,7 @@ import android.database.SQLException;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.provider.FeedItemElement;
+import com.dcg.provider.SystemValue;
 import com.dcg.rss.RSSParser;
 import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;
@@ -44,11 +45,19 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	public static final int ERROR_RSS_IO_EXCEPTION = ERROR_RSS_SAX+1;
 	public static final int ERROR_RSS_PARSE_CONFIG = ERROR_RSS_IO_EXCEPTION+1;
 	public static final int ERROR_NOT_A_FEED_ACTIVITY = ERROR_RSS_PARSE_CONFIG+1;
+	public static final int ERROR_NO_PARAMS = ERROR_NOT_A_FEED_ACTIVITY+1;
+	
+	/** Parser types */
+	public static final int PARSER_TYPE_DEFAULT = 0;
 	
 	/** data params for the task */
 	private RequestFeedTaskParams mMyParams;
 	
+	/** argument list */
 	private static String[] sArguments1 = new String[1];
+	
+	/** Feed parser */
+	private RSSParser mFeedParser = null;
 	
 	/**
      * Constructor
@@ -61,54 +70,73 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	@Override
 	public Integer doInBackground(RequestFeedTaskParams... params) {
 		Integer bResult = ApplicationMNM.ERROR_SUCCESSFULL;
-		
-		// Get params
-		mMyParams = params[0];
-		
-		// Get feed from the net
-		try {
-			InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
+
+		// We need params to run
+		if ( params[0] != null )
+		{
+			// Get params
+			mMyParams = params[0];
 			try {
-				ApplicationMNM.logCat(TAG, "Requesting feed: "+mMyParams.mFeedID);
-				// Delete cache before staring the parsing process
-				if ( deleteFeedCache(mMyParams.mFeedID) )
-					ApplicationMNM.logCat(TAG, " Cache deleted");
-				else
-					ApplicationMNM.logCat(TAG, " Unable to delete cache");
+				// Get stream from the net
+				InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
+				try {
+					ApplicationMNM.logCat(TAG, "Requesting feed: "+mMyParams.mFeedID);
+					// Delete cache before staring the parsing process
+					if ( deleteFeedCache(mMyParams.mFeedID) )
+						ApplicationMNM.logCat(TAG, " Cache deleted");
+					else
+						ApplicationMNM.logCat(TAG, " Unable to delete cache");
+					
+					// Create the parser
+					mFeedParser = getRSSParser(PARSER_TYPE_DEFAULT);
+					mFeedParser.setInputStream(streamReader);
+					mFeedParser.setmFeedItemClassName(mMyParams.mItemClass);
+					mFeedParser.setMaxItems(mMyParams.mMaxItems);
+					mFeedParser.onAddFeedItemListener(this);
+					mFeedParser.parse();
 				
-				// Create the parser
-				RSSParser feedParser = getRSSParser(mMyParams.mParserClass);
-				feedParser.setInputStream(streamReader);
-				feedParser.setmFeedItemClassName(mMyParams.mItemClass);
-				feedParser.setMaxItems(mMyParams.mMaxItems);
-				feedParser.onAddFeedItemListener(this);
-				feedParser.parse();
-			
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+					bResult = ERROR_RSS_UNKOWN;
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+					bResult = ERROR_RSS_UNKOWN;
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					bResult = ERROR_RSS_UNKOWN;
+				} catch (ClassCastException e) {
+					e.printStackTrace();
+					bResult = ERROR_NOT_A_FEED_ACTIVITY;
+				}
+			} catch (ClientProtocolException e1) {
+				e1.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
-			} catch (InstantiationException e) {
-				e.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			} catch (URISyntaxException e1) {
+				e1.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
-			} catch (ClassCastException e) {
-				e.printStackTrace();
-				bResult = ERROR_NOT_A_FEED_ACTIVITY;
 			}
-		} catch (ClientProtocolException e1) {
-			e1.printStackTrace();
-			bResult = ERROR_RSS_UNKOWN;
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			bResult = ERROR_RSS_UNKOWN;
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-			bResult = ERROR_RSS_UNKOWN;
+		}
+		else
+		{
+			bResult = ERROR_NO_PARAMS;
 		}
 		
+		// Cleanup!
+		mFeedParser = null;
+		
 		return bResult;
+	}
+	
+	/**
+	 * Request this thread to stop what it's doing
+	 */
+	public void requestStop( boolean mayInterruptIfRunning) {
+		if ( mFeedParser != null )
+			mFeedParser.requestStop();
+		cancel(mayInterruptIfRunning);
 	}
 	
 	/**
@@ -142,8 +170,8 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	 * @throws InstantiationException 
 	 * @throws IllegalAccessException 
 	 */
-	private RSSParser getRSSParser(String parserClass) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-		return (RSSParser)Class.forName(parserClass).newInstance();
+	private RSSParser getRSSParser(int parserType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+		return new RSSParser();
 	}
 	
 	@Override
@@ -181,6 +209,7 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	public void onFeedAdded(FeedItemElement feedItem) {
 		// Set some feed specific values
 		feedItem.setFeedID(mMyParams.mFeedID);
+		feedItem.setType( ((FeedActivity)mActivity).getFeedItemType() );
 		
 		// Print it out
 		ApplicationMNM.logCat(TAG, "FeedParsed: "+feedItem.getLinkID());

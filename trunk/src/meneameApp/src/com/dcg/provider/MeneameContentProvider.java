@@ -19,10 +19,10 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String TAG = "FeedItemProvider";
     
     /** Database name */
-	private static final String DATABASE_NAME = "meneame.data.db";
+	private static final String DATABASE_NAME = "data";
 	
-	/** Database version currently used. CURRENT 8 */
-    private static final int DATABASE_VERSION = 2;
+	/** Database version currently used. CURRENT 9 - v6 (0.2.0) */
+    private static final int DATABASE_VERSION = 9;
     
     /** Action id's */
     private static final int ITEMS = 1;
@@ -216,7 +216,7 @@ public class MeneameContentProvider extends ContentProvider {
         	// Create items table
             db.execSQL("CREATE TABLE " + FeedItemElement.TABLE + " ("
                     + FeedItemElement._ID + " INTEGER PRIMARY KEY, "
-                    + FeedItemElement.LINK_ID + " INTEGER UNIQUE, "
+                    + FeedItemElement.LINK_ID + " INTEGER, "
                     + FeedItemElement.FEEDID + " INTEGER, "
                     + FeedItemElement.TITLE + " TEXT, "
                     + FeedItemElement.DESCRIPTION + " TEXT, "
@@ -224,14 +224,15 @@ public class MeneameContentProvider extends ContentProvider {
                     + FeedItemElement.URL + " TEXT, "
                     + FeedItemElement.COMMENT_RSS + " TEXT, "
                     + FeedItemElement.VOTES + " INTEGER, "
-                    + FeedItemElement.CATEGORY + " TEXT);");
+                    + FeedItemElement.CATEGORY + " TEXT, "
+                    + FeedItemElement.TYPE + " INTEGER);");
             db.execSQL("CREATE INDEX itemIndexLinkID ON " + FeedItemElement.TABLE + " (" +  FeedItemElement.LINK_ID + ");");
             db.execSQL("CREATE INDEX itemIndexFeedID ON " + FeedItemElement.TABLE + " (" + FeedItemElement.FEEDID + ");");
             
             //Create system table
             db.execSQL("CREATE TABLE " + SystemValue.TABLE + " ("
                     + SystemValue._ID + " INTEGER PRIMARY KEY, "
-                    + SystemValue.KEY + " INTEGER, "
+                    + SystemValue.KEY + " INTEGER UNIQUE, "
                     + SystemValue.VALUE + " TEXT);");
             db.execSQL("CREATE INDEX systemIndexKey ON " + SystemValue.TABLE + " (" + SystemValue.KEY + ");");
         }
