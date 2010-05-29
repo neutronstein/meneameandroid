@@ -55,7 +55,9 @@
     
     <!-- Version changeset -->
     <string name="version_change_title">Version Changes</string>
-    <string name="version_change_v6_title">Version 6 (0.1.6)</string>
+    <string name="version_change_v7_title">Version 7 (0.2.1)</string>
+    <string name="version_change_v7">- TODO</string>
+    <string name="version_change_v6_title">Version 6 (0.2.0)</string>
     <string name="version_change_v6">- General speed-up! No lagging anymore!\n- Caché is now pure DB based to speed-up the app.\n- Beta-Voting system added!\nStill no 1.5 (Cupcake) support, but I\'m on it!</string>
     <string name="version_change_v5_title">Version 5 (0.1.5)</string>
     <string name="version_change_v5">- Minor bug fixes</string>

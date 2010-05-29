@@ -55,6 +55,8 @@
     
     <!-- Version changeset -->
     <string name="version_change_title">Cambios de Versiones</string>
+    <string name="version_change_v7_title">Version 7 (0.2.1)</string>
+    <string name="version_change_v7">- TODO</string>
     <string name="version_change_v6_title">Version 6 (0.2.0)</string>
     <string name="version_change_v6">- ¡Mejora de velocidad! ¡Espero que ya no tengáis parones!\n- El método de caché es ahora interno, ya que es necesario para la mejora del rendimiento.\n- Sistema de votos en prueba!\nAún no he terminado con la compatibilidad con la version 1.5 (Cupcake) de Android, pero no es preocupéis, sigo en ello!</string>
     <string name="version_change_v5_title">Version 5 (0.1.5)</string>
