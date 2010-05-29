@@ -19,7 +19,7 @@ import android.widget.Toast;
 public class ApplicationMNM extends Application {
 	
 	/** Current version of the app*/
-	private static final int mAppVersion = 6;
+	private static final int mAppVersion = 7;
 	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
