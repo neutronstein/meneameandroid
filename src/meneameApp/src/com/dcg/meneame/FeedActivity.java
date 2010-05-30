@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.dcg.adapter.FeedItemAdapter;
 import com.dcg.adapter.FeedItemViewHolder;
 import com.dcg.app.ApplicationMNM;
+import com.dcg.app.SystemValueItem;
+import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.AboutDialog;
 import com.dcg.provider.FeedItemElement;
 import com.dcg.provider.SystemValue;
@@ -39,7 +41,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	
 	/** Log tags */
 	private static final String TAG = "FeedActivity";
-	private static final String SYSTEM_VALUE_TAG = "SystemValue";
 	
 	/** Our RssWorkerThread class so subclasses will be able to call another one */
 	protected static String mRssWorkerThreadClassName = "com.dcg.rss.RSSWorkerThread";
@@ -79,7 +80,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     private static final int CONTEXT_MENU_VOTE = 2;
     
     /** Used to debug, will print all article ID for this feed tab into the log */
-    public static final boolean mbPrintArticleIDsOnStart = false;
+    public static final boolean mbPrintArticleIDsOnStart = true;
     
     /** Is this an article or an comments feed? */
     protected boolean mbIsArticleFeed;
@@ -96,7 +97,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     public FeedActivity() {
 		super();
 		ApplicationMNM.addLogCat(TAG);
-		ApplicationMNM.addLogCat(SYSTEM_VALUE_TAG);
 		mbIsArticleFeed = true;
 	}
 	
@@ -126,6 +126,32 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 				int rowID = 0;
 				do {
 					ApplicationMNM.logCat(TAG, " ["+rowID+"]FeedItem: "+cur.getString(cur.getColumnIndex(FeedItemElement.LINK_ID)));
+					rowID++;
+				} while (cur.moveToNext() );
+			}
+			
+			// Once we are finished close the cursor
+			if ( cur != null )
+			{
+				cur.close();
+			}
+			
+			// Form an array specifying which columns to return. 
+			String[] projection2 = new String[] {
+					SystemValue._ID,
+					SystemValue.KEY,
+					SystemValue.VALUE
+					};
+			
+			// Make the query.
+			cur = managedQuery(SystemValue.CONTENT_URI, projection2, "", null, null);
+			
+			// Print all articles we got out!
+			if ( cur != null && cur.moveToFirst() )
+			{
+				int rowID = 0;
+				do {
+					ApplicationMNM.logCat(TAG, " ["+rowID+"]SystemValue: "+cur.getString(cur.getColumnIndex(SystemValue.KEY))+" | "+cur.getString(cur.getColumnIndex(SystemValue.VALUE)));
 					rowID++;
 				} while (cur.moveToNext() );
 			}
@@ -213,8 +239,8 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			if (mRequestFeedTask != null)
 				mRequestFeedTask.requestStop(true);
 			mRequestFeedTask = null;		
-			// TODO: Save into the database our last viewed position to restore it later on		
-			//setSystemValue(getFirstVisiblePositionSystemKey(), String.valueOf( mListView.getFirstVisiblePosition() ));
+			// TODO: Save into the database our last viewed position to restore it later on
+			//setSystemValue(getFirstVisiblePositionSystemKey(), "-1");
 		}
 		
 		// Finish destroy
@@ -231,22 +257,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	 * @param value
 	 */
 	public void setSystemValue( String key, String value ) {
-		try {
-			// Delete current value
-			final String[] selectionArgs = new String[1];
-			selectionArgs[0] = key;
-			final String selection = SystemValue.KEY + "=?";
-			getContentResolver().delete(SystemValue.CONTENT_URI, selection, selectionArgs);
-			
-			// Add new value
-			final ContentValues values = new ContentValues();
-			values.put(SystemValue.KEY, key);
-			values.put(SystemValue.VALUE, value);
-			getContentResolver().insert(SystemValue.CONTENT_URI, values);
-			ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "SystemValue "+key+"("+value+") set");
-		} catch (SQLException e) {
-			ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "Failed to set system value "+key+":" + e.toString());
-		}
+		SystemValueManager.setSystemValue(getContentResolver(), key, value);
 	}
 	
 	/**
@@ -255,24 +266,8 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	 * @param defaultValue
 	 * @return
 	 */
-	public String getSystemValue( String key, String defaultValue ) {
-		String result = defaultValue;
-		
-		String[] projection = new String[] {
-				SystemValue.VALUE
-				};		
-		final String[] selectionArgs = new String[1];
-		selectionArgs[0] = key;
-		final String selection = SystemValue.KEY + "=?";
-		
-		Cursor cur = getContentResolver().query(SystemValue.CONTENT_URI, projection, selection, selectionArgs, null);
-		if ( cur != null && cur.moveToFirst() )
-		{
-			result = cur.getString(cur.getColumnIndex(SystemValue.VALUE));
-			cur.close();
-		}
-		ApplicationMNM.logCat(SYSTEM_VALUE_TAG, "SystemValue "+key+"("+result+") recovered");
-		return result;
+	public SystemValueItem getSystemValue( String key, String defaultValue ) {
+		return SystemValueManager.getSystemValue(getContentResolver(), key);
 	}
 	
 	/**

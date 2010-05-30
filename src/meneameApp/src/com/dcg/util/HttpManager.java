@@ -5,8 +5,10 @@ import java.io.IOException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -69,5 +71,13 @@ public class HttpManager {
 
     public static HttpResponse execute(HttpGet get) throws IOException {
         return sClient.execute(get);
+    }
+    
+    public static HttpResponse execute(HttpPost post) throws IOException {
+        return sClient.execute(post);
+    }
+    
+    public static synchronized CookieStore getCookieStore() {
+    	return sClient.getCookieStore();
     }
 }

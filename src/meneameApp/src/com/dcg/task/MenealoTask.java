@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.meneame.R;
+import com.dcg.meneame.SecurityKeyManager;
 import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
 import com.dcg.util.UserTask;
@@ -52,21 +53,24 @@ public class MenealoTask extends UserTask<Integer, Void, Integer> {
 		int result = RESULT_OK;
 		if ( hasMenealoDataSetup() )
 		{
+			// Request the security key
+			String securityKey = SecurityKeyManager.GetSecurityKey(mActivity);
+			
 			// We can start sending the vote
 			Integer articleID = params[0];
 			
 			// get the user data
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity.getBaseContext());        
-			String APIKey = prefs.getString("pref_account_apikey", "");
 			int userID = Integer.parseInt(prefs.getString("pref_account_user_id", ""));
 		
 			// Final URL
-			// NOTE: &u is empty because we do not have any document refferer!
-			String URL = MENEAME_MENEALO_API + "?id=" + articleID + "&user=" + userID + "&key=" + APIKey + "&u=";
-			
-			HttpGet httpGet = new HttpGet(URL);
+			// NOTE: &u is empty because we do not have any document referrer!
+			String URL = MENEAME_MENEALO_API + "?id=" + articleID + "&user=" + userID + "&key=" + securityKey + "&u=";
 			HttpEntity entity = null;
-    		try {	    			
+			
+			try {
+				HttpGet httpGet = new HttpGet(URL);				
+  			    			
     			// Execute
     			HttpResponse response = HttpManager.execute(httpGet);
     			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
