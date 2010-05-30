@@ -16,7 +16,6 @@ import android.database.SQLException;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.provider.FeedItemElement;
-import com.dcg.provider.SystemValue;
 import com.dcg.rss.RSSParser;
 import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;

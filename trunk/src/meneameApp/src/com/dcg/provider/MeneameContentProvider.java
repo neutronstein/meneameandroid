@@ -179,23 +179,25 @@ public class MeneameContentProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         int count;
-        String segment = uri.getPathSegments().get(1);
+        String segment = "";
         switch (URI_MATCHER.match(uri)) {
             case ITEMS:
                 count = db.update(FeedItemElement.TABLE, values, selection, selectionArgs);
                 break;
             case ITEM_ID:
+            	segment = uri.getPathSegments().get(1);
                 count = db.update(FeedItemElement.TABLE, values, FeedItemElement._ID + "=" + segment +
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
                         selectionArgs);
                 break;
             case SYSTEM_VALUE:
-                count = db.update(SystemValue.TABLE, values, SystemValue.KEY + "=" + segment +
-                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
-                        selectionArgs);
+            	count = db.update(SystemValue.TABLE, values, selection, selectionArgs);
                 break;
             case SYSTEM_VALUE_ID:
-            	count = db.update(SystemValue.TABLE, values, selection, selectionArgs);
+            	segment = uri.getPathSegments().get(1);
+                count = db.update(SystemValue.TABLE, values, SystemValue._ID + "=" + segment +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
+                        selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);

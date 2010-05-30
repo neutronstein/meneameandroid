@@ -102,8 +102,8 @@ public class ApplicationMNM extends Application {
 		
 		// Revised class tags
 		addIgnoreCat("RequestFeedTask");
-		addIgnoreCat("FeedActivity");
-		addIgnoreCat("SystemValue");
+		//addIgnoreCat("FeedActivity");
+		//addIgnoreCat("SecurityKeyManager");
 	}
 	
 	/**
