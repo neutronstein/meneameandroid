@@ -1,13 +1,12 @@
 package com.dcg.app;
 
-import com.dcg.provider.SystemValue;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.net.Uri;
+
+import com.dcg.provider.SystemValue;
 
 public class SystemValueManager {
 	private static final String TAG = "SystemValueManager";

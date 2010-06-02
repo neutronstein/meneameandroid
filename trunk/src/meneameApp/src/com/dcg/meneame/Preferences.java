@@ -41,8 +41,10 @@ public class Preferences extends PreferenceActivity {
 				Preference versionPrefernce = appPrefernce.getPreference(0);
 				if ( versionPrefernce != null )
 				{
-					int resID = getResources().getIdentifier("version_change_v"+ApplicationMNM.getVersionNumber()+"_title", "string", "com.dcg.meneame");
-					versionPrefernce.setTitle(resID);
+					String versionTitle = getResources().getString(getResources().getIdentifier("version_title", "string", "com.dcg.meneame"));
+					versionTitle = versionTitle.replaceAll("NUMBER", String.valueOf(ApplicationMNM.getVersionNumber()));
+					versionTitle = versionTitle.replaceAll("LABLE", ApplicationMNM.getVersionLable());
+					versionPrefernce.setTitle(versionTitle);
 				}
 			}
 		}

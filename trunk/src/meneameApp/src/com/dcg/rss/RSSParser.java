@@ -211,13 +211,13 @@ public class RSSParser extends DefaultHandler {
 			// Not a real 'error' heheh
 			ApplicationMNM.logCat(TAG, "Finished: " + e.toString());
 		} catch (SAXException e) {
-			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed parsing: " + e.toString());
 		} catch (IOException e) {
-			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed parsing: " + e.toString());
 		} catch (ParserConfigurationException e) {
-			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed parsing: " + e.toString());
 		} catch (Exception e) {
-			ApplicationMNM.logCat(TAG, "Failed parsing: " + e.toString());
+			ApplicationMNM.warnCat(TAG, "Failed parsing: " + e.toString());
 		} finally {
 			// We should add the last article to the feed (if it exists)
 			_addArticle();

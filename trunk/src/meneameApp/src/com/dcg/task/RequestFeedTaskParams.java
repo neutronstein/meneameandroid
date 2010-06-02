@@ -12,5 +12,4 @@ public class RequestFeedTaskParams {
 	public String 				mItemClass;
 	public int 					mMaxItems;
 	public RequestFeedListener 	mFeedListener;
-	public int					mFeedID;
 }

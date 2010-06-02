@@ -83,14 +83,7 @@ public class VersionChangesDialog extends Dialog {
 			
 			// Add view
 			mainContent.addView(body);
-        }      
-        
-        
-        // TODO: Add automatically all versions!
-        /*
-        int resID = getContext().getResources().getIdentifier("version_change_v4_title", "string", "com.dcg.meneame");
-        ApplicationMNM.logCat(TAG,getContext().getResources().getString(resID));
-		/**/
+        }
 	}
 
 }

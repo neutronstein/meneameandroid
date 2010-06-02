@@ -76,12 +76,17 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 			// Get params
 			mMyParams = params[0];
 			try {
+				ApplicationMNM.logCat(TAG, "Requesting feed...");
+				ApplicationMNM.logCat(TAG, "  FeedID = "+((FeedActivity)mActivity).getFeedID());
+				ApplicationMNM.logCat(TAG, "  mURL = "+mMyParams.mURL);
+				ApplicationMNM.logCat(TAG, "  mItemClass = "+mMyParams.mItemClass);
+				ApplicationMNM.logCat(TAG, "  mMaxItems = "+mMyParams.mMaxItems);
+				
 				// Get stream from the net
 				InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
 				try {
-					ApplicationMNM.logCat(TAG, "Requesting feed: "+mMyParams.mFeedID);
 					// Delete cache before staring the parsing process
-					if ( deleteFeedCache(mMyParams.mFeedID) )
+					if ( ((FeedActivity)mActivity).deleteFeedCache() )
 						ApplicationMNM.logCat(TAG, " Cache deleted");
 					else
 						ApplicationMNM.logCat(TAG, " Unable to delete cache");
@@ -191,23 +196,11 @@ public class RequestFeedTask extends UserTask<RequestFeedTaskParams, Void, Integ
 	}
 	
 	/**
-	 * Delete an entire feed cache refernced by a feed ID
-	 * @param feedID
-	 */
-	public boolean deleteFeedCache( int feedID ) {
-		final String[] arguments1 = sArguments1;
-		arguments1[0] = String.valueOf(feedID);
-		final String where = FeedItemElement.FEEDID + "=?";
-		int count = getContentResolver().delete(FeedItemElement.CONTENT_URI, where, arguments1);
-		return count > 0;
-	}
-	
-	/**
 	 * Called from the RSS parser when a feed item has been parsed
 	 */
 	public void onFeedAdded(FeedItemElement feedItem) {
 		// Set some feed specific values
-		feedItem.setFeedID(mMyParams.mFeedID);
+		feedItem.setFeedID( ((FeedActivity)mActivity).getFeedID() );
 		feedItem.setType( ((FeedActivity)mActivity).getFeedItemType() );
 		
 		// Print it out

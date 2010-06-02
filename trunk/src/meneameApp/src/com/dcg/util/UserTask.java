@@ -433,7 +433,7 @@ public abstract class UserTask<Params, Progress, Result> {
     }
 
     private static class InternalHandler extends Handler {
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings({"unchecked"})
         @Override
         public void handleMessage(Message msg) {
             UserTaskResult result = (UserTaskResult) msg.obj;
@@ -456,9 +456,9 @@ public abstract class UserTask<Params, Progress, Result> {
         Params[] mParams;
     }
 
-    @SuppressWarnings({"rawtypes"})
-    private static class UserTaskResult<Data> {
-        final UserTask mTask;
+    @SuppressWarnings({"unchecked"})
+    private static class UserTaskResult<Data> {        
+		final UserTask mTask;
         final Data[] mData;
 
         UserTaskResult(UserTask task, Data... data) {

@@ -24,6 +24,16 @@ public class NewsActivity extends FeedActivity {
 	}
 	
 	/**
+	 * Return the ID used for this feed tab</br></br>
+	 * <i>NOTE:</i> Negative values are used for our tab and other know FeedActivities. This is so because
+	 * the article detailed view is also a feed of data and comments and the id is the article ID
+	 * which is positive
+	 */
+	public int getFeedID() {
+		return -1;
+	}
+	
+	/**
 	 * Returns the tag this activity will hold in the main TabWidget
 	 * @return String - TabTag
 	 */

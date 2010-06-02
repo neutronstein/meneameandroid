@@ -20,7 +20,6 @@ import android.preference.PreferenceManager;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.meneame.R;
-import com.dcg.meneame.SecurityKeyManager;
 import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
 import com.dcg.util.UserTask;
@@ -54,7 +53,23 @@ public class MenealoTask extends UserTask<Integer, Void, Integer> {
 		if ( hasMenealoDataSetup() )
 		{
 			// Request the security key
-			String securityKey = SecurityKeyManager.GetSecurityKey(mActivity);
+			//String securityKey = SecurityKeyManager.GetSecurityKey(mActivity);
+			/*
+			try {
+				List<NameValuePair> requestValues = new ArrayList<NameValuePair>();
+				requestValues.add(new BasicNameValuePair("username", "MyUserName"));
+				requestValues.add(new BasicNameValuePair("pass", "MyPass"));
+				requestValues.add(new BasicNameValuePair("userip", "MyIP"));
+				requestValues.add(new BasicNameValuePair("remember", "PersistenLogin"));
+				requestValues.add(new BasicNameValuePair("processlogin", "1"));
+				ClientFormLogin.login("http://www.meneame.net/login.php", "http://www.meneame.net", requestValues);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			/**/
+			
+			String securityKey = "";
 			
 			// We can start sending the vote
 			Integer articleID = params[0];
