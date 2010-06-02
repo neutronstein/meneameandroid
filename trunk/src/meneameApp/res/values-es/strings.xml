@@ -54,6 +54,7 @@
     <string name="crash_report_question">The app detected a crash! Do you want to send the log file to the developer?</string>
     
     <!-- Version changeset -->
+    <string name="version_title">Version NUMBER (LABLE)</string>
     <string name="version_change_title">Cambios de Versiones</string>
     <string name="version_change_v7_title">Version 7 (0.2.1)</string>
     <string name="version_change_v7">- TODO</string>
