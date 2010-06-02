@@ -22,7 +22,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "data";
 	
 	/** Database version currently used. CURRENT 9 - v6 (0.2.0) */
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 11;
     
     /** Action id's */
     private static final int ITEMS = 1;

@@ -2,12 +2,10 @@ package com.dcg.meneame;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -114,7 +112,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 					};
 			
 			final String[] arguments1 = new String[1];
-			arguments1[0] = String.valueOf(getIndicatorStringID());
+			arguments1[0] = String.valueOf(this.getFeedID());
 			final String where = FeedItemElement.FEEDID + "=?";
 			
 			// Make the query.
@@ -241,6 +239,10 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			mRequestFeedTask = null;		
 			// TODO: Save into the database our last viewed position to restore it later on
 			//setSystemValue(getFirstVisiblePositionSystemKey(), "-1");
+			
+			// Delete feed cache if we want to reload it when starting the app
+			if ( shouldRefreshOnLaunch() )
+				deleteFeedCache();
 		}
 		
 		// Finish destroy
@@ -334,6 +336,17 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	}
 	
 	/**
+	 * Delete an entire feed cache used by us
+	 */
+	public boolean deleteFeedCache() {
+		final String[] arguments1 = new String[1];
+		arguments1[0] = String.valueOf(getFeedID());
+		final String where = FeedItemElement.FEEDID + "=?";
+		int count = getContentResolver().delete(FeedItemElement.CONTENT_URI, where, arguments1);
+		return count > 0;
+	}
+	
+	/**
 	 * Should we refresh in launch or not?
 	 * @return
 	 */
@@ -346,7 +359,12 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	 * Refresh from an existing feed or should we start a new request?
 	 */
 	private void _conditionRefreshFeed() {
-    	if ( shouldRefreshOnLaunch() )
+    	if ( shouldRefreshOnLaunch() && (
+			 mRequestFeedTask == null &&
+			 mListView != null &&
+			 mListView.getAdapter() != null &&
+			 mListView.getAdapter().getCount() == 0
+			))
         {
         	refreshFeed( false );
         }
@@ -362,21 +380,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 				FeedItemElement.FEEDID+"=?",
 				new String[]{String.valueOf(getFeedID())},
 				getFeedItemType()));
-		
-		// TODO Look if we got any saved position to be set to!
-		/*
-		try {
-			int firstVisiblePosition = Integer.parseInt(getSystemValue(getFirstVisiblePositionSystemKey(), "-1"));
-			if ( firstVisiblePosition >= 0)
-			{
-				// Set position and reset system value
-				mListView.setSelection(firstVisiblePosition);
-				setSystemValue(getFirstVisiblePositionSystemKey(), "-1");
-			}
-		} catch ( Exception e ) {
-			// Nothing to be done here
-		}
-		/**/
 	}
 	
 	/**
@@ -437,10 +440,13 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	}
 	
 	/**
-	 * Return the ID used for this feed tab
+	 * Return the ID used for this feed tab</br></br>
+	 * <i>NOTE:</i> Negative values are used for our tab and other know FeedActivities. This is so because
+	 * the article detailed view is also a feed of data and comments and the id is the article ID
+	 * which is positive
 	 */
 	public int getFeedID() {
-		return getIndicatorStringID();
+		return 0;
 	}
 	
 	/**
@@ -484,7 +490,6 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			mTaskParams.mURL = mFeedURL;
 			mTaskParams.mParserClass = "com.dcg.rss.FeedParser";
 			mTaskParams.mFeedListener = this;
-			mTaskParams.mFeedID = getIndicatorStringID();
 			
 			// Create task and run it
 			mRequestFeedTask = new RequestFeedTask(this);

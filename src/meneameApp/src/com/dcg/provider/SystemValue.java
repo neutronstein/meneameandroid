@@ -1,7 +1,5 @@
 package com.dcg.provider;
 
-import com.dcg.util.TextUtilities;
-
 import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -22,7 +20,7 @@ public class SystemValue implements BaseColumns {
     public static final String VALUE = "value";
     public static final int VALUE_FIELD = 1;
     
-    /** Build a content value struct */
+    /** Build the right content values */
     public static ContentValues getContentValue( String key, String value) {
     	final ContentValues values = new ContentValues();    	
     	values.put(key, value);    	

@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,8 +12,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 
 import com.dcg.app.ApplicationMNM;
 import com.dcg.app.SystemValueItem;
@@ -53,8 +50,6 @@ public class SecurityKeyManager {
 		if ( systemValue.mValue != null )
 		{			
 			try {
-				long securityKeyTimeStamp = Long.parseLong(systemValue.mValue);
-				long diff = now-securityKeyTimeStamp;
 				// Did elapse enough time to force a new key request?
 				if ( (now-Long.parseLong(systemValue.mValue))  < SECURITY_KEY_REFRESH_INTERVAL*1000 )
 				{

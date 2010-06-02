@@ -69,7 +69,8 @@ public class MeneameAPP extends TabActivity  {
         // Check version number and if we change the version show a nice dialog
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
         int savedVersion = prefs.getInt("pref_app_version_number", 0);
-        ApplicationMNM.logCat(TAG, "Current version: "+savedVersion);
+        ApplicationMNM.logCat(TAG, "Current version: "+ApplicationMNM.getVersionNumber() + " ("+ApplicationMNM.getVersionLable()+")");
+        ApplicationMNM.logCat(TAG, "Saved version: "+savedVersion);
         // Did we made any update?
         if ( ApplicationMNM.getVersionNumber() > savedVersion )
         {

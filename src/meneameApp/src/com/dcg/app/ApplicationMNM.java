@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,9 +18,6 @@ import android.widget.Toast;
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class ApplicationMNM extends Application {
-	
-	/** Current version of the app*/
-	private static final int mAppVersion = 7;
 	
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
@@ -64,9 +62,14 @@ public class ApplicationMNM extends Application {
 	public static final int ERROR_SUCCESSFULL = 0;
 	public static final int ERROR_FAILED = ERROR_SUCCESSFULL+1;
 	
+	/** Feed ID's used by our know FeedActivity's */
+	public static final int FEED_ID_NEWS_TAB = -1;
+	public static final int FEED_ID_QUEUE_TAB = -2;
+	public static final int FEED_ID_COMMENTS_TAB = -3;
+	
 	/** Some global definitions */
 	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();		
@@ -78,8 +81,7 @@ public class ApplicationMNM extends Application {
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
-		addIgnoreCat("MeneameAPP");
-		addIgnoreCat("ApplicationMNM");
+
 		addIgnoreCat("RSSParser");
 		addIgnoreCat("RSSWorkerThread");
 		addIgnoreCat("FeedItem");
@@ -101,9 +103,12 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MenealoTask");
 		
 		// Revised class tags
-		addIgnoreCat("RequestFeedTask");
+		//addIgnoreCat("MeneameAPP");
+		//addIgnoreCat("ApplicationMNM");
+		//addIgnoreCat("RequestFeedTask");
 		//addIgnoreCat("FeedActivity");
 		//addIgnoreCat("SecurityKeyManager");
+		//addIgnoreCat("ClientFormLogin");
 	}
 	
 	/**
@@ -134,7 +139,33 @@ public class ApplicationMNM extends Application {
 	 * Returns the version number we are currently in
 	 */
 	public static int getVersionNumber() {
-		return mAppVersion;
+		if ( mAppContext != null )
+		{
+			try {
+				return mAppContext.getPackageManager().getPackageInfo("com.dcg.meneame", 0).versionCode;
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Returns the current version label
+	 * @return
+	 */
+	public static String getVersionLable() {
+		if ( mAppContext != null )
+		{
+			try {
+				return mAppContext.getPackageManager().getPackageInfo("com.dcg.meneame", 0).versionName;
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return "";
 	}
 	
 	/**
