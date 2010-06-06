@@ -1,5 +1,6 @@
 package com.dcg.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -9,7 +10,6 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.meneame.FeedActivity;
 import com.dcg.meneame.R;
 import com.dcg.provider.FeedItemElement;
 
@@ -30,7 +30,7 @@ public class FeedItemAdapter extends CursorAdapter  {
 	private static final String TAG = "FeedItemAdapter";
 	
 	private final LayoutInflater mInflater;
-	private final FeedActivity mActivity;
+	private final Activity mActivity;
 	
 	/** Column indexes */
 	private final int[] mColumnIndexArray = new int[9];
@@ -42,7 +42,7 @@ public class FeedItemAdapter extends CursorAdapter  {
 	 * Constructor
 	 * @param activity
 	 */
-	public FeedItemAdapter(FeedActivity activity, String selection, String[] selectionArgs, int itemType ) {
+	public FeedItemAdapter(Activity activity, String selection, String[] selectionArgs, int itemType ) {
 		super(activity, activity.managedQuery(FeedItemElement.CONTENT_URI,
                 PROJECTION_IDS_AND_TITLE,
                 selection, selectionArgs, FeedItemElement.DEFAULT_SORT_ORDER), true);
