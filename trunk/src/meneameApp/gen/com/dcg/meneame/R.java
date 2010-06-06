@@ -43,6 +43,7 @@ public final class R {
         public static final int tab_press=0x7f020007;
         public static final int tab_selected=0x7f020008;
         public static final int tab_unselected=0x7f020009;
+        public static final int title_bar_shadow=0x7f02000a;
     }
     public static final class id {
         public static final int LinearLayout01=0x7f0a0017;
