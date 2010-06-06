@@ -8,7 +8,7 @@
 
 	<!-- Main Activity -->
 
-	<string name="app_name">menéame</string>
+	<string name="app_name">men\u00E9ame</string>
 	<string name="hello">Welcome to menéame!</string>
 
 	<!-- Tab Pages -->
