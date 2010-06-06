@@ -3,15 +3,15 @@
 
 	<style name="Theme.mnm" parent="android:Theme">
 		<item name="android:windowBackground">@color/Color.orange</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:tabWidgetStyle">@style/MNM.Widget.TabWidget</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:tabWidgetStyle">@style/MNM.Widget.TabWidget</item>
 	</style>
 	<style name="Theme.mnm_prefs" parent="android:Theme">
 		<item name="android:windowBackground">@color/Color.white</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:colorBackground">@color/Color.white</item>
-        <item name="android:textColorPrimary">@color/Color.black</item>
-        <item name="android:textColorSecondary">@color/Color.dark_grey</item>
-        <item name="android:listSeparatorTextViewStyle">@style/MNM.Prefs.TextView.ListSeparator</item>  
-	</style>	
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:colorBackground">@color/Color.white</item>
+		<item name="android:textColorPrimary">@color/Color.black</item>
+		<item name="android:textColorSecondary">@color/Color.dark_grey</item>
+		<item name="android:listSeparatorTextViewStyle">@style/MNM.Prefs.TextView.ListSeparator</item>
+	</style>
 </resources>
