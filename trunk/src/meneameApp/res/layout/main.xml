@@ -3,10 +3,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >	
     
-	<ImageButton
-		android:id="@+id/applogo" 
+    <ImageView
+		android:id="@+id/applogo"
 		
-		style="@style/Style.app_logo" />		
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		
+		android:layout_alignParentTop="true"
+		android:layout_marginLeft="20px"
+		android:layout_marginBottom="6dip"
+		
+		android:src="@drawable/logo" />	
     	
 	<TabHost
 		android:id="@android:id/tabhost"
