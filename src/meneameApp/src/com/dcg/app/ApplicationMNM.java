@@ -103,12 +103,12 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MenealoTask");
 		
 		// Revised class tags
-		//addIgnoreCat("MeneameAPP");
-		//addIgnoreCat("ApplicationMNM");
-		//addIgnoreCat("RequestFeedTask");
-		//addIgnoreCat("FeedActivity");
-		//addIgnoreCat("SecurityKeyManager");
-		//addIgnoreCat("ClientFormLogin");
+		addIgnoreCat("MeneameAPP");
+		addIgnoreCat("ApplicationMNM");
+		addIgnoreCat("RequestFeedTask");
+		addIgnoreCat("FeedActivity");
+		addIgnoreCat("SecurityKeyManager");
+		addIgnoreCat("ClientFormLogin");
 	}
 	
 	/**
