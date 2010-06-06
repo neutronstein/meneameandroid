@@ -23,7 +23,8 @@
 	<string name="meneo_item_open">Abrir</string>
 	<string name="meneo_item_open_source">Abrir (fuente)</string>
 	<string name="meneo_item_vote">Menéalo</string>
-
+	<string name="meneo_item_share">Compartir</string>
+	
 	<!-- Menu -->
 
 	<string name="main_menu_refresh">Refrescar</string>
@@ -37,6 +38,11 @@
 	<string name="generic_ok">Ok</string>
 	<string name="generic_yes">Si</string>
 	<string name="generic_no">No</string>
+	
+	<!-- Share feed item option -->
+	<string name="share_option_title">Compartir Artículo</string>
+	<string name="share_option_subject">Menéame: SUBJECT</string>
+	
 
 	<!-- Messages and Info -->
 	<string name="refreshing_lable">Cargando...</string>
@@ -59,6 +65,8 @@
 	<!-- Version changeset -->
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
+	<string name="version_change_v8_title">Version 8 (0.2.2)</string>
+	<string name="version_change_v8">- TODO</string>
 	<string name="version_change_v7_title">Version 7 (0.2.1)</string>
 	<string name="version_change_v7">- Compatible con Android 1.5 (Cupcake)\n- Arreglado bug con la opción \'Refrescar al lanzar\'</string>
 	<string name="version_change_v6_title">Version 6 (0.2.0)</string>
