@@ -41,8 +41,7 @@
 	
 	<!-- Share feed item option -->
 	<string name="share_option_title">Compartir Artículo</string>
-	<string name="share_option_subject">Menéame: SUBJECT</string>
-	
+	<string name="share_option_subject">Menéame: SUBJECT</string>	
 
 	<!-- Messages and Info -->
 	<string name="refreshing_lable">Cargando...</string>
