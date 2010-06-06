@@ -76,6 +76,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     private static final int CONTEXT_MENU_OPEN = 0;
     private static final int CONTEXT_MENU_OPEN_SOURCE = 1;
     private static final int CONTEXT_MENU_VOTE = 2;
+    private static final int CONTEXT_MENU_SHARE = 3;
     
     /** Used to debug, will print all article ID for this feed tab into the log */
     public static final boolean mbPrintArticleIDsOnStart = true;
@@ -406,6 +407,9 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 								menu.add(0, CONTEXT_MENU_OPEN_SOURCE, 0, R.string.meneo_item_open_source);
 								menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);
 							}
+							
+							// Share action							
+							menu.add(0, CONTEXT_MENU_SHARE, 0, R.string.meneo_item_share);							
 						}
 					});
 		}
@@ -586,12 +590,12 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     public boolean onContextItemSelected(MenuItem item) {
     	final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
     	final FeedItemViewHolder holder = (FeedItemViewHolder) info.targetView.getTag();
-
+    	
+    	String url = "";
 		switch (item.getItemId()) 
 		{
 	    	case CONTEXT_MENU_OPEN:
 	        case CONTEXT_MENU_OPEN_SOURCE:
-	    			String url = "";
 	    			if (item.getItemId() == CONTEXT_MENU_OPEN)
 	    			{
 	    				url = holder.link;
@@ -614,6 +618,25 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	    	case CONTEXT_MENU_VOTE:
 	    		new MenealoTask(this).execute(holder.link_id);
 	        	return true;
+	    	case CONTEXT_MENU_SHARE:
+	    		// Get link
+    			if (item.getItemId() == CONTEXT_MENU_OPEN)
+    			{
+    				url = holder.link;
+    			}
+    			else
+    			{
+    				url = (String)holder.url.getText();
+    			}
+    			
+    			// send intent
+	    		Intent sendMailIntent = new Intent(Intent.ACTION_SEND); 
+	            sendMailIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_option_subject).replace("SUBJECT", holder.title.getText()));
+	            sendMailIntent.putExtra(Intent.EXTRA_TEXT, url);
+	            sendMailIntent.setType("text/plain");
+
+	            startActivity(Intent.createChooser(sendMailIntent, getResources().getString(R.string.share_option_title)));
+	    		break;
         }
     	return false;
     }
