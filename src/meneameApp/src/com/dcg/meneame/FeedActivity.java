@@ -395,7 +395,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 			setCursorAdapter();
 			
 			// Set basic ListView stuff
-			mListView.setTextFilterEnabled(true);
+			mListView.setTextFilterEnabled(false);
 			
 			// Add context menu
 			mListView.setOnCreateContextMenuListener( 
