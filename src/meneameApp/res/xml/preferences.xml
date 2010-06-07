@@ -27,6 +27,9 @@
 		<CheckBoxPreference android:key="pref_app_refreshonlaunch"
 			android:title="@string/pref_app_refreshonlaunch" android:summary="@string/pref_app_refreshonlaunch_summary"
 			android:defaultValue="false" />
+		<CheckBoxPreference android:key="pref_app_stack_from_buttom"
+			android:title="@string/pref_app_stack_from_buttom" android:summary="@string/pref_app_stack_from_buttom_summary"
+			android:defaultValue="false" />
 		<Preference android:key="pref_app_clearcache"
 			android:title="@string/pref_app_clearcache" android:summary="@string/pref_app_clearcache_summary" />
 

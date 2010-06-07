@@ -165,6 +165,9 @@
 
 	<string name="pref_app_version_number">TITLE</string>
 	<string name="pref_app_version_number_summary">Application version</string>
+	
+	<string name="pref_app_stack_from_buttom">Inverse feed list</string>
+	<string name="pref_app_stack_from_buttom_summary">First item will be the buttom of the list</string>
 
 	<string name="pref_app_refreshonlaunch">Refresh on launch</string>
 	<string name="pref_app_refreshonlaunch_summary">Refresh feeds when app launches?</string>

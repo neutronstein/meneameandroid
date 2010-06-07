@@ -16,6 +16,10 @@ public class FeedItemElement implements BaseColumns {
 	public static final Uri CONTENT_URI = Uri.parse("content://com.dcg.meneame/"+ELEMENT_AUTHORITY);
 	public static final String DEFAULT_SORT_ORDER = "_id ASC";
 	
+	/** Order types */
+	public static final String ASC_SORT_ORDER = "_id ASC";
+	public static final String DESC_SORT_ORDER = "_id DESC";
+	
 	/** Type definitions */
 	public static final int TYPE_ARTICLE = 0;
 	public static final int TYPE_COMMENT = 1;

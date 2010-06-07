@@ -42,10 +42,10 @@ public class FeedItemAdapter extends CursorAdapter  {
 	 * Constructor
 	 * @param activity
 	 */
-	public FeedItemAdapter(Activity activity, String selection, String[] selectionArgs, int itemType ) {
+	public FeedItemAdapter(Activity activity, String selection, String[] selectionArgs, int itemType, boolean bStackFromBottom ) {
 		super(activity, activity.managedQuery(FeedItemElement.CONTENT_URI,
                 PROJECTION_IDS_AND_TITLE,
-                selection, selectionArgs, FeedItemElement.DEFAULT_SORT_ORDER), true);
+                selection, selectionArgs, ((bStackFromBottom)?FeedItemElement.DESC_SORT_ORDER:FeedItemElement.ASC_SORT_ORDER)), true);
 		
 		ApplicationMNM.addLogCat(TAG);
 		

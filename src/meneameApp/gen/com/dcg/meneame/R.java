@@ -203,16 +203,18 @@ public final class R {
  Application settings 
          */
         public static final int pref_app=0x7f08005c;
-        public static final int pref_app_clearcache=0x7f080061;
-        public static final int pref_app_clearcache_summary=0x7f080062;
-        public static final int pref_app_maxarticles=0x7f080063;
-        public static final int pref_app_maxarticles_10=0x7f080065;
-        public static final int pref_app_maxarticles_20=0x7f080066;
-        public static final int pref_app_maxarticles_40=0x7f080067;
-        public static final int pref_app_maxarticles_ALL=0x7f080068;
-        public static final int pref_app_maxarticles_summary=0x7f080064;
-        public static final int pref_app_refreshonlaunch=0x7f08005f;
-        public static final int pref_app_refreshonlaunch_summary=0x7f080060;
+        public static final int pref_app_clearcache=0x7f080063;
+        public static final int pref_app_clearcache_summary=0x7f080064;
+        public static final int pref_app_maxarticles=0x7f080065;
+        public static final int pref_app_maxarticles_10=0x7f080067;
+        public static final int pref_app_maxarticles_20=0x7f080068;
+        public static final int pref_app_maxarticles_40=0x7f080069;
+        public static final int pref_app_maxarticles_ALL=0x7f08006a;
+        public static final int pref_app_maxarticles_summary=0x7f080066;
+        public static final int pref_app_refreshonlaunch=0x7f080061;
+        public static final int pref_app_refreshonlaunch_summary=0x7f080062;
+        public static final int pref_app_stack_from_buttom=0x7f08005f;
+        public static final int pref_app_stack_from_buttom_summary=0x7f080060;
         public static final int pref_app_version_number=0x7f08005d;
         public static final int pref_app_version_number_summary=0x7f08005e;
         /**  Style customizations 

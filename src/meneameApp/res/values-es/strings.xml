@@ -167,6 +167,9 @@
 
 	<string name="pref_app_version_number">TITLE</string>
 	<string name="pref_app_version_number_summary">Version actual</string>
+	
+	<string name="pref_app_stack_from_buttom">Lista invertida</string>
+	<string name="pref_app_stack_from_buttom_summary">La lista de feeds se ordenara de manera invertida</string>
 
 	<string name="pref_app_refreshonlaunch">Refrescar al lanzar</string>
 	<string name="pref_app_refreshonlaunch_summary">Refrescar los feeds al lanzar cada página</string>

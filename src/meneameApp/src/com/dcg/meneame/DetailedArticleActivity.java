@@ -6,8 +6,10 @@ import com.dcg.provider.FeedItemElement;
 import com.dcg.provider.SystemValue;
 
 import android.app.ListActivity;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ListView;
@@ -52,6 +54,15 @@ public class DetailedArticleActivity extends ListActivity {
 	}
 	
 	/**
+	 * Should the list stack from bottom?
+	 * @return boolean
+	 */
+	public boolean shouldStackFromBottom() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        return prefs.getBoolean("pref_app_stack_from_buttom", false);
+	}
+	
+	/**
 	 * Set a cursor adapter for our list
 	 */
 	protected void setCursorAdapter() {
@@ -60,7 +71,8 @@ public class DetailedArticleActivity extends ListActivity {
 				this, 
 				FeedItemElement.FEEDID+"=?",
 				new String[]{"-1"},
-				getFeedItemType()));
+				getFeedItemType(),
+				shouldStackFromBottom()));
 	}
 	
 	/**
