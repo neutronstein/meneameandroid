@@ -22,6 +22,19 @@ import com.dcg.provider.FeedItemElement;
 public class Preferences extends PreferenceActivity {
 	/** Class tag used for it's logs */
 	private static final String TAG = "Preferences";
+	
+	/** Default result code */
+	public static final int RESULT_CODE_DEFAULT = 0x0000;
+	
+	/** 
+	 * Returned when we need to force a list view refresh when turning back from the
+	 * preference screen
+	 */
+	public static final int RESULT_CODE_REFRESH_LIST_VIEW = 0x0001;
+	
+	/** resuklt code holder */
+	private int mResultCode = RESULT_CODE_DEFAULT;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +61,15 @@ public class Preferences extends PreferenceActivity {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Update the result code with a new 'or'ed value :D. This way we can add quite some flags
+	 * @param result
+	 */
+	private void updateResult( int result ) {
+		mResultCode |= RESULT_CODE_REFRESH_LIST_VIEW;
+		setResult(mResultCode);
 	}
 	
 	/**
@@ -91,6 +113,10 @@ public class Preferences extends PreferenceActivity {
 				});
 			AlertDialog clearCacheDialog = builder.create();
 			clearCacheDialog.show();
+		}
+		else if ( preference.getKey().compareTo("pref_app_stack_from_buttom") == 0 )
+		{
+			updateResult(RESULT_CODE_REFRESH_LIST_VIEW);
 		}
 		// TODO Auto-generated method stub
 		return super.onPreferenceTreeClick(preferenceScreen, preference);

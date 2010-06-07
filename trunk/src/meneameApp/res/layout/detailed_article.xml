@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- ARTICLE VIEW -->
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+	
+		android:padding="6dip">
+	
+		<ImageView android:id="@+id/icon" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_alignParentTop="true"
+	
+			android:layout_marginRight="6dip" android:layout_marginBottom="6dip"
+	
+			android:src="@drawable/icon" />
+	
+		<TextView android:id="@+id/title" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
+			android:layout_alignParentRight="true" android:layout_alignParentTop="true"
+			android:layout_alignWithParentIfMissing="true" android:gravity="center_vertical"
+			android:text="Title" android:textColor="@color/Color.dark_blue"
+			android:textStyle="bold" android:singleLine="false" />
+	
+		<TextView android:id="@+id/source" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
+			android:layout_alignParentRight="true" android:layout_below="@+id/title"
+	
+			android:text="http://www.mydomain.com" android:textColor="@color/Color.dark_grey"
+			android:singleLine="true" />
+	
+		<TextView android:id="@+id/description" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
+			android:layout_alignParentRight="true" android:layout_below="@+id/source"
+	
+			android:text="Description" android:textColor="@color/Color.black"
+			android:singleLine="false" android:autoLink="web" />
+	
+		<TextView android:id="@+id/tags" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
+			android:layout_below="@+id/description" android:layout_marginRight="6dip"
+	
+			android:text="tags:" android:textColor="@color/Color.black"
+			android:textStyle="bold" android:singleLine="true" />
+	
+		<TextView android:id="@+id/tags_content" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_toRightOf="@+id/tags"
+			android:layout_below="@+id/description" android:ellipsize="marquee"
+	
+			android:text="tags" android:textColor="@color/Color.black"
+			android:singleLine="true" />
+	
+		<TextView android:id="@+id/votes" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_marginRight="6dip"
+	
+			android:layout_below="@id/icon" android:layout_toLeftOf="@id/title"
+			android:layout_alignParentLeft="true" android:gravity="center"
+			android:text="123456789" android:textColor="@color/Color.white"
+			android:background="@color/Color.orange" android:singleLine="true" />
+	
+	</RelativeLayout>
+	
+	<!-- COMMENTS LIST -->
+	<ListView android:id="@android:id/list" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:layout_weight="1"
+		android:scrollbars="vertical" style="@style/Style.feed_list" />
+	<TextView android:id="@android:id/empty" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:text="@string/empty_list"
+		style="@style/Style.infolabel_orange" />
+</LinearLayout> 

@@ -79,7 +79,7 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     private static final int CONTEXT_MENU_SHARE = 3;
     
     /** Used to debug, will print all article ID for this feed tab into the log */
-    public static final boolean mbPrintArticleIDsOnStart = true;
+    public static final boolean mbPrintArticleIDsOnStart = false;
     
     /** Is this an article or an comments feed? */
     protected boolean mbIsArticleFeed;
@@ -380,7 +380,8 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 				this, 
 				FeedItemElement.FEEDID+"=?",
 				new String[]{String.valueOf(getFeedID())},
-				getFeedItemType()));
+				getFeedItemType(),
+				this.shouldStackFromBottom()));
 	}
 	
 	/**
@@ -391,6 +392,9 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		
 		if ( mListView != null )
 		{
+			// Stack from bottom or from top?
+			mListView.setStackFromBottom(shouldStackFromBottom());
+			
 			// Set adapter
 			setCursorAdapter();
 			
@@ -540,11 +544,20 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 	
 	/**
 	 * Return storage type used
-	 * @return
+	 * @return String
 	 */
 	public String getStorageType() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
         return prefs.getString("pref_app_storage", "SDCard");
+	}
+	
+	/**
+	 * Should the list stack from bottom?
+	 * @return boolean
+	 */
+	public boolean shouldStackFromBottom() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
+        return prefs.getBoolean("pref_app_stack_from_buttom", false);
 	}
 	
 	/* Creates the menu items */
@@ -596,24 +609,23 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
 		{
 	    	case CONTEXT_MENU_OPEN:
 	        case CONTEXT_MENU_OPEN_SOURCE:
-	    			if (item.getItemId() == CONTEXT_MENU_OPEN)
-	    			{
-	    				url = holder.link;
-	    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
-	    			}
-	    			else
-	    			{
-	    				url = (String)holder.url.getText();
-	    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
-	    			}
-	    			try
-	    			{
-	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-	    			} catch ( Exception e )
-	    			{
-	    				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
-	    			}
-	    		
+    			if (item.getItemId() == CONTEXT_MENU_OPEN)
+    			{
+    				url = holder.link;
+    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open));
+    			}
+    			else
+    			{
+    				url = (String)holder.url.getText();
+    				ApplicationMNM.showToast(getResources().getString(R.string.context_menu_open_source));
+    			}
+    			try
+    			{
+    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    			} catch ( Exception e )
+    			{
+    				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: " + e.toString());
+    			}	    		
 	        	return true;
 	    	case CONTEXT_MENU_VOTE:
 	    		new MenealoTask(this).execute(holder.link_id);
@@ -647,6 +659,24 @@ abstract public class FeedActivity extends ListActivity implements RequestFeedLi
     public void openSettingsScreen() {
     	Intent settingsActivity = new Intent( this, Preferences.class);
     	startActivityForResult(settingsActivity, SUB_ACT_SETTINGS_ID);
+    }
+    
+    /**
+     * get the activity result code
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	
+    	switch( requestCode ) {
+    		case SUB_ACT_SETTINGS_ID:
+    			if ( (resultCode & Preferences.RESULT_CODE_REFRESH_LIST_VIEW) == 1 )
+    			{
+    				// the preference screen forces us to setup our list view again
+    				setupViews();
+    			}
+    			break;
+    	}
     }
     
     /**
