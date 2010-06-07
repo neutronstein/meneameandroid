@@ -21,6 +21,7 @@
 
 	<string name="empty_list">List is empty... Touch to refresh</string>
 	<string name="meneo_item_open">Open</string>
+	<string name="meneo_item_open_meneame">Open (Menéame)</string>
 	<string name="meneo_item_open_source">Open (Source)</string>
 	<string name="meneo_item_vote">Vote</string>
 	<string name="meneo_item_share">Share</string>
@@ -38,11 +39,11 @@
 	<string name="generic_ok">Ok</string>
 	<string name="generic_yes">Yes</string>
 	<string name="generic_no">No</string>
-	
+
 	<!-- Share feed item option -->
 	<string name="share_option_title">Share Story</string>
 	<string name="share_option_subject">Menéame: SUBJECT</string>
-	
+
 	<!-- Messages and Info -->
 	<string name="refreshing_lable">Refreshing...</string>
 	<string name="refreshing_lable_cached">Refreshing from cache...</string>
@@ -65,9 +66,13 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Version Changes</string>
 	<string name="version_change_v8_title">Version 8 (0.2.2)</string>
-	<string name="version_change_v8">- Share option from within an article (long click)\n- Detailed view for articles</string>
+	<string name="version_change_v8">- Share option from within an article (long
+		click)\n- Detailed view for articles\n- Added option to invert the
+		list, so that the first item will be located at the bottom of the
+		list\n- Added new data to articles: \'User\' and \'Date\'</string>
 	<string name="version_change_v7_title">Version 7 (0.2.1)</string>
-	<string name="version_change_v7">- Compatible with Android 1.5 (CupCake)\n- Fixed \'Refresh on launch\' orientation bug</string>
+	<string name="version_change_v7">- Compatible with Android 1.5 (CupCake)\n- Fixed
+		\'Refresh on launch\' orientation bug</string>
 	<string name="version_change_v6_title">Version 6 (0.2.0)</string>
 	<string name="version_change_v6">- General speed-up! No lagging anymore!\n- Caché is
 		now pure DB based to speed-up the app.\n- Beta-Voting system
@@ -82,7 +87,8 @@
 		add notes to Nótame</string>
 	<string name="version_change_v2_title">Version 2 (0.1.2)</string>
 	<string name="version_change_v2">- Fixing some memory issues\n- Releasing list
-		content when switching pages, needs a cache process to be seamless</string>
+		content when switching pages, needs a cache process to be seamless
+	</string>
 	<string name="version_change_v1_title">Version 1 (0.1.1)</string>
 	<string name="version_change_v1">- First beta release</string>
 
@@ -100,7 +106,8 @@
 		made by Menéame Comunicacions, SL and licensed under Creative Commons
 		(http://creativecommons.org/licenses/by-sa/2.5/)</string>
 	<string name="about_title_meneame">Menéame license</string>
-	<string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL</string>
+	<string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL
+	</string>
 
 	<!-- Errors -->
 	<string name="menealo_already_voted">You can only vote once!</string>
@@ -143,7 +150,8 @@
 		personal key)</string>
 	<string name="pref_account_apikey">API key</string>
 
-	<string name="pref_account_user_id_summary">menèame user ID (can be found in your profile)</string>
+	<string name="pref_account_user_id_summary">menèame user ID (can be found in your profile)
+	</string>
 	<string name="pref_account_user_id">User ID</string>
 
 	<string name="pref_account_user_summary">menéame username</string>
@@ -165,7 +173,7 @@
 
 	<string name="pref_app_version_number">TITLE</string>
 	<string name="pref_app_version_number_summary">Application version</string>
-	
+
 	<string name="pref_app_stack_from_buttom">Inverse feed list</string>
 	<string name="pref_app_stack_from_buttom_summary">First item will be the buttom of the list</string>
 

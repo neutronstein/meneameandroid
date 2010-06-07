@@ -17,135 +17,136 @@ import com.dcg.provider.FeedItemElement;
 
 /**
  * Our preference activity
+ * 
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class Preferences extends PreferenceActivity {
 	/** Class tag used for it's logs */
 	private static final String TAG = "Preferences";
-	
+
 	/** Default result code */
 	public static final int RESULT_CODE_DEFAULT = 0x0000;
-	
-	/** 
-	 * Returned when we need to force a list view refresh when turning back from the
-	 * preference screen
+
+	/**
+	 * Returned when we need to force a list view refresh when turning back from
+	 * the preference screen
 	 */
 	public static final int RESULT_CODE_REFRESH_LIST_VIEW = 0x0001;
-	
+
 	/** resuklt code holder */
 	private int mResultCode = RESULT_CODE_DEFAULT;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ApplicationMNM.addLogCat(TAG);        
-        ApplicationMNM.logCat(TAG, "onCreate()");
-		
+		ApplicationMNM.addLogCat(TAG);
+		ApplicationMNM.logCat(TAG, "onCreate()");
+
 		// Add prefs from xml
 		addPreferencesFromResource(R.xml.preferences);
-		
+
 		// Set version title!
 		PreferenceScreen prefScreen = getPreferenceScreen();
-		if ( prefScreen != null )
-		{
-			PreferenceGroup appPrefernce = (PreferenceGroup)prefScreen.getPreference(1);
-			if ( appPrefernce != null )
-			{
+		if (prefScreen != null) {
+			PreferenceGroup appPrefernce = (PreferenceGroup) prefScreen
+					.getPreference(1);
+			if (appPrefernce != null) {
 				Preference versionPrefernce = appPrefernce.getPreference(0);
-				if ( versionPrefernce != null )
-				{
-					String versionTitle = getResources().getString(getResources().getIdentifier("version_title", "string", "com.dcg.meneame"));
-					versionTitle = versionTitle.replaceAll("NUMBER", String.valueOf(ApplicationMNM.getVersionNumber()));
-					versionTitle = versionTitle.replaceAll("LABLE", ApplicationMNM.getVersionLable());
+				if (versionPrefernce != null) {
+					String versionTitle = getResources().getString(
+							getResources().getIdentifier("version_title",
+									"string", "com.dcg.meneame"));
+					versionTitle = versionTitle.replaceAll("NUMBER", String
+							.valueOf(ApplicationMNM.getVersionNumber()));
+					versionTitle = versionTitle.replaceAll("LABLE",
+							ApplicationMNM.getVersionLable());
 					versionPrefernce.setTitle(versionTitle);
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * Update the result code with a new 'or'ed value :D. This way we can add quite some flags
+	 * Update the result code with a new 'or'ed value :D. This way we can add
+	 * quite some flags
+	 * 
 	 * @param result
 	 */
-	private void updateResult( int result ) {
+	private void updateResult(int result) {
 		mResultCode |= RESULT_CODE_REFRESH_LIST_VIEW;
 		setResult(mResultCode);
 	}
-	
+
 	/**
 	 * Return storage type used
+	 * 
 	 * @return
 	 */
 	public String getStorageType() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-        return prefs.getString("pref_app_storage", "SDCard");
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
+		return prefs.getString("pref_app_storage", "SDCard");
 	}
-	
-	public void  onContentChanged()
-	{
+
+	@Override
+	public void onContentChanged() {
 		ApplicationMNM.logCat(TAG, "onContentChanged()");
 		super.onContentChanged();
 	}
-	
+
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
 		ApplicationMNM.logCat(TAG, "onContentChanged()");
-		if ( preference.getKey().compareTo("pref_app_version_number") == 0 )
-		{
+		if (preference.getKey().compareTo("pref_app_version_number") == 0) {
 			VersionChangesDialog versionDialog = new VersionChangesDialog(this);
-        	versionDialog.show();
-		}
-		else if ( preference.getKey().compareTo("pref_app_clearcache") == 0 )
-		{
+			versionDialog.show();
+		} else if (preference.getKey().compareTo("pref_app_clearcache") == 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.confirm_clear_cache)
-				.setCancelable(false)
-				.setPositiveButton(R.string.generic_ok, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						clearFeedCache();
-						dialog.dismiss();
-					}
-				})
-				.setNegativeButton(R.string.generic_no, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
+			builder.setMessage(R.string.confirm_clear_cache).setCancelable(
+					false).setPositiveButton(R.string.generic_ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							clearFeedCache();
+							dialog.dismiss();
+						}
+					}).setNegativeButton(R.string.generic_no,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
 			AlertDialog clearCacheDialog = builder.create();
 			clearCacheDialog.show();
-		}
-		else if ( preference.getKey().compareTo("pref_app_stack_from_buttom") == 0 )
-		{
+		} else if (preference.getKey().compareTo("pref_app_stack_from_buttom") == 0) {
 			updateResult(RESULT_CODE_REFRESH_LIST_VIEW);
 		}
 		// TODO Auto-generated method stub
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}
-	
+
 	/**
 	 * Worker method that clears the current feed cache
+	 * 
 	 * @return
 	 */
 	public boolean clearFeedCacheWorker() {
 		try {
-			getContentResolver().delete(FeedItemElement.CONTENT_URI, "", null);		
+			getContentResolver().delete(FeedItemElement.CONTENT_URI, "", null);
 			return true;
-		} catch( SQLException e ) {
+		} catch (SQLException e) {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Clear feed cache, file or DB.
 	 */
-	public void clearFeedCache() {		
-		if ( clearFeedCacheWorker() )
-		{
+	public void clearFeedCache() {
+		if (clearFeedCacheWorker()) {
 			ApplicationMNM.logCat(TAG, "Cache has been cleared!");
 			ApplicationMNM.showToast(R.string.clear_cache_successfull);
-		}
-		else
-		{
+		} else {
 			ApplicationMNM.logCat(TAG, "Nothing to be deleted!");
 			ApplicationMNM.showToast(R.string.clear_cache_failed);
 		}

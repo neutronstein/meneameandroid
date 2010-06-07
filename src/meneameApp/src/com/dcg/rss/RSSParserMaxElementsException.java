@@ -4,7 +4,9 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 
 /**
- * Exception raised by our RSS parser when the max number of elements has been reached
+ * Exception raised by our RSS parser when the max number of elements has been
+ * reached
+ * 
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class RSSParserMaxElementsException extends SAXParseException {

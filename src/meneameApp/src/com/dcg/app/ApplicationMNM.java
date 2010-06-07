@@ -15,69 +15,73 @@ import android.widget.Toast;
 
 /**
  * General app object used by android life cycle
+ * 
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class ApplicationMNM extends Application {
-	
+
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
-	
+
 	/** Toast message handler */
 	private static Toast mToast = null;
-	
+
 	/** Category used to filter the category list */
 	private static List<String> mLogCatList = new ArrayList<String>();
-	
+
 	/** Ignore category list */
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
-	
+
 	/** Enable logging or not */
 	public static final boolean mbEnableLogging = true;
-	
-	/** Will add the position of the each article in the list, useful for debugging */
+
+	/**
+	 * Will add the position of the each article in the list, useful for
+	 * debugging
+	 */
 	public static final boolean mbShowArticlePositions = false;
-	
+
 	/** Should we use the crash report functionality? */
 	public static final boolean mbAllowCrashReport = false;
-	
+
 	/** Flag used to specify that this is the donation app! */
 	public static final boolean mbDonationApp = false;
-	
+
 	/** Cached context to be able to achieve static access */
 	private static Context mAppContext = null;
-	
+
 	/** IDs used to handle diffrenet messages comming from different threads */
 	public static final String MSG_ID_KEY = "msg.id.key";
 	public static final int MSG_ID_ARTICLE_PARSER = 0;
 	public static final int MSG_ID_MENEALO = 1;
 	public static final int MSG_ID_DB_PARSER = 2;
-	
+
 	/** Definitions of a completed message */
 	public static final String COMPLETED_KEY = "msg.completed.key";
 	public static final int COMPLETED_OK = 0;
 	public static final int COMPLETED_FAILED = 1;
-	
-	/** base error for thread messages  */
+
+	/** base error for thread messages */
 	public static final String ERROR_KEY = "error";
 	public static final int ERROR_SUCCESSFULL = 0;
-	public static final int ERROR_FAILED = ERROR_SUCCESSFULL+1;
-	
+	public static final int ERROR_FAILED = ERROR_SUCCESSFULL + 1;
+
 	/** Feed ID's used by our know FeedActivity's */
 	public static final int FEED_ID_NEWS_TAB = -1;
 	public static final int FEED_ID_QUEUE_TAB = -2;
 	public static final int FEED_ID_COMMENTS_TAB = -3;
-	
+
 	/** Some global definitions */
 	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
 
 	@Override
 	public void onCreate() {
-		super.onCreate();		
+		super.onCreate();
 		ApplicationMNM.addLogCat(TAG);
 		ApplicationMNM.logCat(TAG, "onCreate()");
-		
+
 		mAppContext = getBaseContext();
-		
+
 		// Create log ignore list!
 		// Note: To use a log just comment it :D
 		addIgnoreCat(""); // Yep... empty too ;P
@@ -88,7 +92,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("Feed");
 		addIgnoreCat("BaseRSSWorkerThread");
 		addIgnoreCat("FeedParser");
-		
+
 		addIgnoreCat("ArticlesAdapter");
 		addIgnoreCat("CommentsAdapter");
 		addIgnoreCat("Preferences");
@@ -101,48 +105,50 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("FeedItemAdapter");
 		addIgnoreCat("FeedItemStore");
 		addIgnoreCat("MenealoTask");
-		
+
 		// Revised class tags
 		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RequestFeedTask");
-		//addIgnoreCat("FeedActivity");
+		// addIgnoreCat("FeedActivity");
 		addIgnoreCat("SecurityKeyManager");
 		addIgnoreCat("ClientFormLogin");
 	}
-	
+
 	/**
-	 * Clear the cached context, called from the main activity in it's 
+	 * Clear the cached context, called from the main activity in it's
 	 * onDestroy() call.
 	 */
 	public static void clearCachedContext() {
 		mAppContext = null;
 	}
-	
+
 	/**
 	 * Set cached context for the app
+	 * 
 	 * @param context
 	 */
-	public static void setCachedContext( Context context ) {
+	public static void setCachedContext(Context context) {
 		mAppContext = context;
 	}
-	
+
 	/**
 	 * return the current context
+	 * 
 	 * @return
 	 */
 	public static Context getCachedContext() {
 		return mAppContext;
 	}
-	
+
 	/**
 	 * Returns the version number we are currently in
 	 */
 	public static int getVersionNumber() {
-		if ( mAppContext != null )
-		{
+		if (mAppContext != null) {
 			try {
-				return mAppContext.getPackageManager().getPackageInfo("com.dcg.meneame", 0).versionCode;
+				return mAppContext.getPackageManager().getPackageInfo(
+						"com.dcg.meneame", 0).versionCode;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -150,16 +156,17 @@ public class ApplicationMNM extends Application {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Returns the current version label
+	 * 
 	 * @return
 	 */
 	public static String getVersionLable() {
-		if ( mAppContext != null )
-		{
+		if (mAppContext != null) {
 			try {
-				return mAppContext.getPackageManager().getPackageInfo("com.dcg.meneame", 0).versionName;
+				return mAppContext.getPackageManager().getPackageInfo(
+						"com.dcg.meneame", 0).versionName;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -167,121 +174,124 @@ public class ApplicationMNM extends Application {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Add a new category to the category ignore list
+	 * 
 	 * @param cat
 	 */
-	public static void addIgnoreCat( String cat ) {
-		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) )
-		{
+	public static void addIgnoreCat(String cat) {
+		if (mbEnableLogging && !mIgnoreCatList.contains(cat)) {
 			mIgnoreCatList.add(cat);
 		}
 	}
-	
+
 	/**
 	 * Add a new category to the category log
+	 * 
 	 * @param cat
 	 */
-	public static void addLogCat( String cat ) {
-		if ( mbEnableLogging && !mIgnoreCatList.contains(cat) && !mLogCatList.contains(cat) )
-		{
+	public static void addLogCat(String cat) {
+		if (mbEnableLogging && !mIgnoreCatList.contains(cat)
+				&& !mLogCatList.contains(cat)) {
 			mLogCatList.add(cat);
 		}
 	}
-	
+
 	/**
 	 * Remove a category from the log
+	 * 
 	 * @param cat
 	 */
-	public static void removeLogCat( String cat ) {
-		if ( mbEnableLogging && mLogCatList.contains(cat) )
-		{
+	public static void removeLogCat(String cat) {
+		if (mbEnableLogging && mLogCatList.contains(cat)) {
 			mLogCatList.remove(cat);
 		}
 	}
-	
+
 	/**
 	 * Print a log with a specific category
+	 * 
 	 * @param msg
 	 * @param cat
 	 */
-	public static void logCat( String cat, String msg ) {
-		if ( mbEnableLogging && mLogCatList.contains(cat) )
-		{
+	public static void logCat(String cat, String msg) {
+		if (mbEnableLogging && mLogCatList.contains(cat)) {
 			Log.d(cat, msg);
 		}
 	}
-	
+
 	/**
 	 * Print a warn with a specific category
+	 * 
 	 * @param msg
 	 * @param cat
 	 */
-	public static void warnCat( String cat, String msg ) {
+	public static void warnCat(String cat, String msg) {
 		Log.w(cat, msg);
 	}
-	
+
 	@Override
-	public void onLowMemory()
-	{
+	public void onLowMemory() {
 		super.onLowMemory();
 		ApplicationMNM.logCat(TAG, "onLowMemory()");
 	}
-	
+
 	@Override
-	public void onTerminate()
-	{
+	public void onTerminate() {
 		super.onTerminate();
 		ApplicationMNM.logCat(TAG, "onLowMemory()");
 	}
-	
+
 	/**
 	 * Shows a toast message, will hide any already shown message
+	 * 
 	 * @param msg
 	 */
-	public static void showToast( String msg ) {
-		if ( mAppContext != null )
-		{
-			if ( mToast == null )
-			{
+	public static void showToast(String msg) {
+		if (mAppContext != null) {
+			if (mToast == null) {
 				mToast = Toast.makeText(mAppContext, msg, Toast.LENGTH_SHORT);
-			}
-			else
-			{
+			} else {
 				mToast.cancel();
-				mToast.setText( msg );
+				mToast.setText(msg);
 			}
 			mToast.show();
 		}
 	}
-	
+
 	/**
-	 * Shows a toast message but referencing a resource id and not directly a string
+	 * Shows a toast message but referencing a resource id and not directly a
+	 * string
+	 * 
 	 * @param id
 	 */
-	public static void showToast( int id ) {
+	public static void showToast(int id) {
 		showToast(mAppContext.getResources().getString(id));
 	}
-	
+
 	/**
 	 * Returns the root folder we will use in the SDCard
+	 * 
 	 * @return
 	 */
 	public static String getRootSDcardFolder() {
-		return Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"com.dcg.meneame"+File.separator;
+		return Environment.getExternalStorageDirectory().getAbsolutePath()
+				+ File.separator + "com.dcg.meneame" + File.separator;
 	}
-	
+
 	/**
 	 * Returns the root path to our cache foldet
+	 * 
 	 * @return
 	 */
 	public static String getRootCacheFolder() {
-		return getRootSDcardFolder()+"cache"+File.separator;
+		return getRootSDcardFolder() + "cache" + File.separator;
 	}
-	
+
 	/**
 	 * Clear all cached feeds
+	 * 
 	 * @return
 	 */
 	public static boolean clearFeedCache() {
@@ -289,30 +299,28 @@ public class ApplicationMNM extends Application {
 			File directory = new File(getRootCacheFolder());
 			fileDelete(directory);
 			return true;
-		} catch (IOException e ) {
-			warnCat(TAG, "Failed to clear cache: "+e.toString());
+		} catch (IOException e) {
+			warnCat(TAG, "Failed to clear cache: " + e.toString());
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Delete a file/directory recursively
+	 * 
 	 * @param srcFile
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void fileDelete(File srcFile) throws FileNotFoundException, IOException {
-		if (srcFile.isDirectory()) 
-		{
+	public static void fileDelete(File srcFile) throws FileNotFoundException,
+			IOException {
+		if (srcFile.isDirectory()) {
 			File[] b = srcFile.listFiles();
-			for (int i = 0; i < b.length; i++) 
-			{
+			for (int i = 0; i < b.length; i++) {
 				fileDelete(b[i]);
 			}
 			srcFile.delete();
-		} 
-		else 
-		{
+		} else {
 			srcFile.delete();
 		}
 	}

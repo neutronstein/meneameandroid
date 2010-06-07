@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<!-- ARTICLE VIEW -->
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical" android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
+<!-- ARTICLE VIEW -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
@@ -57,9 +57,15 @@
 			android:layout_below="@id/icon" android:layout_toLeftOf="@id/title"
 			android:layout_alignParentLeft="true" android:gravity="center"
 			android:text="123456789" android:textColor="@color/Color.white"
-			android:background="@color/Color.orange" android:singleLine="true" />
+			android:background="@color/Color.orange" android:singleLine="true" />		
 	
 	</RelativeLayout>
+	
+	<ImageView android:id="@+id/horizontal_bar" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:layout_alignParentTop="true"
+		android:layout_marginBottom="6dip"
+		android:layout_marginTop="6dip"
+		android:src="@drawable/divider_horizontal_bright_opaque" />
 	
 	<!-- COMMENTS LIST -->
 	<ListView android:id="@android:id/list" android:layout_width="fill_parent"
