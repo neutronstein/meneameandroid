@@ -25,6 +25,8 @@ public class FeedItemAdapter extends CursorAdapter  {
 		FeedItemElement.DESCRIPTION,
 		FeedItemElement.CATEGORY,
 		FeedItemElement.URL,
+		FeedItemElement.PUB_DATE,
+		FeedItemElement.USER,
 	};
 	
 	private static final String TAG = "FeedItemAdapter";
@@ -33,7 +35,7 @@ public class FeedItemAdapter extends CursorAdapter  {
 	private final Activity mActivity;
 	
 	/** Column indexes */
-	private final int[] mColumnIndexArray = new int[9];
+	private final int[] mColumnIndexArray = new int[FeedItemElement.FIELD_NUMS];
 	
 	/** Defines the item type we will use here */
 	private final int mItemType;
@@ -74,6 +76,10 @@ public class FeedItemAdapter extends CursorAdapter  {
 			c.getColumnIndexOrThrow(FeedItemElement.CATEGORY);
 		mColumnIndexArray[FeedItemElement.URL_FIELD] = 
 			c.getColumnIndexOrThrow(FeedItemElement.URL);
+		mColumnIndexArray[FeedItemElement.PUB_DATE_FIELD] = 
+			c.getColumnIndexOrThrow(FeedItemElement.PUB_DATE);
+		mColumnIndexArray[FeedItemElement.USER_FIELD] = 
+			c.getColumnIndexOrThrow(FeedItemElement.USER);
 	}
 	
 	@Override
@@ -104,6 +110,10 @@ public class FeedItemAdapter extends CursorAdapter  {
 			holder.url.setText(cursor.getString(mColumnIndexArray[FeedItemElement.URL_FIELD]));
 		if ( holder.category != null )
 			holder.category.setText(cursor.getString(mColumnIndexArray[FeedItemElement.CATEGORY_FIELD]));
+		if ( holder.pubDate != null )
+			holder.pubDate.setText(cursor.getString(mColumnIndexArray[FeedItemElement.PUB_DATE_FIELD]));
+		if ( holder.user != null )
+			holder.user.setText(cursor.getString(mColumnIndexArray[FeedItemElement.USER_FIELD]));
 	}
 	
 	/**
@@ -138,6 +148,12 @@ public class FeedItemAdapter extends CursorAdapter  {
 		viewObj = view.findViewById(R.id.tags_content);
 		if ( viewObj != null )
 			holder.category = (TextView)viewObj;
+		viewObj = view.findViewById(R.id.pubDate);
+		if ( viewObj != null )
+			holder.pubDate = (TextView)viewObj;
+		viewObj = view.findViewById(R.id.user);
+		if ( viewObj != null )
+			holder.user = (TextView)viewObj;
 		
 		// Use the view holder
 		view.setTag(holder);		

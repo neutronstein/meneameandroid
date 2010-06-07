@@ -46,22 +46,23 @@ public final class R {
         public static final int title_bar_shadow=0x7f02000a;
     }
     public static final class id {
-        public static final int LinearLayout01=0x7f0a0017;
+        public static final int LinearLayout01=0x7f0a0019;
         public static final int about_faq_a1=0x7f0a0005;
         public static final int about_faq_q1=0x7f0a0004;
         public static final int applogo=0x7f0a0015;
         public static final int body_app=0x7f0a0007;
         public static final int body_meneame=0x7f0a0009;
-        public static final int btnBack=0x7f0a0019;
+        public static final int btnBack=0x7f0a001b;
         public static final int btnOk=0x7f0a000b;
-        public static final int btnSend=0x7f0a0018;
+        public static final int btnSend=0x7f0a001a;
         public static final int cover=0x7f0a0014;
         public static final int description=0x7f0a000f;
         public static final int icon=0x7f0a000c;
         public static final int linlayoutBase=0x7f0a0000;
         public static final int linlayoutButtons=0x7f0a000a;
         public static final int message=0x7f0a0013;
-        public static final int notame_text=0x7f0a0016;
+        public static final int notame_text=0x7f0a0018;
+        public static final int pubDate=0x7f0a0017;
         public static final int scrollview=0x7f0a0001;
         public static final int source=0x7f0a000e;
         public static final int tags=0x7f0a0010;
@@ -70,7 +71,8 @@ public final class R {
         public static final int tilte_faq=0x7f0a0003;
         public static final int tilte_meneame=0x7f0a0008;
         public static final int title=0x7f0a000d;
-        public static final int version_change_content=0x7f0a001a;
+        public static final int user=0x7f0a0016;
+        public static final int version_change_content=0x7f0a001c;
         public static final int votes=0x7f0a0012;
         public static final int widget30=0x7f0a0002;
     }

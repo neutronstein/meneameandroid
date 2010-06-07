@@ -25,10 +25,24 @@
 
 		android:text="http://www.mydomain.com" android:textColor="@color/Color.dark_grey"
 		android:singleLine="true" />
+	
+	<TextView android:id="@+id/user" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
+		android:layout_below="@+id/source" android:layout_marginRight="6dip"
+
+		android:text="User:" android:textColor="@color/Color.dark_grey"
+		android:textStyle="bold" android:singleLine="true" />
+
+	<TextView android:id="@+id/pubDate" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@+id/user"
+		android:layout_below="@+id/source" android:ellipsize="marquee"
+
+		android:text="Mon, 07 Jun 2010 19:10:02" android:textColor="@color/Color.dark_grey"
+		android:singleLine="true" />
 
 	<TextView android:id="@+id/description" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"
-		android:layout_alignParentRight="true" android:layout_below="@+id/source"
+		android:layout_alignParentRight="true" android:layout_below="@+id/user"
 
 		android:text="Description" android:textColor="@color/Color.black"
 		android:singleLine="false" android:autoLink="web" />
