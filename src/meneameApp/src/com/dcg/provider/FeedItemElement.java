@@ -59,6 +59,15 @@ public class FeedItemElement implements BaseColumns {
     public static final String TYPE = "type";
     public static final int TYPE_FIELD = 9;
     
+    public static final String PUB_DATE = "pubDate";
+    public static final int PUB_DATE_FIELD = 10;
+    
+    public static final String USER = "user";
+    public static final int USER_FIELD = 11;
+    
+    /** Update this number to match the number of fields a feed item has */
+    public static final int FIELD_NUMS = 12;
+    
     /** Feed item data */
     private int mLinkID;
     private int mFeedID;
@@ -70,6 +79,8 @@ public class FeedItemElement implements BaseColumns {
     private List<String> mCategories; 
     private String mURL;
     private int mType;
+    private String mPubDate;
+    private String mUser;
     
     public FeedItemElement() {
     	mCategories = new ArrayList<String>();
@@ -201,6 +212,28 @@ public class FeedItemElement implements BaseColumns {
     	mType = type;
     }
     
+    public void setPubDate( String pubDate ) {
+    	mPubDate = pubDate;
+    	try {
+			// Get rid of the las 6 chars, they are just: ' +0000'
+			mPubDate = mPubDate.substring(0, mPubDate.length()-6);
+		} catch(Exception e) {
+			// Nothing to be done
+		}
+    }
+    
+    public String getPubDate() {
+    	return mPubDate;
+    }
+    
+    public void setUser( String user ) {
+    	mUser = user;
+    }
+    
+    public String getUser() {
+    	return mUser;
+    }
+    
     /**
      * Returns the type of the feed item.
      * @return TYPE_ARTICLE or TYPE_COMMENT
@@ -219,6 +252,8 @@ public class FeedItemElement implements BaseColumns {
         mDescription = "";
         mCategories.clear(); 
         mURL = "";
+        mPubDate = "";
+        mUser = "";
     }
     
     public ContentValues getContentValues() {
@@ -234,6 +269,8 @@ public class FeedItemElement implements BaseColumns {
     	values.put(CATEGORY, TextUtilities.join(mCategories, ", "));
     	values.put(URL, mURL);
     	values.put(TYPE, mType);
+    	values.put(PUB_DATE, mPubDate);
+    	values.put(USER, mUser);
     	
     	return values;
     }
@@ -256,7 +293,9 @@ public class FeedItemElement implements BaseColumns {
     	result.append(" mDescription: " + mDescription + NEW_LINE);
     	result.append(" mCategories: " + TextUtilities.join(mCategories, ", ") + NEW_LINE);
     	result.append(" mURL: " + mURL + NEW_LINE);
-    	result.append(" mTYpe: " + mType + NEW_LINE);
+    	result.append(" mType: " + mType + NEW_LINE);
+    	result.append(" mPubDate: " + mPubDate + NEW_LINE);
+    	result.append(" mUser: " + mUser + NEW_LINE);
     	
     	// End object
     	result.append("}");

@@ -167,6 +167,16 @@ public class RSSParser extends DefaultHandler {
 				this.mFeedItem.setLinkID(Integer.parseInt(value));
 				bResult = true;
 			}
+			else if ( key.compareTo("pubDate") == 0)
+			{
+				this.mFeedItem.setPubDate(value);
+				bResult = true;
+			}
+			else if ( key.compareTo("user") == 0)
+			{
+				this.mFeedItem.setUser(value);
+				bResult = true;
+			}
 		}
 		return bResult;
 	}

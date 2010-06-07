@@ -21,8 +21,8 @@ public class MeneameContentProvider extends ContentProvider {
     /** Database name */
 	private static final String DATABASE_NAME = "data";
 	
-	/** Database version currently used. CURRENT 9 - v6 (0.2.0) */
-    private static final int DATABASE_VERSION = 11;
+	/** Database version currently used. CURRENT 11 - v7 (0.2.1) */
+    private static final int DATABASE_VERSION = 12;
     
     /** Action id's */
     private static final int ITEMS = 1;
@@ -227,7 +227,9 @@ public class MeneameContentProvider extends ContentProvider {
                     + FeedItemElement.COMMENT_RSS + " TEXT, "
                     + FeedItemElement.VOTES + " INTEGER, "
                     + FeedItemElement.CATEGORY + " TEXT, "
-                    + FeedItemElement.TYPE + " INTEGER);");
+                    + FeedItemElement.TYPE + " INTEGER, "
+            		+ FeedItemElement.PUB_DATE + " TEXT, "
+            		+ FeedItemElement.USER + " TEXT);");
             db.execSQL("CREATE INDEX itemIndexLinkID ON " + FeedItemElement.TABLE + " (" +  FeedItemElement.LINK_ID + ");");
             db.execSQL("CREATE INDEX itemIndexFeedID ON " + FeedItemElement.TABLE + " (" + FeedItemElement.FEEDID + ");");
             
