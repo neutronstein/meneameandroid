@@ -21,10 +21,11 @@
 
 	<string name="empty_list">Lista vacia... Tocar para refrescar</string>
 	<string name="meneo_item_open">Abrir</string>
+	<string name="meneo_item_open_meneame">Abrir (Menéame)</string>
 	<string name="meneo_item_open_source">Abrir (fuente)</string>
 	<string name="meneo_item_vote">Menéalo</string>
 	<string name="meneo_item_share">Compartir</string>
-	
+
 	<!-- Menu -->
 
 	<string name="main_menu_refresh">Refrescar</string>
@@ -38,10 +39,10 @@
 	<string name="generic_ok">Ok</string>
 	<string name="generic_yes">Si</string>
 	<string name="generic_no">No</string>
-	
+
 	<!-- Share feed item option -->
 	<string name="share_option_title">Compartir Artículo</string>
-	<string name="share_option_subject">Menéame: SUBJECT</string>	
+	<string name="share_option_subject">Menéame: SUBJECT</string>
 
 	<!-- Messages and Info -->
 	<string name="refreshing_lable">Cargando...</string>
@@ -65,9 +66,14 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
 	<string name="version_change_v8_title">Version 8 (0.2.2)</string>
-	<string name="version_change_v8">- Añadida opción para compartir artículos\n- Añadido vista detallada para artículos</string>
+	<string name="version_change_v8">- Añadida opción para compartir artículos\n-
+		Añadido vista detallada para artículos\n- Añadida nueva opción para
+		invertir la lista, el primer element estará en la parte inferior de la
+		lista de feeds\n- Nuevos datos para los artículos: \'Usuario\' and
+		\'Fecha\'</string>
 	<string name="version_change_v7_title">Version 7 (0.2.1)</string>
-	<string name="version_change_v7">- Compatible con Android 1.5 (Cupcake)\n- Arreglado bug con la opción \'Refrescar al lanzar\'</string>
+	<string name="version_change_v7">- Compatible con Android 1.5 (Cupcake)\n- Arreglado
+		bug con la opción \'Refrescar al lanzar\'</string>
 	<string name="version_change_v6_title">Version 6 (0.2.0)</string>
 	<string name="version_change_v6">- ¡Mejora de velocidad! ¡Espero que ya no tengáis
 		parones!\n- El método de caché es ahora interno, ya que es necesario
@@ -105,18 +111,21 @@
 		made by Menéame Comunicacions, SL and licensed under Creative Commons
 		(http://creativecommons.org/licenses/by-sa/2.5/)</string>
 	<string name="about_title_meneame">Menéame license</string>
-	<string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL</string>
+	<string name="about_body_meneame">meneame.net is made by Menéame Comunicacions, SL
+	</string>
 
 	<!-- Errors -->
 	<string name="clear_cache_failed">Fallo al borrar feeds descargados!</string>
 	<string name="clear_cache_sdcard_notwritebale">No se puede escribir en la tarjeta SD o no esta
 		presente!</string>
 	<string name="error_unknown">Error desconocido</string>
-	<string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de \u0027Feed\u0027</string>
+	<string name="msg_obj_wrong_type_unknown">msg.obj no es una instancia de \u0027Feed\u0027
+	</string>
 	<string name="msg_obj_null">¡msg.obj es nulo!</string>
 	<string name="refreshing_failed">No se ha podidio refrescar el feed:</string>
 	<string name="refreshing_thread_still_alive">Hilo de refresco aún activo!</string>
-	<string name="user_id_invalid">ID de usuario inválida! Revisa tus preferencias!</string>
+	<string name="user_id_invalid">ID de usuario inválida! Revisa tus preferencias!
+	</string>
 
 	<!-- Feed Errors -->
 	<string name="feed_host_unavailable">Sin conexión de datos!</string>
@@ -127,7 +136,8 @@
 	<!-- Nótame erros messages -->
 	<string name="notame_sending">Enviando...</string>
 	<string name="notame_ok">Mensaje ha sido enviado a Nótame!</string>
-	<string name="notame_failed">No se ha podido enviar el mensaje a Nótame!</string>
+	<string name="notame_failed">No se ha podido enviar el mensaje a Nótame!
+	</string>
 
 	<!--
 		================================================================
@@ -145,7 +155,8 @@
 		personal)</string>
 	<string name="pref_account_apikey">Clave-API</string>
 
-	<string name="pref_account_user_id_summary">menèame user ID (lo podrás encontrar en tu perfil)</string>
+	<string name="pref_account_user_id_summary">menèame user ID (lo podrás encontrar en tu perfil)
+	</string>
 	<string name="pref_account_user_id">ID de usuario</string>
 
 	<string name="pref_account_user_summary">Nombre de usuario de menéame</string>
@@ -167,9 +178,10 @@
 
 	<string name="pref_app_version_number">TITLE</string>
 	<string name="pref_app_version_number_summary">Version actual</string>
-	
+
 	<string name="pref_app_stack_from_buttom">Lista invertida</string>
-	<string name="pref_app_stack_from_buttom_summary">La lista de feeds se ordenara de manera invertida</string>
+	<string name="pref_app_stack_from_buttom_summary">La lista de feeds se ordenara de manera invertida
+	</string>
 
 	<string name="pref_app_refreshonlaunch">Refrescar al lanzar</string>
 	<string name="pref_app_refreshonlaunch_summary">Refrescar los feeds al lanzar cada página</string>
@@ -178,7 +190,8 @@
 	<string name="pref_app_clearcache_summary">Limpiar feeds descargados</string>
 
 	<string name="pref_app_maxarticles">Artículos descargados</string>
-	<string name="pref_app_maxarticles_summary">Número de artículos que se mostrarán en pantalla</string>
+	<string name="pref_app_maxarticles_summary">Número de artículos que se mostrarán en pantalla
+	</string>
 	<string name="pref_app_maxarticles_10">10</string>
 	<string name="pref_app_maxarticles_20">20</string>
 	<string name="pref_app_maxarticles_40">40</string>

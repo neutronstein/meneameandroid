@@ -10,7 +10,7 @@ public class FeedItemViewHolder {
 	public TextView category;
 	public TextView pubDate;
 	public TextView user;
-	
+
 	public int link_id;
 	public int feedid;
 	public String comment_rss;

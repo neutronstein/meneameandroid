@@ -13,19 +13,19 @@ public class AboutDialog extends Dialog {
 	public AboutDialog(Context context) {
 		super(context);
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_dialog);
 		setTitle(R.string.about_title);
-		
+
 		// When the user presses the ok button just dismiss the dialog
-        Button btnOk = (Button) findViewById(R.id.btnOk);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-           public void onClick(View arg0) {
-	           dismiss();
-           }
-        });
+		Button btnOk = (Button) findViewById(R.id.btnOk);
+		btnOk.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View arg0) {
+				dismiss();
+			}
+		});
 	}
 }

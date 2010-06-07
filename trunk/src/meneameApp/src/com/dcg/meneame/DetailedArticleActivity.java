@@ -3,95 +3,54 @@ package com.dcg.meneame;
 import com.dcg.adapter.FeedItemAdapter;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.provider.FeedItemElement;
-import com.dcg.provider.SystemValue;
-
-import android.app.ListActivity;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.ContextMenu;
-import android.view.View;
 import android.widget.ListView;
 
-public class DetailedArticleActivity extends ListActivity {
-	
+public class DetailedArticleActivity extends FeedActivity {
+
 	/** Log tags */
 	private static final String TAG = "DetailedArticleActivity";
-	
+
 	/** Are we paused or not? */
-    protected boolean mbIsPaused;
-    
-    /** Our cached main list view */
+	protected boolean mbIsPaused;
+
+	/** Our cached main list view */
 	private ListView mListView = null;
-    
-    public DetailedArticleActivity() {
+	
+	/** Article ID used to get data and comments */
+	private int mArticleID = 0;
+
+	public DetailedArticleActivity() {
 		super();
 		ApplicationMNM.addLogCat(TAG);
 	}
-    
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ApplicationMNM.logCat(TAG, "onCreate()");
-	
-		// Unpause
-		mbIsPaused = false;
 		
-		// Perpare layout
-		setContentView(R.layout.detailed_article);
-		
-		// Do final stuff
-		setupViews();
-	}
-	
-	/**
-	 * By default we will use articels
-	 * @return
-	 */
-	public int getFeedItemType() {
-		return FeedItemElement.TYPE_ARTICLE;
-	}
-	
-	/**
-	 * Should the list stack from bottom?
-	 * @return boolean
-	 */
-	public boolean shouldStackFromBottom() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());        
-        return prefs.getBoolean("pref_app_stack_from_buttom", false);
-	}
-	
-	/**
-	 * Set a cursor adapter for our list
-	 */
-	protected void setCursorAdapter() {
-		// TODO: Use: setFilterText(queryString); to set the filter.
-		mListView.setAdapter(new FeedItemAdapter(
-				this, 
-				FeedItemElement.FEEDID+"=?",
-				new String[]{"-1"},
-				getFeedItemType(),
-				shouldStackFromBottom()));
-	}
-	
-	/**
-	 * Setup view
-	 */
-	protected void setupViews() {
-		mListView = getListView();
-		
-		if ( mListView != null )
-		{
-			// Set adapter
-			setCursorAdapter();
-			
-			// Set basic ListView stuff
-			mListView.setTextFilterEnabled(false);
+		// From the extra get the article ID so we can start getting the
+		// comments
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+			mArticleID = Integer.parseInt(extras.getString(EXTRA_KEY_ARTICLE_ID));
+			ApplicationMNM.showToast("Detailed view for: " + mArticleID);
 		}
 		else
 		{
-			ApplicationMNM.warnCat(TAG,"No ListView found in layout for " + this.toString());
+			ApplicationMNM.showToast("No article ID specified in extra bundle!");
 		}
+
+	}
+	
+	/**
+	 * Set the content view we will use for the activity
+	 */
+	protected void setupContentView() {
+		// Prepare layout
+		setContentView(R.layout.detailed_article);
 	}
 }
