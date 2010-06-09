@@ -1,6 +1,5 @@
 package com.dcg.task;
 
-import com.dcg.task.RequestFeedTask.RequestFeedListener;
 
 /**
  * Params used by our request feed task

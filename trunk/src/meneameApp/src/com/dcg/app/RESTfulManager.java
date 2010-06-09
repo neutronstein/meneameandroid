@@ -1,6 +1,10 @@
 package com.dcg.app;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.SQLException;
+
+import com.dcg.provider.RESTfulMethod;
 
 /**
  * The RESTful manager handles and updates any REST methods we are executing.</br>
@@ -43,5 +47,40 @@ public class RESTfulManager {
 	 */
 	public void setContext( Context context  ) {
 		mContext = context;
+	}
+	
+	/**
+	 * Adds/Updates a RESTfulMethod in the database
+	 * @param item
+	 */
+	public void setSystemValue(RESTfulMethod method) {
+		try {
+			// Get the current content resolver
+			ContentResolver resolver = mContext.getContentResolver();
+			
+			// try updating the method is that works
+			final int count = resolver.update(RESTfulMethod.CONTENT_URI, method.getContentValues(), method.getSelection(), method.getSelectionArgs());
+			
+			if ( count == 0 )
+			{
+				// TODO: Make an insert
+			}
+			else
+			{
+				// We are done
+			}
+		} catch (SQLException e) {
+			// TODO: MAKE ERROR MSG
+		}
+	}
+	
+	/**
+	 * Retrives the RESTfulMethod that is linked to a request if any
+	 * @param request
+	 * @return
+	 */
+	public RESTfulMethod getSystemValue(String request) {
+		// TODO: Make the get
+		return null;
 	}
 }

@@ -23,7 +23,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "data";
 
 	/** Database version currently used. CURRENT 11 - v7 (0.2.1) */
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 14;
 
 	/** Action id's */
 	private static final int ITEMS = 1;
@@ -45,9 +45,9 @@ public class MeneameContentProvider extends ContentProvider {
 				SYSTEM_VALUE);
 		URI_MATCHER.addURI(AUTHORITY, SystemValue.ELEMENT_AUTHORITY + "/#",
 				SYSTEM_VALUE_ID);
-		URI_MATCHER.addURI(AUTHORITY, RESTfulItem.ELEMENT_AUTHORITY,
+		URI_MATCHER.addURI(AUTHORITY, RESTfulMethod.ELEMENT_AUTHORITY,
 				RESTFUL_VALUE);
-		URI_MATCHER.addURI(AUTHORITY, RESTfulItem.ELEMENT_AUTHORITY + "/#",
+		URI_MATCHER.addURI(AUTHORITY, RESTfulMethod.ELEMENT_AUTHORITY + "/#",
 				RESTFUL_VALUE_ID);
 	}
 
@@ -82,15 +82,15 @@ public class MeneameContentProvider extends ContentProvider {
 		case SYSTEM_VALUE_ID:
 			qb.setTables(SystemValue.TABLE);
 			segment = uri.getPathSegments().get(1);
-			qb.appendWhere(SystemValue.KEY + "=" + segment);
+			qb.appendWhere(SystemValue.KEY + "='" + segment+"'");
 			break;
 		case RESTFUL_VALUE:
-			qb.setTables(RESTfulItem.TABLE);
+			qb.setTables(RESTfulMethod.TABLE);
 			break;
 		case RESTFUL_VALUE_ID:
-			qb.setTables(RESTfulItem.TABLE);
+			qb.setTables(RESTfulMethod.TABLE);
 			segment = uri.getPathSegments().get(1);
-			qb.appendWhere(RESTfulItem.NAME + "=" + segment);
+			qb.appendWhere(RESTfulMethod.REQUEST + "='" + segment+"'");
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
@@ -153,9 +153,9 @@ public class MeneameContentProvider extends ContentProvider {
 			}
 			break;		
 		case RESTFUL_VALUE:
-			rowId = db.insert(RESTfulItem.TABLE, null, values);
+			rowId = db.insert(RESTfulMethod.TABLE, null, values);
 			if (rowId > 0) {
-				insertUri = ContentUris.withAppendedId(RESTfulItem.CONTENT_URI,
+				insertUri = ContentUris.withAppendedId(RESTfulMethod.CONTENT_URI,
 						rowId);
 				bResult = true;
 			}
@@ -194,18 +194,18 @@ public class MeneameContentProvider extends ContentProvider {
 			break;
 		case SYSTEM_VALUE_ID:
 			segment = uri.getPathSegments().get(1);
-			count = db.delete(SystemValue.TABLE, SystemValue.KEY
+			count = db.delete(SystemValue.TABLE, BaseColumns._ID
 					+ "="
 					+ segment
 					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
 							+ ')' : ""), selectionArgs);
 			break;
 		case RESTFUL_VALUE:
-			count = db.delete(RESTfulItem.TABLE, selection, selectionArgs);
+			count = db.delete(RESTfulMethod.TABLE, selection, selectionArgs);
 			break;
 		case RESTFUL_VALUE_ID:
 			segment = uri.getPathSegments().get(1);
-			count = db.delete(RESTfulItem.TABLE, RESTfulItem.NAME
+			count = db.delete(RESTfulMethod.TABLE, BaseColumns._ID
 					+ "="
 					+ segment
 					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
@@ -253,6 +253,18 @@ public class MeneameContentProvider extends ContentProvider {
 					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
 							+ ')' : ""), selectionArgs);
 			break;
+		case RESTFUL_VALUE:
+			count = db.update(RESTfulMethod.TABLE, values, selection,
+					selectionArgs);
+			break;
+		case RESTFUL_VALUE_ID:
+			segment = uri.getPathSegments().get(1);
+			count = db.update(RESTfulMethod.TABLE, values, BaseColumns._ID
+					+ "="
+					+ segment
+					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
+							+ ')' : ""), selectionArgs);
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -293,19 +305,20 @@ public class MeneameContentProvider extends ContentProvider {
 			// Create system table
 			db.execSQL("CREATE TABLE " + SystemValue.TABLE + " ("
 					+ BaseColumns._ID + " INTEGER PRIMARY KEY, "
-					+ SystemValue.KEY + " INTEGER UNIQUE, " + SystemValue.VALUE
+					+ SystemValue.KEY + " TEXT UNIQUE, " + SystemValue.VALUE
 					+ " TEXT);");
 			db.execSQL("CREATE INDEX systemIndexKey ON " + SystemValue.TABLE
 					+ " (" + SystemValue.KEY + ");");
 			
 			// Create RESTful table
-			db.execSQL("CREATE TABLE " + RESTfulItem.TABLE + " ("
+			db.execSQL("CREATE TABLE " + RESTfulMethod.TABLE + " ("
 					+ BaseColumns._ID + " INTEGER PRIMARY KEY, "
-					+ RESTfulItem.NAME + " STRING UNIQUE, "
-					+ RESTfulItem.REQUEST + " TEXT, "
-					+ RESTfulItem.STATUS + " INTEGER);");
-			db.execSQL("CREATE INDEX restfulIndexKey ON " + RESTfulItem.TABLE
-					+ " (" + RESTfulItem.NAME + ");");
+					+ RESTfulMethod.NAME + " TEXT UNIQUE, "
+					+ RESTfulMethod.REQUEST + " TEXT UNIQUE, "
+					+ RESTfulMethod.STATUS + " INTEGER, "
+					+ RESTfulMethod.METHOD + " INTEGER);");
+			db.execSQL("CREATE INDEX restfulIndexKey ON " + RESTfulMethod.TABLE
+					+ " (" + RESTfulMethod.REQUEST + ");");
 		}
 
 		@Override
@@ -315,7 +328,7 @@ public class MeneameContentProvider extends ContentProvider {
 					+ ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + FeedItemElement.TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SystemValue.TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + RESTfulItem.TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + RESTfulMethod.TABLE);
 			onCreate(db);
 		}
 	}

@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.dcg.adapter.FeedItemAdapter;
 import com.dcg.adapter.FeedItemViewHolder;
 import com.dcg.app.ApplicationMNM;
-import com.dcg.app.SystemValueItem;
 import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.AboutDialog;
 import com.dcg.provider.FeedItemElement;
@@ -106,6 +105,9 @@ abstract public class FeedActivity extends ListActivity implements
 	
 	/** Handler used in our ContentObserver */
 	private Handler mHandler = null;
+	
+	/** Our ContentObservers */
+	private RequestFeedTaskObserver mRequestFeedTaskObserver= null;
 
 	public FeedActivity() {
 		super();
@@ -221,7 +223,8 @@ abstract public class FeedActivity extends ListActivity implements
 		};
 		
 		// Register our feed content observer
-		getContentResolver().registerContentObserver(RequestFeedTask.CONTENT_URI, true, new RequestFeedTaskObserver(mHandler));
+		mRequestFeedTaskObserver = new RequestFeedTaskObserver(mHandler);
+		getContentResolver().registerContentObserver(RequestFeedTask.CONTENT_URI, true, mRequestFeedTaskObserver);
 
 		// Restore app state if any
 		restoreState();
@@ -250,6 +253,12 @@ abstract public class FeedActivity extends ListActivity implements
 
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 		emptyTextView.setText("");
+		
+		// Unregister our ContentObserver
+		getContentResolver().unregisterContentObserver(mRequestFeedTaskObserver);
+		
+		// Clean the handler
+		mHandler = null;
 
 		// Pause
 		mbIsPaused = true;
@@ -309,7 +318,7 @@ abstract public class FeedActivity extends ListActivity implements
 	 * @param defaultValue
 	 * @return
 	 */
-	public SystemValueItem getSystemValue(String key, String defaultValue) {
+	public SystemValue getSystemValue(String key, String defaultValue) {
 		return SystemValueManager.getSystemValue(getContentResolver(), key);
 	}
 
