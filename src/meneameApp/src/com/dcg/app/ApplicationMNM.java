@@ -73,6 +73,8 @@ public class ApplicationMNM extends Application {
 
 	/** Some global definitions */
 	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
+	
+	/** The REST method manager, this is a singleton */
 
 	@Override
 	public void onCreate() {
@@ -120,7 +122,7 @@ public class ApplicationMNM extends Application {
 	 * onDestroy() call.
 	 */
 	public static void clearCachedContext() {
-		mAppContext = null;
+		setCachedContext(null);
 	}
 
 	/**
@@ -130,6 +132,7 @@ public class ApplicationMNM extends Application {
 	 */
 	public static void setCachedContext(Context context) {
 		mAppContext = context;
+		getRESTfulManager().setContext(mAppContext);
 	}
 
 	/**
@@ -139,6 +142,14 @@ public class ApplicationMNM extends Application {
 	 */
 	public static Context getCachedContext() {
 		return mAppContext;
+	}
+	
+	/**
+	 * Returns the RESTfulManager we got
+	 * @return
+	 */
+	public static synchronized RESTfulManager getRESTfulManager() {
+		return RESTfulManager.getInstance();
 	}
 
 	/**

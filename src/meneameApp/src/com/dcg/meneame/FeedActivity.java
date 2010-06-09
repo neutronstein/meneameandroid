@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.view.ContextMenu;
@@ -29,6 +31,7 @@ import com.dcg.provider.FeedItemElement;
 import com.dcg.provider.SystemValue;
 import com.dcg.task.MenealoTask;
 import com.dcg.task.RequestFeedTask;
+import com.dcg.task.RequestFeedTaskObserver;
 import com.dcg.task.RequestFeedTaskParams;
 import com.dcg.task.RequestFeedTask.RequestFeedListener;
 
@@ -100,6 +103,9 @@ abstract public class FeedActivity extends ListActivity implements
 
 	/** Request a feed from the meneame server */
 	private RequestFeedTask mRequestFeedTask = null;
+	
+	/** Handler used in our ContentObserver */
+	private Handler mHandler = null;
 
 	public FeedActivity() {
 		super();
@@ -205,6 +211,17 @@ abstract public class FeedActivity extends ListActivity implements
 	protected void onResume() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onResume()");
 		super.onResume();
+		
+		// Handler used to catch feed requests
+		mHandler = new Handler() {
+			public void handleMessage(Message msg) {
+				// Call the right method
+				onFinsihedContentObserver(msg);
+			}
+		};
+		
+		// Register our feed content observer
+		getContentResolver().registerContentObserver(RequestFeedTask.CONTENT_URI, true, new RequestFeedTaskObserver(mHandler));
 
 		// Restore app state if any
 		restoreState();
@@ -212,7 +229,7 @@ abstract public class FeedActivity extends ListActivity implements
 		// Unpause
 		mbIsPaused = false;
 
-		// Set empty list textor loading if we got a task running
+		// Set empty list text or loading if we got a task running
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 		emptyTextView.setText(((mRequestFeedTask == null) ? R.string.empty_list
 				: R.string.refreshing_lable));
@@ -530,7 +547,6 @@ abstract public class FeedActivity extends ListActivity implements
 			mTaskParams.mItemClass = "com.dcg.rss.ArticleFeedItem";
 			mTaskParams.mURL = mFeedURL;
 			mTaskParams.mParserClass = "com.dcg.rss.FeedParser";
-			mTaskParams.mFeedListener = this;
 
 			// Create task and run it
 			mRequestFeedTask = new RequestFeedTask(this);
@@ -562,6 +578,15 @@ abstract public class FeedActivity extends ListActivity implements
 			TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 			emptyTextView.setText(R.string.empty_list);
 		}
+	}
+	
+	/**
+	 * Called form the ContentResolver to notify us that we finsihed requesting a feed
+	 * @param msg
+	 */
+	public void onFinsihedContentObserver(Message msg) {
+		// We always pass a seuccess, the CursorAdapter wull set the right list text and items
+		onFeedFinished( ApplicationMNM.ERROR_SUCCESSFULL );
 	}
 
 	/**
@@ -657,7 +682,7 @@ abstract public class FeedActivity extends ListActivity implements
 			break;
 		case CONTEXT_MENU_OPEN_MENEAME:
 		case CONTEXT_MENU_OPEN_SOURCE:
-			if (item.getItemId() == CONTEXT_MENU_OPEN) {
+			if (item.getItemId() == CONTEXT_MENU_OPEN_MENEAME) {
 				url = holder.link;
 				ApplicationMNM.showToast(getResources().getString(
 						R.string.context_menu_open));

@@ -173,5 +173,10 @@ public class FeedItemAdapter extends CursorAdapter {
 		view.setTag(holder);
 		return view;
 	}
+	
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 
 }

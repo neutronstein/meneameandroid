@@ -29,7 +29,7 @@ public class SystemValueManager {
 			final ContentValues values = new ContentValues();
 			values.put(SystemValue.KEY, key);
 			values.put(SystemValue.VALUE, value);
-			SystemValueItem systemValue = getSystemValue(contentResolver, key);
+			SystemValue systemValue = getSystemValue(contentResolver, key);
 
 			// If the system value is already there just update it
 			if (systemValue == null) {
@@ -40,12 +40,12 @@ public class SystemValueManager {
 			} else {
 				// Use the URI to update the item
 				if (contentResolver
-						.update(systemValue.mUri, values, null, null) > 0) {
+						.update(systemValue.getUri(), values, null, null) > 0) {
 					ApplicationMNM.logCat(TAG, "[UPDATE] SystemValue " + key
 							+ "(" + value + ")");
 				} else {
 					ApplicationMNM.logCat(TAG, "[UPDATE] [FAILED] SystemValue "
-							+ key + "(" + value + "): " + systemValue.mUri);
+							+ key + "(" + value + "): " + systemValue.getUri());
 				}
 			}
 		} catch (SQLException e) {
@@ -62,7 +62,7 @@ public class SystemValueManager {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static SystemValueItem getSystemValue(
+	public static SystemValue getSystemValue(
 			ContentResolver contentResolver, String key) {
 		String[] projection = new String[] { BaseColumns._ID, SystemValue.VALUE };
 		final String[] selectionArgs = new String[1];
@@ -72,18 +72,17 @@ public class SystemValueManager {
 		Cursor cur = contentResolver.query(SystemValue.CONTENT_URI, projection,
 				selection, selectionArgs, null);
 		if (cur != null && cur.moveToFirst()) {
-			SystemValueItem result = new SystemValueItem();
-			result.mKey = key;
-			result.mValue = cur
-					.getString(cur.getColumnIndex(SystemValue.VALUE));
+			SystemValue result = new SystemValue();
+			result.setKey(key);
+			result.setValue(cur.getString(cur.getColumnIndex(SystemValue.VALUE)));
 
 			// Create the item URI
-			result.mUri = ContentUris.withAppendedId(SystemValue.CONTENT_URI,
-					cur.getLong(cur.getColumnIndex(BaseColumns._ID)));
+			result.setUri( ContentUris.withAppendedId(SystemValue.CONTENT_URI,
+					cur.getLong(cur.getColumnIndex(BaseColumns._ID))));
 
 			cur.close();
 			ApplicationMNM.logCat(TAG, "[QUERY] SystemValue " + key + "("
-					+ result.mValue + ") recovered");
+					+ result.getValue() + ") recovered");
 			return result;
 		} else {
 			ApplicationMNM.logCat(TAG, "[QUERY] [FAILED] SystemValue " + key
