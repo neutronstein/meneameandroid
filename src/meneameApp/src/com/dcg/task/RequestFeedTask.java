@@ -19,7 +19,6 @@ import android.net.Uri;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.provider.FeedItemElement;
-import com.dcg.provider.SystemValue;
 import com.dcg.rss.RSSParser;
 import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;
@@ -65,9 +64,6 @@ public class RequestFeedTask extends
 
 	/** data params for the task */
 	private RequestFeedTaskParams mMyParams;
-
-	/** argument list */
-	private static String[] sArguments1 = new String[1];
 
 	/** Feed parser */
 	private RSSParser mFeedParser = null;

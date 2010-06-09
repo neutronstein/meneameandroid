@@ -14,8 +14,8 @@ import org.apache.http.client.methods.HttpGet;
 import android.content.Context;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.app.SystemValueItem;
 import com.dcg.app.SystemValueManager;
+import com.dcg.provider.SystemValue;
 import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
 
@@ -46,12 +46,12 @@ public class SecurityKeyManager {
 		String securityKey = "";
 
 		// Check if we need to reload the security key or not
-		SystemValueItem systemValue = SystemValueManager.getSystemValue(context
+		SystemValue systemValue = SystemValueManager.getSystemValue(context
 				.getContentResolver(), SECURITY_KEY_TIME);
-		if (systemValue.mValue != null) {
+		if (systemValue.getValue() != null) {
 			try {
 				// Did elapse enough time to force a new key request?
-				if ((now - Long.parseLong(systemValue.mValue)) < SECURITY_KEY_REFRESH_INTERVAL * 1000) {
+				if ((now - Long.parseLong(systemValue.getValue())) < SECURITY_KEY_REFRESH_INTERVAL * 1000) {
 					bRequestKey = false;
 				}
 			} catch (Exception e) {
@@ -109,7 +109,6 @@ public class SecurityKeyManager {
 						ApplicationMNM.warnCat(TAG,
 								"Could not request security key " + URL + ": "
 										+ e);
-						e.printStackTrace();
 					} finally {
 						IOUtilities.closeStream(in);
 						IOUtilities.closeStream(out);
@@ -138,7 +137,7 @@ public class SecurityKeyManager {
 		if (!bRequestKey) {
 			systemValue = SystemValueManager.getSystemValue(context
 					.getContentResolver(), SECURITY_KEY_KEY);
-			securityKey = (systemValue != null && systemValue.mValue != null) ? systemValue.mValue
+			securityKey = (systemValue != null && systemValue.getValue() != null) ? systemValue.getValue()
 					: securityKey;
 		}
 
