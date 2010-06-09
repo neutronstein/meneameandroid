@@ -11,11 +11,15 @@ import org.apache.http.client.methods.HttpGet;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.database.SQLException;
+import android.net.Uri;
 
 import com.dcg.app.ApplicationMNM;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.provider.FeedItemElement;
+import com.dcg.provider.SystemValue;
 import com.dcg.rss.RSSParser;
 import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;
@@ -30,6 +34,13 @@ public class RequestFeedTask extends
 		UserTask<RequestFeedTaskParams, Void, Integer> implements
 		AddFeedItemListener {
 	private static final String TAG = "RequestFeedTask";
+	
+	/** Authority used for the task, this should never be used as normal content provider access! */
+	public static final String ELEMENT_AUTHORITY = "RequestFeedTask";
+	
+	/** The observer URI, used to catch any finish event */
+	public static final Uri CONTENT_URI = Uri
+	.parse("content://com.dcg.meneame/" + ELEMENT_AUTHORITY);
 
 	/** Error keys used as return types by the task */
 	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ApplicationMNM.ERROR_FAILED + 1;
@@ -60,6 +71,9 @@ public class RequestFeedTask extends
 
 	/** Feed parser */
 	private RSSParser mFeedParser = null;
+	
+	/** cached Context used to handle content access */
+	private Context mContext = null;
 
 	/**
 	 * Constructor
@@ -86,6 +100,9 @@ public class RequestFeedTask extends
 						+ mMyParams.mItemClass);
 				ApplicationMNM.logCat(TAG, "  mMaxItems = "
 						+ mMyParams.mMaxItems);
+				
+				// Get the base context
+				mContext = mActivity.getBaseContext();
 
 				// Get stream from the net
 				InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
@@ -105,26 +122,21 @@ public class RequestFeedTask extends
 					mFeedParser.parse();
 
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (InstantiationException e) {
-					e.printStackTrace();
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (ClassCastException e) {
-					e.printStackTrace();
 					bResult = ERROR_NOT_A_FEED_ACTIVITY;
 				}
 			} catch (ClientProtocolException e1) {
-				e1.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
 			} catch (IOException e1) {
-				e1.printStackTrace();
 				bResult = ERROR_RSS_UNKOWN;
 			} catch (URISyntaxException e1) {
-				e1.printStackTrace();
+				bResult = ERROR_RSS_UNKOWN;
+			} catch ( Exception e1 ) {
 				bResult = ERROR_RSS_UNKOWN;
 			}
 		} else {
@@ -186,9 +198,19 @@ public class RequestFeedTask extends
 
 	@Override
 	public void onPostExecute(Integer result) {
-		// ApplicationMNM.showToast("Finished with result: " + result);
-		if (mMyParams != null) {
-			mMyParams.mFeedListener.onFeedFinished(result);
+		ApplicationMNM.showToast("Finished with result: " + result);
+		
+		if (mMyParams != null) 
+		{
+			ContentResolver resolver = getContentResolver();
+			if ( resolver != null )
+			{
+				// Inform any registered content observers
+				Uri onFinishedUri = ContentUris.withAppendedId(CONTENT_URI, result);
+				resolver.notifyChange(onFinishedUri, null);
+			}
+			//((FeedActivity) mActivity).getContentResolver().notifyChange(uri, null);
+			//mMyParams.mFeedListener.onFeedFinished(result);
 		}
 	}
 
@@ -198,7 +220,11 @@ public class RequestFeedTask extends
 	 * @return
 	 */
 	public ContentResolver getContentResolver() {
-		return ((FeedActivity) mActivity).getContentResolver();
+		if ( mContext != null )
+		{
+			return mContext.getContentResolver();
+		}
+		return null;
 	}
 
 	/**

@@ -23,14 +23,16 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "data";
 
 	/** Database version currently used. CURRENT 11 - v7 (0.2.1) */
-	private static final int DATABASE_VERSION = 12;
+	private static final int DATABASE_VERSION = 13;
 
 	/** Action id's */
 	private static final int ITEMS = 1;
 	private static final int ITEM_ID = 2;
 	private static final int SYSTEM_VALUE = 3;
 	private static final int SYSTEM_VALUE_ID = 4;
-
+	private static final int RESTFUL_VALUE = 5;
+	private static final int RESTFUL_VALUE_ID = 6;
+	
 	private static final String AUTHORITY = "com.dcg.meneame";
 
 	private static final UriMatcher URI_MATCHER;
@@ -43,6 +45,10 @@ public class MeneameContentProvider extends ContentProvider {
 				SYSTEM_VALUE);
 		URI_MATCHER.addURI(AUTHORITY, SystemValue.ELEMENT_AUTHORITY + "/#",
 				SYSTEM_VALUE_ID);
+		URI_MATCHER.addURI(AUTHORITY, RESTfulItem.ELEMENT_AUTHORITY,
+				RESTFUL_VALUE);
+		URI_MATCHER.addURI(AUTHORITY, RESTfulItem.ELEMENT_AUTHORITY + "/#",
+				RESTFUL_VALUE_ID);
 	}
 
 	private SQLiteOpenHelper mOpenHelper;
@@ -78,6 +84,14 @@ public class MeneameContentProvider extends ContentProvider {
 			segment = uri.getPathSegments().get(1);
 			qb.appendWhere(SystemValue.KEY + "=" + segment);
 			break;
+		case RESTFUL_VALUE:
+			qb.setTables(RESTfulItem.TABLE);
+			break;
+		case RESTFUL_VALUE_ID:
+			qb.setTables(RESTfulItem.TABLE);
+			segment = uri.getPathSegments().get(1);
+			qb.appendWhere(RESTfulItem.NAME + "=" + segment);
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -106,6 +120,10 @@ public class MeneameContentProvider extends ContentProvider {
 			return "vnd.android.cursor.dir/vnd.com.dcg.meneame.provider.systemvalue";
 		case SYSTEM_VALUE_ID:
 			return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.systemvalue";
+		case RESTFUL_VALUE:
+			return "vnd.android.cursor.dir/vnd.com.dcg.meneame.provider.systemvalue";
+		case RESTFUL_VALUE_ID:
+			return "vnd.android.cursor.item/vnd.com.dcg.meneame.provider.systemvalue";
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -130,6 +148,14 @@ public class MeneameContentProvider extends ContentProvider {
 			rowId = db.insert(SystemValue.TABLE, null, values);
 			if (rowId > 0) {
 				insertUri = ContentUris.withAppendedId(SystemValue.CONTENT_URI,
+						rowId);
+				bResult = true;
+			}
+			break;		
+		case RESTFUL_VALUE:
+			rowId = db.insert(RESTfulItem.TABLE, null, values);
+			if (rowId > 0) {
+				insertUri = ContentUris.withAppendedId(RESTfulItem.CONTENT_URI,
 						rowId);
 				bResult = true;
 			}
@@ -169,6 +195,17 @@ public class MeneameContentProvider extends ContentProvider {
 		case SYSTEM_VALUE_ID:
 			segment = uri.getPathSegments().get(1);
 			count = db.delete(SystemValue.TABLE, SystemValue.KEY
+					+ "="
+					+ segment
+					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
+							+ ')' : ""), selectionArgs);
+			break;
+		case RESTFUL_VALUE:
+			count = db.delete(RESTfulItem.TABLE, selection, selectionArgs);
+			break;
+		case RESTFUL_VALUE_ID:
+			segment = uri.getPathSegments().get(1);
+			count = db.delete(RESTfulItem.TABLE, RESTfulItem.NAME
 					+ "="
 					+ segment
 					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
@@ -260,6 +297,15 @@ public class MeneameContentProvider extends ContentProvider {
 					+ " TEXT);");
 			db.execSQL("CREATE INDEX systemIndexKey ON " + SystemValue.TABLE
 					+ " (" + SystemValue.KEY + ");");
+			
+			// Create RESTful table
+			db.execSQL("CREATE TABLE " + RESTfulItem.TABLE + " ("
+					+ BaseColumns._ID + " INTEGER PRIMARY KEY, "
+					+ RESTfulItem.NAME + " STRING UNIQUE, "
+					+ RESTfulItem.REQUEST + " TEXT, "
+					+ RESTfulItem.STATUS + " INTEGER);");
+			db.execSQL("CREATE INDEX restfulIndexKey ON " + RESTfulItem.TABLE
+					+ " (" + RESTfulItem.NAME + ");");
 		}
 
 		@Override
@@ -269,6 +315,7 @@ public class MeneameContentProvider extends ContentProvider {
 					+ ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + FeedItemElement.TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SystemValue.TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + RESTfulItem.TABLE);
 			onCreate(db);
 		}
 	}
