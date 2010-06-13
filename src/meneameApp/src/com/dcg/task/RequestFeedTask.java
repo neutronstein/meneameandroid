@@ -15,10 +15,13 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.SQLException;
 import android.net.Uri;
+import android.util.Log;
 
 import com.dcg.app.ApplicationMNM;
+import com.dcg.app.RESTfulManager;
 import com.dcg.meneame.FeedActivity;
 import com.dcg.provider.FeedItemElement;
+import com.dcg.provider.RESTfulMethod;
 import com.dcg.rss.RSSParser;
 import com.dcg.rss.RSSParser.AddFeedItemListener;
 import com.dcg.util.HttpManager;
@@ -70,6 +73,9 @@ public class RequestFeedTask extends
 	
 	/** cached Context used to handle content access */
 	private Context mContext = null;
+	
+	/** The method we are using */
+	private RESTfulMethod mRESTMethod = null;
 
 	/**
 	 * Constructor
@@ -82,6 +88,12 @@ public class RequestFeedTask extends
 	@Override
 	public Integer doInBackground(RequestFeedTaskParams... params) {
 		Integer bResult = ApplicationMNM.ERROR_SUCCESSFULL;
+		
+		// Get the base context
+		mContext = mActivity.getBaseContext();
+		
+		// We add the task!		
+		mRESTMethod = new RESTfulMethod();
 
 		// We need params to run
 		if (params[0] != null) {
@@ -97,9 +109,17 @@ public class RequestFeedTask extends
 				ApplicationMNM.logCat(TAG, "  mMaxItems = "
 						+ mMyParams.mMaxItems);
 				
-				// Get the base context
-				mContext = mActivity.getBaseContext();
-
+				// Setup method
+				mRESTMethod.setMethod(RESTfulMethod.REST_GET);
+				mRESTMethod.setStatus(RESTfulMethod.STATUS_TRANSACTION);
+				mRESTMethod.setRequest(mMyParams.mURL);
+				mRESTMethod.setName(TAG);
+				
+				Log.d(TAG, "STARTING REFRESH: " + mRESTMethod.toString());
+				
+				// Update RESTful method
+				RESTfulManager.setRESTMethod(mContext,mRESTMethod);
+				
 				// Get stream from the net
 				InputStreamReader streamReader = getInputStreamReader(mMyParams.mURL);
 				try {
@@ -118,21 +138,29 @@ public class RequestFeedTask extends
 					mFeedParser.parse();
 
 				} catch (IllegalAccessException e) {
+					ApplicationMNM.warnCat(TAG, e.toString());
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (InstantiationException e) {
+					ApplicationMNM.warnCat(TAG, e.toString());
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (ClassNotFoundException e) {
+					ApplicationMNM.warnCat(TAG, e.toString());
 					bResult = ERROR_RSS_UNKOWN;
 				} catch (ClassCastException e) {
+					ApplicationMNM.warnCat(TAG, e.toString());
 					bResult = ERROR_NOT_A_FEED_ACTIVITY;
 				}
 			} catch (ClientProtocolException e1) {
+				ApplicationMNM.warnCat(TAG, e1.toString());
 				bResult = ERROR_RSS_UNKOWN;
 			} catch (IOException e1) {
+				ApplicationMNM.warnCat(TAG, e1.toString());
 				bResult = ERROR_RSS_UNKOWN;
 			} catch (URISyntaxException e1) {
+				ApplicationMNM.warnCat(TAG, e1.toString());
 				bResult = ERROR_RSS_UNKOWN;
 			} catch ( Exception e1 ) {
+				ApplicationMNM.warnCat(TAG, e1.toString());
 				bResult = ERROR_RSS_UNKOWN;
 			}
 		} else {
@@ -165,6 +193,11 @@ public class RequestFeedTask extends
 	protected InputStreamReader getInputStreamReader(String streamURL)
 			throws ClientProtocolException, IOException, URISyntaxException {
 		HttpGet request = new HttpGet();
+		
+		// Clean the URL for containing invalid characters
+		streamURL = streamURL.replaceAll("\t", "");
+		streamURL = streamURL.replaceAll("\n", "");
+		streamURL = streamURL.replaceAll("\r", "");
 
 		request.setURI(new URI(streamURL));
 		ApplicationMNM.logCat(TAG, "Starting request " + request.toString());
@@ -194,10 +227,16 @@ public class RequestFeedTask extends
 
 	@Override
 	public void onPostExecute(Integer result) {
-		ApplicationMNM.showToast("Finished with result: " + result);
+		//ApplicationMNM.showToast("Finished with result: " + result);
 		
 		if (mMyParams != null) 
 		{
+			mRESTMethod.setResult(result);
+			mRESTMethod.setStatus((result==ApplicationMNM.ERROR_SUCCESSFULL)?RESTfulMethod.STATUS_DONE:RESTfulMethod.STATUS_FIELD);
+			
+			// Update RESTful method
+			RESTfulManager.setRESTMethod(mContext,mRESTMethod);
+			
 			ContentResolver resolver = getContentResolver();
 			if ( resolver != null )
 			{
@@ -205,9 +244,12 @@ public class RequestFeedTask extends
 				Uri onFinishedUri = ContentUris.withAppendedId(CONTENT_URI, result);
 				resolver.notifyChange(onFinishedUri, null);
 			}
-			//((FeedActivity) mActivity).getContentResolver().notifyChange(uri, null);
-			//mMyParams.mFeedListener.onFeedFinished(result);
 		}
+		
+		// Null refs
+		mActivity = null;
+		mContext = null;
+		mRESTMethod = null;
 	}
 
 	/**

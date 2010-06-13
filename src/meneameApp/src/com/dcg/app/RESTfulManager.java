@@ -1,7 +1,9 @@
 package com.dcg.app;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 
 import com.dcg.provider.RESTfulMethod;
@@ -11,76 +13,80 @@ import com.dcg.provider.RESTfulMethod;
  * By now it handles states of already executed methods or methods that are </br>
  * a transaction state.</br>
  * </br>
- * The manager it self is a singleton so you can have only one instance at time.</br>
+ * The manager operates in a static context and has no instance.</br>
  * The context will be set by ApplicationMNM so you do not need to worry about it.</br>
  * </br>
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 public class RESTfulManager {
 	private static final String TAG = "RESTfulManager";
-	
-	/** Context in which we operate */
-	private Context mContext = null;
-	
-	/** Our static instance */
-	private static RESTfulManager mInstance = null;
-	
-	private RESTfulManager() {
+
+	static {
 		ApplicationMNM.addLogCat(TAG);
-	}
-	
-	/**
-	 * Will return a RESTfulManager instance.
-	 * @return RESTfulManager
-	 */
-	public static synchronized RESTfulManager getInstance() {
-		if ( mInstance == null )
-		{
-			mInstance = new RESTfulManager();
-		}
-		return mInstance;
-	}
-	
-	/**
-	 * Register a context that will be used by the manager
-	 * @param context
-	 */
-	public void setContext( Context context  ) {
-		mContext = context;
 	}
 	
 	/**
 	 * Adds/Updates a RESTfulMethod in the database
 	 * @param item
 	 */
-	public void setSystemValue(RESTfulMethod method) {
+	public static void setRESTMethod(Context context, RESTfulMethod method) {
 		try {
 			// Get the current content resolver
-			ContentResolver resolver = mContext.getContentResolver();
+			final ContentResolver resolver = context.getContentResolver();
+			final ContentValues contentValues = method.getContentValues();
 			
 			// try updating the method is that works
-			final int count = resolver.update(RESTfulMethod.CONTENT_URI, method.getContentValues(), method.getSelection(), method.getSelectionArgs());
+			final int count = resolver.update(RESTfulMethod.CONTENT_URI, contentValues, RESTfulMethod.getSelection(), method.getSelectionArgs());
 			
 			if ( count == 0 )
 			{
-				// TODO: Make an insert
+				try
+				{
+					resolver.insert(RESTfulMethod.CONTENT_URI,contentValues);
+					ApplicationMNM.logCat(TAG, "Added REST method:\n" + method.toString());
+				} catch( SQLException e1) {
+					ApplicationMNM.warnCat(TAG, "Failed to insert REST method:\n" + method.toString() + "\nError: " + e1.toString());
+				}
 			}
 			else
 			{
-				// We are done
+				ApplicationMNM.logCat(TAG, "Updated REST method:\n" + method.toString());
 			}
-		} catch (SQLException e) {
-			// TODO: MAKE ERROR MSG
+		} catch (Exception e) {
+			ApplicationMNM.warnCat(TAG, "Failed to set REST method:\n" + method.toString() + "\nError: " + e.toString());
 		}
 	}
 	
 	/**
-	 * Retrives the RESTfulMethod that is linked to a request if any
+	 * Retrieves the RESTfulMethod that is linked to a request if any
 	 * @param request
 	 * @return
 	 */
-	public RESTfulMethod getSystemValue(String request) {
-		// TODO: Make the get
-		return null;
+	public static RESTfulMethod getRESTMethod(Context context, String request) {
+		RESTfulMethod method = null;
+		Cursor cur = null;
+		try {			
+			// Get the current content resolver
+			final ContentResolver resolver = context.getContentResolver();
+			
+			// Build method and set request
+			method = new RESTfulMethod();
+			method.setRequest(request);
+
+			// Query method
+			cur = resolver.query(RESTfulMethod.CONTENT_URI, RESTfulMethod.getProjection(),
+					RESTfulMethod.getSelection(), method.getSelectionArgs(), null);
+			if (cur != null && cur.moveToFirst()) {
+				method.buildFromCursor(cur);
+			}
+		} catch (Exception e) {
+			ApplicationMNM.warnCat(TAG, "Failed to get REST method with request:\n" + request + "\nError: " + e.toString());
+		}
+		
+		if ( cur != null )
+		{
+			cur.close();
+		}
+		return method;
 	}
 }

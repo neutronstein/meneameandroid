@@ -1,4 +1,4 @@
-package com.dcg.meneame;
+package com.dcg.app;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,8 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 
 import android.content.Context;
 
-import com.dcg.app.ApplicationMNM;
-import com.dcg.app.SystemValueManager;
 import com.dcg.provider.SystemValue;
 import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
@@ -85,7 +83,7 @@ public class SecurityKeyManager {
 
 						String[] arrayData = data.split("\n");
 
-						// We start at the top becasue the base_key is at the
+						// We start at the top because the base_key is at the
 						// end of the document
 						for (int i = arrayData.length - 1; i >= 0; i--) {
 							if (arrayData[i].startsWith(KEY_PREFIX)) {

@@ -25,8 +25,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
-import com.dcg.auth.TrustAllSSLSocketFactory;
-
 public class HttpManager {
 	private static final DefaultHttpClient sClient;
 	static {

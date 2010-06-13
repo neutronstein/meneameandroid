@@ -23,7 +23,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "data";
 
 	/** Database version currently used. CURRENT 11 - v7 (0.2.1) */
-	private static final int DATABASE_VERSION = 14;
+	private static final int DATABASE_VERSION = 13;
 
 	/** Action id's */
 	private static final int ITEMS = 1;
@@ -313,8 +313,9 @@ public class MeneameContentProvider extends ContentProvider {
 			// Create RESTful table
 			db.execSQL("CREATE TABLE " + RESTfulMethod.TABLE + " ("
 					+ BaseColumns._ID + " INTEGER PRIMARY KEY, "
-					+ RESTfulMethod.NAME + " TEXT UNIQUE, "
+					+ RESTfulMethod.NAME + " TEXT, "
 					+ RESTfulMethod.REQUEST + " TEXT UNIQUE, "
+					+ RESTfulMethod.RESULT + " INTEGER, "
 					+ RESTfulMethod.STATUS + " INTEGER, "
 					+ RESTfulMethod.METHOD + " INTEGER);");
 			db.execSQL("CREATE INDEX restfulIndexKey ON " + RESTfulMethod.TABLE

@@ -20,8 +20,8 @@
 	<!-- UI Lsts -->
 
 	<string name="empty_list">Lista vacia... Tocar para refrescar</string>
-	<string name="meneo_item_open">Abrir</string>
-	<string name="meneo_item_open_meneame">Abrir (Menéame)</string>
+	<string name="meneo_item_open">Vista detallada</string>
+	<string name="meneo_item_open_meneame">Abrir (menéame)</string>
 	<string name="meneo_item_open_source">Abrir (fuente)</string>
 	<string name="meneo_item_vote">Menéalo</string>
 	<string name="meneo_item_share">Compartir</string>
@@ -42,7 +42,7 @@
 
 	<!-- Share feed item option -->
 	<string name="share_option_title">Compartir Artículo</string>
-	<string name="share_option_subject">Menéame: SUBJECT</string>
+	<string name="share_option_subject">Men\u00E9ame para Android: SUBJECT</string>
 
 	<!-- Messages and Info -->
 	<string name="refreshing_lable">Cargando...</string>

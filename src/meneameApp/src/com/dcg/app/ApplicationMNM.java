@@ -112,9 +112,10 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RequestFeedTask");
-		// addIgnoreCat("FeedActivity");
+		addIgnoreCat("FeedActivity");
 		addIgnoreCat("SecurityKeyManager");
 		addIgnoreCat("ClientFormLogin");
+		addIgnoreCat("RESTfulManager");
 	}
 
 	/**
@@ -132,7 +133,6 @@ public class ApplicationMNM extends Application {
 	 */
 	public static void setCachedContext(Context context) {
 		mAppContext = context;
-		getRESTfulManager().setContext(mAppContext);
 	}
 
 	/**
@@ -142,14 +142,6 @@ public class ApplicationMNM extends Application {
 	 */
 	public static Context getCachedContext() {
 		return mAppContext;
-	}
-	
-	/**
-	 * Returns the RESTfulManager we got
-	 * @return
-	 */
-	public static synchronized RESTfulManager getRESTfulManager() {
-		return RESTfulManager.getInstance();
 	}
 
 	/**
