@@ -48,13 +48,15 @@ public class VersionChangesDialog extends Dialog {
 
 			// Set layout params
 			MarginLayoutParams params = new MarginLayoutParams(
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 			title.setLayoutParams(params);
 
 			// More params
 			title.setSingleLine(true);
 			title.setAutoLinkMask(Linkify.WEB_URLS);
 			title.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+			title.setBackgroundColor(R.color.Color_dark_blue);
+			title.setPadding(10, 2, 20, 2);
 
 			// Set text
 			int resID = getContext().getResources().getIdentifier(
@@ -79,6 +81,7 @@ public class VersionChangesDialog extends Dialog {
 			// More params
 			body.setSingleLine(false);
 			body.setAutoLinkMask(Linkify.WEB_URLS);
+			body.setPadding(10, 2, 20, 2);
 
 			// Set text
 			resID = getContext().getResources().getIdentifier(
