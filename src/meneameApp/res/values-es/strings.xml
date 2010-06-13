@@ -67,10 +67,20 @@
 	<string name="version_change_title">Cambios de Versiones</string>
 	<string name="version_change_v8_title">Version 8 (0.2.2)</string>
 	<string name="version_change_v8">- Añadida opción para compartir artículos\n-
-		Añadido vista detallada para artículos\n- Añadida nueva opción para
-		invertir la lista, el primer element estará en la parte inferior de la
-		lista de feeds\n- Nuevos datos para los artículos: \'Usuario\' and
-		\'Fecha\'</string>
+		Añadido vista detallada para artículos. Recordad que para acceder a
+		las opciones avanzadas tenéis que mantener encima de un artículo, se
+		desplegarán las opciones disponibles. Para volver rápidamente de la
+		vista detallada a la lista de artículos podéis tocar logo de menéame o
+		con el botón de \'atrás\' de vuestro teléfono.\n- Añadida nueva opción
+		para
+		invertir la lista, el primer element estará en la parte inferior
+		de la
+		lista de feeds\n- Nuevos datos para los artículos: \'Usuario\'
+		and
+		\'Fecha\'\n- Si tocais el logo de menéame estéis donde estéis
+		volveréis a la lista de artículos.\nMejora de estabilidad general,
+		podéis refrescar en cualquier elemento y cerrar la applicación, la
+		tarea se finalizará y tendréis todo actualizado.</string>
 	<string name="version_change_v7_title">Version 7 (0.2.1)</string>
 	<string name="version_change_v7">- Compatible con Android 1.5 (Cupcake)\n- Arreglado
 		bug con la opción \'Refrescar al lanzar\'</string>

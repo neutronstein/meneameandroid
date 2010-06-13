@@ -115,8 +115,6 @@ public class RequestFeedTask extends
 				mRESTMethod.setRequest(mMyParams.mURL);
 				mRESTMethod.setName(TAG);
 				
-				Log.d(TAG, "STARTING REFRESH: " + mRESTMethod.toString());
-				
 				// Update RESTful method
 				RESTfulManager.setRESTMethod(mContext,mRESTMethod);
 				
