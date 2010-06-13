@@ -1,10 +1,14 @@
 package com.dcg.provider;
 
+import com.dcg.app.ApplicationMNM;
+
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class RESTfulMethod implements BaseColumns {
+	private static final String TAG = "SystemValueManager";
 	
 	/** Define content provider connections */
 	public static final String ELEMENT_AUTHORITY = "RESTfulmethod";
@@ -38,21 +42,39 @@ public class RESTfulMethod implements BaseColumns {
 	public static final String METHOD = "method";
 	public static final int METHOD_FIELD = 3;
 	
+	public static final String RESULT = "result";
+	public static final int RESULT_FIELD = 4;
+	
 	/** Some database stuff */
-	 private static String[] sArguments1 = new String[1];
-	 private static String sSelection;
+	private static String[] sArguments1 = new String[1];
+	private static final String sSelection;
+	private static final String[] sProjection;
 	
 	/** Internal data */
-	private String mName;
-	private String mRequest;
-	private int mStatus;
-	private int mMethod;
+	private long mID = -1;
+	private String mName = "";
+	private String mRequest = "";
+	private int mStatus = -1;
+	private int mMethod = -1;
+	private int mResult = -1;
 	
 	static {
         StringBuilder selection = new StringBuilder();
         selection.append(REQUEST);
         selection.append("=?");
         sSelection = selection.toString();
+        
+        // Build projection
+        sProjection = new String[] {
+        		BaseColumns._ID, 
+        		RESTfulMethod.NAME,
+        		RESTfulMethod.REQUEST,
+        		RESTfulMethod.STATUS,
+        		RESTfulMethod.METHOD,
+        		RESTfulMethod.RESULT
+        		};
+        
+        ApplicationMNM.addLogCat(TAG);
 	}
 	
 	/** Build the right content values */
@@ -63,12 +85,13 @@ public class RESTfulMethod implements BaseColumns {
 		values.put(REQUEST, mRequest);
 		values.put(STATUS, mStatus);
 		values.put(METHOD, mMethod);
+		values.put(RESULT, mResult);
 		
 		return values;
 	}
 	
 	/** Get the selection string used by this object */
-	public String getSelection() {
+	public static String getSelection() {
 		return sSelection;
 	}
 	
@@ -78,37 +101,93 @@ public class RESTfulMethod implements BaseColumns {
 		arguments1[0] = mRequest;
 		return arguments1;
 	}
+	
+	/** Get the selection string used by this object */
+	public static String[] getProjection() {
+		return sProjection;
+	}
+	
+	/**
+	 * Fill the item from values taken from a valid cursor.</br>
+	 * NOTE: We assume the cursor is valid for his item!
+	 * @param cursor
+	 * @return
+	 */
+	public boolean buildFromCursor( Cursor cursor ) {
+		try
+		{
+			mID = cursor.getLong(cursor.getColumnIndexOrThrow(BaseColumns._ID));
+			mName = cursor.getString(cursor.getColumnIndexOrThrow(NAME));
+			mRequest = cursor.getString(cursor.getColumnIndexOrThrow(REQUEST));
+			mStatus = cursor.getInt(cursor.getColumnIndexOrThrow(STATUS));
+			mMethod = cursor.getInt(cursor.getColumnIndexOrThrow(METHOD));
+			mResult = cursor.getInt(cursor.getColumnIndexOrThrow(RESULT));
+		} catch( IllegalArgumentException e ) {
+			clear();
+			ApplicationMNM.warnCat(TAG, "Failed to build REST method from cursos: " + e.toString());
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Clear all data
+	 */
+	public void clear() {
+		mID = -1;
+		mName = "";
+		mRequest = "";
+		mStatus = -1;
+		mMethod = -1;
+		mResult = -1;
+	}
+	
+	public void setID(long ID) {
+		this.mID = ID;
+	}
 
-	public String getmName() {
+	public long getID() {
+		return mID;
+	}
+
+	public String getName() {
 		return mName;
 	}
 
-	public void setmName(String mName) {
-		this.mName = mName;
+	public void setName(String name) {
+		this.mName = name;
 	}
 
-	public String getmRequest() {
+	public String getRequest() {
 		return mRequest;
 	}
 
-	public void setmRequest(String mRequest) {
-		this.mRequest = mRequest;
+	public void setRequest(String request) {
+		this.mRequest = request;
 	}
 
-	public int getmStatus() {
+	public int getStatus() {
 		return mStatus;
 	}
 
-	public void setmStatus(int mStatus) {
-		this.mStatus = mStatus;
+	public void setStatus(int status) {
+		this.mStatus = status;
 	}
 
-	public int getmMethod() {
+	public int getMethod() {
 		return mMethod;
 	}
 
-	public void setmMethod(int mMethod) {
-		this.mMethod = mMethod;
+	public void setMethod(int method) {
+		this.mMethod = method;
+	}
+	
+	public int getResult() {
+		return mResult;
+	}
+
+	public void setResult(int result) {
+		this.mResult = result;
 	}
 
 	@Override
@@ -124,7 +203,8 @@ public class RESTfulMethod implements BaseColumns {
 		result.append(" mRequest: " + mRequest + NEW_LINE);
 		result.append(" mStatus: " + mStatus + NEW_LINE);
 		result.append(" mMethod: " + mMethod + NEW_LINE);
-
+		result.append(" mResult: " + mResult + NEW_LINE);
+		
 		// End object
 		result.append("}");
 		return result.toString();

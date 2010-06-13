@@ -11,4 +11,5 @@ public class RequestFeedTaskParams {
 	public String mParserClass;
 	public String mItemClass;
 	public int mMaxItems;
+	public int mItemType;
 }

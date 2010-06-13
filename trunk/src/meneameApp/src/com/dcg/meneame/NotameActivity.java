@@ -17,9 +17,11 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 /**
  * Notame activity that handles all actions the notame api can handle
@@ -92,6 +94,20 @@ public class NotameActivity extends Activity {
 				back();
 			}
 		});
+		
+		// Set the imamge button callback
+		ImageButton logoButton = (ImageButton)findViewById(R.id.applogo);
+		if ( logoButton != null )
+		{
+			logoButton.setOnTouchListener(new ImageButton.OnTouchListener() {
+
+				public boolean onTouch(View v, MotionEvent event) {
+					// TODO Auto-generated method stub
+					back();
+					return true;
+				}
+			});
+		}
 	}
 
 	public void sendNotameMessage() {

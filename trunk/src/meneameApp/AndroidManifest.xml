@@ -15,8 +15,7 @@
 		</activity>
 
 		<activity android:name="NewsActivity"></activity>
-		<activity android:name="DetailedArticleActivity"
-			android:theme="@style/Theme.mnm_prefs">
+		<activity android:name="DetailedArticleActivity">
 		</activity>
 		<activity android:name="CommentsActivity"></activity>
 		<activity android:name="QueueActivity"></activity>

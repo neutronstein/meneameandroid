@@ -261,7 +261,9 @@ public class FeedItemElement implements BaseColumns {
 	public ContentValues getContentValues() {
 		final ContentValues values = new ContentValues();
 
-		values.put(LINK_ID, mLinkID);
+		// Only add the link ID if this is an article
+		if (mType == FeedItemElement.TYPE_ARTICLE)
+			values.put(LINK_ID, mLinkID);
 		values.put(FEEDID, mFeedID);
 		values.put(COMMENT_RSS, mCommentRSS);
 		values.put(TITLE, mTitle);
