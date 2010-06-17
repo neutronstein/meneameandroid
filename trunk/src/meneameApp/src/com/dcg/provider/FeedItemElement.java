@@ -65,9 +65,12 @@ public class FeedItemElement implements BaseColumns {
 
 	public static final String USER = "user";
 	public static final int USER_FIELD = 11;
+	
+	public static final String PARENT_FEEDID = "parentFeedId";
+	public static final int PARENT_FEEDID_FIELD = 12;
 
 	/** Update this number to match the number of fields a feed item has */
-	public static final int FIELD_NUMS = 12;
+	public static final int FIELD_NUMS = 13;
 
 	/** Feed item data */
 	private int mLinkID;
@@ -82,6 +85,7 @@ public class FeedItemElement implements BaseColumns {
 	private int mType;
 	private String mPubDate;
 	private String mUser;
+	private int mParentFeedID;
 
 	public FeedItemElement() {
 		mCategories = new ArrayList<String>();
@@ -102,7 +106,15 @@ public class FeedItemElement implements BaseColumns {
 	public int getFeedID() {
 		return mFeedID;
 	}
+	
+	public void setParentFeedID(int parentFeedID) {
+		mParentFeedID = parentFeedID;
+	}
 
+	public int getParentFeedID() {
+		return mParentFeedID;
+	}
+	
 	public void setCommentRSS(String commentRSS) {
 		mCommentRSS = commentRSS;
 	}
@@ -246,7 +258,7 @@ public class FeedItemElement implements BaseColumns {
 
 	public void clear() {
 		mLinkID = -1;
-		mFeedID = -1;
+		mFeedID = 0;
 		mCommentRSS = "";
 		mTitle = "";
 		mVotes = 0;
@@ -256,6 +268,7 @@ public class FeedItemElement implements BaseColumns {
 		mURL = "";
 		mPubDate = "";
 		mUser = "";
+		mParentFeedID = 0;
 	}
 
 	public ContentValues getContentValues() {
@@ -275,6 +288,7 @@ public class FeedItemElement implements BaseColumns {
 		values.put(TYPE, mType);
 		values.put(PUB_DATE, mPubDate);
 		values.put(USER, mUser);
+		values.put(PARENT_FEEDID, mParentFeedID);	
 
 		return values;
 	}
@@ -290,6 +304,7 @@ public class FeedItemElement implements BaseColumns {
 		// Add data
 		result.append(" mLinkID: " + mLinkID + NEW_LINE);
 		result.append(" mFeedID: " + mFeedID + NEW_LINE);
+		result.append(" mParentFeedID: " + mParentFeedID + NEW_LINE);
 		result.append(" mCommentRSS: " + mCommentRSS + NEW_LINE);
 		result.append(" mTitle: " + mTitle + NEW_LINE);
 		result.append(" mVotes: " + mVotes + NEW_LINE);

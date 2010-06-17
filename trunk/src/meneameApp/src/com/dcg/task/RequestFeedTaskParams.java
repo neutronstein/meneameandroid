@@ -12,4 +12,5 @@ public class RequestFeedTaskParams {
 	public String mItemClass;
 	public int mMaxItems;
 	public int mItemType;
+	public int mParentFeedID;
 }
