@@ -33,6 +33,9 @@ public class DetailedArticleActivity extends FeedActivity {
 	/** Feed ID where the item comes from */
 	private int mFeedID = -1;
 	
+	/** Parent Feed ID where the main article is stored*/
+	private int mParentFeedID = -1;
+	
 	/** The URL used to point to menéame.net */
 	private String mLinkURL = "";
 	
@@ -59,22 +62,33 @@ public class DetailedArticleActivity extends FeedActivity {
 		// From the extra get the article ID so we can start getting the
 		// comments
 		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			// Find the article id
-			mArticleID = Integer.parseInt(extras.getString(EXTRA_KEY_ARTICLE_ID));
+		if (extras != null) 
+		{
+			try
+			{
+				// Find the article id
+				mArticleID = Integer.parseInt(extras.getString(EXTRA_KEY_ARTICLE_ID));
+				mParentFeedID = Integer.parseInt(extras.getString(EXTRA_KEY_PARENT_FEEDID));
+				
+				// Get data from DB
+				populateDataFromDB();
+				
+				// Setup view
+				setupViews();
+				
+				// Refresh 
+				conditionRefreshFeed();
 			
-			// Get data from DB
-			populateDataFromDB();
-			
-			// Setup view
-			setupViews();
-			
-			// Refresh 
-			conditionRefreshFeed();
+			} catch( Exception e ) {
+				// Ok... the data send to open the activity is not correct!
+				ApplicationMNM.warnCat(TAG, "No article/parent Feed ID (or not an integer) specified in extra bundle!");
+				finish();
+			}
 		}
 		else
 		{
-			ApplicationMNM.showToast("No article ID specified in extra bundle!");
+			ApplicationMNM.warnCat(TAG, "No bundle send when opening this activity!");
+			finish();
 		}
 	}
 	
@@ -234,7 +248,9 @@ public class DetailedArticleActivity extends FeedActivity {
 	 * @return
 	 */
 	protected RequestFeedTaskParams getTaskParams() {
-		return super.getTaskParams();
+		RequestFeedTaskParams taskParams = super.getTaskParams();
+		taskParams.mParentFeedID = mParentFeedID;
+		return taskParams;
 	}
 	
 	/* Creates the menu items */

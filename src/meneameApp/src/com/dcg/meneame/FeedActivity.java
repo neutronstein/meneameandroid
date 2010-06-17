@@ -93,7 +93,8 @@ abstract public class FeedActivity extends ListActivity implements
 	
 	/** Definitions used by the detailed view */
 	public static final String EXTRA_KEY_ARTICLE_ID = "extra.article.id";
-
+	public static final String EXTRA_KEY_PARENT_FEEDID = "extra.parentfeed.id";
+	
 	/** Used to debug, will print some data from the DB on start */
 	public static final boolean mbPrintDBContentOnStart = false;
 
@@ -432,11 +433,11 @@ abstract public class FeedActivity extends ListActivity implements
 	 * Delete an entire feed cache used by us
 	 */
 	public boolean deleteFeedCache() {
-		final String[] arguments1 = new String[1];
-		arguments1[0] = String.valueOf(getFeedID());
-		final String where = FeedItemElement.FEEDID + "=?";
+		final String[] arguments2 = new String[2];
+		arguments2[0] = arguments2[1] = String.valueOf(getFeedID());
+		final String where = FeedItemElement.FEEDID+"=? OR "+FeedItemElement.PARENT_FEEDID+"=?";
 		int count = getContentResolver().delete(FeedItemElement.CONTENT_URI,
-				where, arguments1);
+				where, arguments2);
 		return count > 0;
 	}
 
@@ -791,6 +792,7 @@ abstract public class FeedActivity extends ListActivity implements
 			// Open detailed view for article
 			Intent i = new Intent(this, DetailedArticleActivity.class);
 			i.putExtra(EXTRA_KEY_ARTICLE_ID, String.valueOf(holder.link_id));
+			i.putExtra(EXTRA_KEY_PARENT_FEEDID, String.valueOf(getFeedID()));
 			startActivityForResult(i, SUB_ACT_DETAILED_ID);
 			break;
 		case CONTEXT_MENU_OPEN_MENEAME:

@@ -269,6 +269,7 @@ public class RequestFeedTask extends
 	public void onFeedAdded(FeedItemElement feedItem) {
 		// Set some feed specific values
 		feedItem.setFeedID(((FeedActivity) mActivity).getFeedID());
+		feedItem.setParentFeedID(mMyParams.mParentFeedID);
 		feedItem.setType(((FeedActivity) mActivity).getFeedItemType());
 
 		// Print it out

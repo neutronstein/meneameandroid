@@ -22,8 +22,8 @@ public class MeneameContentProvider extends ContentProvider {
 	/** Database name */
 	private static final String DATABASE_NAME = "data";
 
-	/** Database version currently used. CURRENT 11 - v7 (0.2.1) */
-	private static final int DATABASE_VERSION = 13;
+	/** Database version currently used. CURRENT 13 - v8 (0.2.2) */
+	private static final int DATABASE_VERSION = 14;
 
 	/** Action id's */
 	private static final int ITEMS = 1;
@@ -286,6 +286,7 @@ public class MeneameContentProvider extends ContentProvider {
 					+ BaseColumns._ID + " INTEGER PRIMARY KEY, "
 					+ FeedItemElement.LINK_ID + " INTEGER, "
 					+ FeedItemElement.FEEDID + " INTEGER, "
+					+ FeedItemElement.PARENT_FEEDID + " INTEGER, "
 					+ FeedItemElement.TITLE + " TEXT, "
 					+ FeedItemElement.DESCRIPTION + " TEXT, "
 					+ FeedItemElement.LINK + " TEXT, " + FeedItemElement.URL
