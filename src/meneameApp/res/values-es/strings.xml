@@ -66,6 +66,9 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
 	
+	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
+	<string name="version_change_v10">- TODO</string>
+	
 	<string name="version_change_v9_title">Version 9 (0.2.3)</string>
 	<string name="version_change_v9">- Primera version del sistema de envio de noticias! Es el primer paso, cuando la autentificación este integrada será mucho más potente!</string>
 	
