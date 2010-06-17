@@ -33,7 +33,7 @@ public class ApplicationMNM extends Application {
 	private static List<String> mIgnoreCatList = new ArrayList<String>();
 
 	/** Enable logging or not */
-	public static final boolean mbEnableLogging = true;
+	public static final boolean mbEnableLogging = false;
 
 	/**
 	 * Will add the position of the each article in the list, useful for
