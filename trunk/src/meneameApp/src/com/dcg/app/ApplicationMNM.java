@@ -22,6 +22,9 @@ public class ApplicationMNM extends Application {
 
 	/** log tag for this class */
 	private static final String TAG = "ApplicationMNM";
+	
+	/** Emulator IMEI */
+	public static final String EMULATOR_IMEI = "000000000000000";
 
 	/** Toast message handler */
 	private static Toast mToast = null;
@@ -142,6 +145,19 @@ public class ApplicationMNM extends Application {
 	 */
 	public static Context getCachedContext() {
 		return mAppContext;
+	}
+	
+	/**
+	 * Returns if we are running in the emulator or not
+	 */
+	public static boolean isEmulator() {
+		if ( mAppContext != null )
+		{
+			TelephonyManager telephonyManager = (TelephonyManager)mAppContext.getSystemService(Context.TELEPHONY_SERVICE);        
+			return !telephonyManager.getDeviceId().equals(EMULATOR_IMEI);
+		}
+		// No context == not in emulatro?? Mhhh not sure...
+		return false;
 	}
 
 	/**
