@@ -30,6 +30,9 @@
 	<style name="Style.white_bg" parent="android:Theme">
 		<item name="android:background">@color/Color.white</item>
 	</style>
+	<style name="Style.tab_font_size" parent="android:Theme">
+	<item name="android:textSize">15px</item>
+	</style>
 
 	<style name="Style.feed_list" parent="android:Theme">
 		<item name="android:cacheColorHint">#EEE</item>
