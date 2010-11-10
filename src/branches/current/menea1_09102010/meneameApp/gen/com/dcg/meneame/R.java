@@ -31,6 +31,7 @@ public final class R {
         public static final int Color_grey=0x7f070000;
         public static final int Color_orange=0x7f070004;
         public static final int Color_white=0x7f070002;
+        public static final int color_state_definition_tab=0x7f070006;
     }
     public static final class drawable {
         public static final int app_logo=0x7f020000;
@@ -272,19 +273,20 @@ public final class R {
         public static final int version_title=0x7f080023;
     }
     public static final class style {
-        public static final int MNM_Prefs_TextView_ListSeparator=0x7f090008;
-        public static final int MNM_TextAppearance_Widget_TabWidget=0x7f09000a;
-        public static final int MNM_Widget_TabWidget=0x7f090009;
+        public static final int MNM_Prefs_TextView_ListSeparator=0x7f090009;
+        public static final int MNM_TextAppearance_Widget_TabWidget=0x7f09000b;
+        public static final int MNM_Widget_TabWidget=0x7f09000a;
         public static final int Style_app_logo=0x7f090002;
-        public static final int Style_feed_list=0x7f090006;
+        public static final int Style_feed_list=0x7f090007;
         public static final int Style_grey_bg=0x7f090004;
         public static final int Style_infolabel=0x7f090000;
         public static final int Style_infolabel_orange=0x7f090001;
-        public static final int Style_main_framelayout_style=0x7f090007;
+        public static final int Style_main_framelayout_style=0x7f090008;
         public static final int Style_orange_bg=0x7f090003;
+        public static final int Style_tab_font_size=0x7f090006;
         public static final int Style_white_bg=0x7f090005;
-        public static final int Theme_mnm=0x7f09000b;
-        public static final int Theme_mnm_prefs=0x7f09000c;
+        public static final int Theme_mnm=0x7f09000c;
+        public static final int Theme_mnm_prefs=0x7f09000d;
     }
     public static final class xml {
         public static final int preferences=0x7f050000;

@@ -1,20 +1,30 @@
 package com.dcg.meneame;
 
-import com.dcg.app.ApplicationMNM;
-import com.dcg.dialog.VersionChangesDialog;
-import com.dcg.meneame.R;
+import java.io.IOException;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.content.res.XmlResourceParser;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
+
+import com.dcg.app.ApplicationMNM;
+import com.dcg.dialog.VersionChangesDialog;
 
 /**
  * Main activity, basically holds the main tab widget
@@ -45,28 +55,77 @@ public class MeneameAPP extends TabActivity {
 		// Get some global stuff
 		mTabHost = getTabHost();
 
+		XmlResourceParser[]   parser     = new XmlResourceParser[3];
+		 ColorStateList      text       = null;
+	
+		 Drawable[] background  = new StateListDrawable[3];
+		 int[]               selected   = {},
+		                     unselected = {0};
+		 int               selectedColor = Color.GRAY,
+		                     defaultColor  = Color.DKGRAY;
+		
+		// Load the colour lists.
+		
+		 try {
+			parser[0] = getResources().getXml(R.color.color_state_definition_tab);
+			text   = ColorStateList.createFromXml(getResources(), parser[0]);
+			parser[0] = getResources().getXml(R.drawable.tab_indicator);
+			parser[1] = getResources().getXml(R.drawable.tab_indicator);
+			parser[2] = getResources().getXml(R.drawable.tab_indicator);
+			background[0]   = StateListDrawable.createFromXml(getResources(), parser[0]);
+			background[1]   = StateListDrawable.createFromXml(getResources(), parser[1]);
+			background[2]   = StateListDrawable.createFromXml(getResources(), parser[2]);
+		} catch (XmlPullParserException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
 		// Add news tab
 		TabSpec newsTab = mTabHost.newTabSpec(NewsActivity
 				.static_getTabActivityTag());
 		newsTab.setContent(new Intent(this, NewsActivity.class));
-		newsTab.setIndicator(getResources().getString(
-				NewsActivity.static_getIndicatorStringID()));
+		
+		
+		TextView newsTabView = new TextView(this);
+		newsTabView.setText(getResources().getString(
+		NewsActivity.static_getIndicatorStringID()));
+		newsTabView.setTextSize(15.0f);		
+		newsTabView.setTextColor(text);
+		newsTabView.setBackgroundDrawable(background[0]);
+		newsTab.setIndicator(newsTabView);
 		mTabHost.addTab(newsTab);
-
+	
 		// Add queue tab
 		TabSpec queueTab = mTabHost.newTabSpec(QueueActivity
 				.static_getTabActivityTag());
 		queueTab.setContent(new Intent(this, QueueActivity.class));
-		queueTab.setIndicator(getResources().getString(
+
+		
+		
+		TextView queueTabView = new TextView(this);
+		queueTabView.setText(getResources().getString(
 				QueueActivity.static_getIndicatorStringID()));
+		queueTabView.setTextSize(15.0f);		
+		queueTabView.setTextColor(text);
+		queueTabView.setBackgroundDrawable(background[1]);
+		queueTab.setIndicator(queueTabView);
 		mTabHost.addTab(queueTab);
 
 		// Add comments tab
 		TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity
 				.static_getTabActivityTag());
 		commentsTab.setContent(new Intent(this, CommentsActivity.class));
-		commentsTab.setIndicator(getResources().getString(
+		
+		TextView commentsTabView = new TextView(this);
+		commentsTabView.setText(getResources().getString(
 				CommentsActivity.static_getIndicatorStringID()));
+		commentsTabView.setTextSize(15.0f);		
+		commentsTabView.setTextColor(text);
+		commentsTabView.setBackgroundDrawable(background[2]);
+		commentsTab.setIndicator(commentsTabView);
 		mTabHost.addTab(commentsTab);
 
 		// Set news tab as visible one
