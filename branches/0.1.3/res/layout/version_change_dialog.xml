@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/linlayoutBase"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical" >
+	
+	<ScrollView
+		android:id="@+id/scrollview"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1" >		
+		<LinearLayout
+			android:id="@+id/widget30"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<!-- Version 3 (0.1.3) -->	
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v3_title" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v3_title" 
+				android:autoLink="web" android:textStyle="bold"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v3" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v3" 
+				android:autoLink="web" android:layout_marginLeft="10px"/>
+			<!-- Version 2 (0.1.2) -->	
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v2_title" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v2_title" 
+				android:autoLink="web" android:textStyle="bold"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v2" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v2" 
+				android:autoLink="web" android:layout_marginLeft="10px"/>
+			<!-- Version 1 (0.1.1) -->	
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v1_title" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v1_title" 
+				android:autoLink="web" android:textStyle="bold"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/version_change_v1" 
+				android:singleLine="false" 
+				android:text="@string/version_change_v1" 
+				android:autoLink="web" android:layout_marginLeft="10px"/>
+		</LinearLayout>	
+	</ScrollView>
+	
+	<LinearLayout
+		android:id="@+id/linlayoutButtons"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="0" >
+		<Button
+		android:id="@+id/btnOk"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Ok"
+		android:layout_weight="1" />
+	</LinearLayout>
+</LinearLayout>
