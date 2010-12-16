@@ -13,6 +13,7 @@
 			android:title="@string/pref_account_apikey" android:key="pref_account_apikey"
 			android:summary="@string/pref_account_apikey_summary"
 			android:defaultValue="" />
+3
 
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
@@ -34,11 +35,16 @@
 			android:title="@string/pref_app_clearcache" android:summary="@string/pref_app_clearcache_summary" />
 
 	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/pref_style">
+	<PreferenceCategory android:title="@string/pref_style"> 
 		<ListPreference android:key="pref_style_mainanimation"
 			android:summary="@string/pref_style_mainanimation_summary"
 			android:title="@string/pref_style_mainanimation" android:entries="@array/pref_style_mainanimation_entries"
 			android:entryValues="@array/pref_style_mainanimation_values"
 			android:defaultValue="None" />
+			<ListPreference android:key="pref_style_size"
+			android:summary="@string/pref_style_size_summary"
+			android:title="@string/pref_style_size" android:entries="@array/pref_style_size_entries"
+			android:entryValues="@array/pref_style_size_values"
+			android:defaultValue="Default" />
 	</PreferenceCategory>
 </PreferenceScreen>
