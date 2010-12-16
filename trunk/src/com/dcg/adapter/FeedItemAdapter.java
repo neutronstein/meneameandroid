@@ -2,7 +2,9 @@ package com.dcg.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +18,9 @@ import com.dcg.provider.FeedItemElement;
 
 public class FeedItemAdapter extends CursorAdapter {
 	private static final String[] PROJECTION_IDS_AND_TITLE = new String[] {
-			BaseColumns._ID, FeedItemElement.LINK_ID,
-			FeedItemElement.FEEDID, FeedItemElement.COMMENT_RSS,
-			FeedItemElement.TITLE, FeedItemElement.VOTES, FeedItemElement.LINK,
+			BaseColumns._ID, FeedItemElement.LINK_ID, FeedItemElement.FEEDID,
+			FeedItemElement.COMMENT_RSS, FeedItemElement.TITLE,
+			FeedItemElement.VOTES, FeedItemElement.LINK,
 			FeedItemElement.DESCRIPTION, FeedItemElement.CATEGORY,
 			FeedItemElement.URL, FeedItemElement.PUB_DATE,
 			FeedItemElement.USER, };
@@ -27,6 +29,7 @@ public class FeedItemAdapter extends CursorAdapter {
 
 	private final LayoutInflater mInflater;
 	private final Activity mActivity;
+	private boolean tiny = false;
 
 	/** Column indexes */
 	private final int[] mColumnIndexArray = new int[FeedItemElement.FIELD_NUMS];
@@ -40,7 +43,8 @@ public class FeedItemAdapter extends CursorAdapter {
 	 * @param activity
 	 */
 	public FeedItemAdapter(Activity activity, String selection,
-			String[] selectionArgs, int itemType, boolean bStackFromBottom) {
+			String[] selectionArgs, int itemType, boolean bStackFromBottom,
+			boolean tiny) {
 		super(activity, activity.managedQuery(FeedItemElement.CONTENT_URI,
 				PROJECTION_IDS_AND_TITLE, selection, selectionArgs,
 				((bStackFromBottom) ? FeedItemElement.DESC_SORT_ORDER
@@ -77,6 +81,7 @@ public class FeedItemAdapter extends CursorAdapter {
 				.getColumnIndexOrThrow(FeedItemElement.PUB_DATE);
 		mColumnIndexArray[FeedItemElement.USER_FIELD] = c
 				.getColumnIndexOrThrow(FeedItemElement.USER);
+		this.tiny = tiny;
 	}
 
 	@Override
@@ -134,8 +139,17 @@ public class FeedItemAdapter extends CursorAdapter {
 	 * @return
 	 */
 	public int getItemLayout(Context context, Cursor cursor, ViewGroup parent) {
-		return (mItemType == FeedItemElement.TYPE_ARTICLE) ? R.layout.meneo_listitem
-				: R.layout.meneo_listitem_comments;
+		if (isTiny())
+			return (mItemType == FeedItemElement.TYPE_ARTICLE) ? R.layout.meneo_listitem_tiny
+					: R.layout.meneo_listitem_comments_tiny;
+		else
+			return (mItemType == FeedItemElement.TYPE_ARTICLE) ? R.layout.meneo_listitem
+					: R.layout.meneo_listitem_comments;
+
+	}
+
+	private boolean isTiny() {
+		return tiny;
 	}
 
 	@Override
@@ -173,7 +187,7 @@ public class FeedItemAdapter extends CursorAdapter {
 		view.setTag(holder);
 		return view;
 	}
-	
+
 	@Override
 	public boolean hasStableIds() {
 		return true;
