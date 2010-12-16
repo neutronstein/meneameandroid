@@ -75,7 +75,7 @@ abstract public class FeedActivity extends ListActivity implements
 
 	/** About menu item id */
 	protected static final int MENU_ABOUT = 3;
-	
+
 	/** Last menu items */
 	protected static final int MENU_LAST_ITEM = MENU_ABOUT;
 
@@ -90,11 +90,11 @@ abstract public class FeedActivity extends ListActivity implements
 	private static final int CONTEXT_MENU_OPEN_SOURCE = 2;
 	private static final int CONTEXT_MENU_VOTE = 3;
 	private static final int CONTEXT_MENU_SHARE = 4;
-	
+
 	/** Definitions used by the detailed view */
 	public static final String EXTRA_KEY_ARTICLE_ID = "extra.article.id";
 	public static final String EXTRA_KEY_PARENT_FEEDID = "extra.parentfeed.id";
-	
+
 	/** Used to debug, will print some data from the DB on start */
 	public static final boolean mbPrintDBContentOnStart = false;
 
@@ -103,16 +103,16 @@ abstract public class FeedActivity extends ListActivity implements
 
 	/** Are we loading a cached feed? */
 	protected boolean mbIsLoadingCachedFeed;
-	
+
 	/** Handler used in our ContentObserver */
 	private Handler mHandler = null;
-	
+
 	/** Our ContentObservers */
-	private RequestFeedTaskObserver mRequestFeedTaskObserver= null;
-	
+	private RequestFeedTaskObserver mRequestFeedTaskObserver = null;
+
 	/** The logo image button */
 	private ImageButton mLogoButton = null;
-	
+
 	public FeedActivity() {
 		super();
 		ApplicationMNM.addLogCat(TAG);
@@ -125,7 +125,7 @@ abstract public class FeedActivity extends ListActivity implements
 
 		// Unpause
 		mbIsPaused = false;
-		
+
 		// Setup our content view
 		setupContentView();
 
@@ -135,7 +135,7 @@ abstract public class FeedActivity extends ListActivity implements
 		// Refresh if needed
 		conditionRefreshFeed();
 	}
-	
+
 	public void printDatabaseContent() {
 		if (mbPrintDBContentOnStart) {
 			// Form an array specifying which columns to return.
@@ -154,9 +154,12 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["+rowID+"] FeedItemElement:\n"+
-							" LINK_ID: "+cur.getString(cur.getColumnIndex(FeedItemElement.LINK_ID))
-									);
+					ApplicationMNM.logCat(TAG, "["
+							+ rowID
+							+ "] FeedItemElement:\n"
+							+ " LINK_ID: "
+							+ cur.getString(cur
+									.getColumnIndex(FeedItemElement.LINK_ID)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -178,10 +181,17 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["+rowID+"] SystemValue:\n"+
-							"   KEY: "+cur.getString(cur.getColumnIndex(SystemValue.KEY))+"\n"+
-							" VALUE: "+cur.getString(cur.getColumnIndex(SystemValue.VALUE))
-									);
+					ApplicationMNM.logCat(TAG, "["
+							+ rowID
+							+ "] SystemValue:\n"
+							+ "   KEY: "
+							+ cur
+									.getString(cur
+											.getColumnIndex(SystemValue.KEY))
+							+ "\n"
+							+ " VALUE: "
+							+ cur.getString(cur
+									.getColumnIndex(SystemValue.VALUE)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -190,30 +200,43 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null) {
 				cur.close();
 			}
-			
+
 			// Form an array specifying which columns to return.
 			String[] projection3 = new String[] { BaseColumns._ID,
-					RESTfulMethod.NAME,
-	        		RESTfulMethod.REQUEST,
-	        		RESTfulMethod.STATUS,
-	        		RESTfulMethod.METHOD,
-	        		RESTfulMethod.RESULT };
+					RESTfulMethod.NAME, RESTfulMethod.REQUEST,
+					RESTfulMethod.STATUS, RESTfulMethod.METHOD,
+					RESTfulMethod.RESULT };
 
 			// Make the query.
-			cur = managedQuery(RESTfulMethod.CONTENT_URI, projection3, "", null,
-					null);
+			cur = managedQuery(RESTfulMethod.CONTENT_URI, projection3, "",
+					null, null);
 
 			// Print all articles we got out!
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["+rowID+"] RESTfulMethod:\n"+
-							"    NAME: "+cur.getString(cur.getColumnIndex(RESTfulMethod.NAME))+"\n"+
-							" REQUEST: "+cur.getString(cur.getColumnIndex(RESTfulMethod.REQUEST))+"\n"+
-							"  STATUS: "+cur.getInt(cur.getColumnIndex(RESTfulMethod.STATUS))+"\n"+
-							"  METHOD: "+cur.getInt(cur.getColumnIndex(RESTfulMethod.METHOD))+"\n"+
-							"  RESULT: "+cur.getInt(cur.getColumnIndex(RESTfulMethod.RESULT))
-									);
+					ApplicationMNM.logCat(TAG, "["
+							+ rowID
+							+ "] RESTfulMethod:\n"
+							+ "    NAME: "
+							+ cur.getString(cur
+									.getColumnIndex(RESTfulMethod.NAME))
+							+ "\n"
+							+ " REQUEST: "
+							+ cur.getString(cur
+									.getColumnIndex(RESTfulMethod.REQUEST))
+							+ "\n"
+							+ "  STATUS: "
+							+ cur.getInt(cur
+									.getColumnIndex(RESTfulMethod.STATUS))
+							+ "\n"
+							+ "  METHOD: "
+							+ cur.getInt(cur
+									.getColumnIndex(RESTfulMethod.METHOD))
+							+ "\n"
+							+ "  RESULT: "
+							+ cur.getInt(cur
+									.getColumnIndex(RESTfulMethod.RESULT)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -224,7 +247,7 @@ abstract public class FeedActivity extends ListActivity implements
 			}
 		}
 	}
-	
+
 	/**
 	 * Set the content view we will use for the activity
 	 */
@@ -243,10 +266,10 @@ abstract public class FeedActivity extends ListActivity implements
 	protected void onResume() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onResume()");
 		super.onResume();
-		
+
 		// Some debug stuff
 		printDatabaseContent();
-		
+
 		// Handler used to catch feed requests
 		mHandler = new Handler() {
 			public void handleMessage(Message msg) {
@@ -254,32 +277,29 @@ abstract public class FeedActivity extends ListActivity implements
 				onFinsihedContentObserver(msg);
 			}
 		};
-		
+
 		// Register our feed content observer
 		mRequestFeedTaskObserver = new RequestFeedTaskObserver(mHandler);
-		getContentResolver().registerContentObserver(RequestFeedTask.CONTENT_URI, true, mRequestFeedTaskObserver);
-		
+		getContentResolver().registerContentObserver(
+				RequestFeedTask.CONTENT_URI, true, mRequestFeedTaskObserver);
+
 		// Set then right state
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
-		if ( isRequestingFeed() )
-		{
+		if (isRequestingFeed()) {
 			// Still not done
 			emptyTextView.setText(R.string.refreshing_lable);
-			
+
 			// Null the adapter!
 			mListView.setAdapter(null);
-		}
-		else
-		{
+		} else {
 			emptyTextView.setText(R.string.empty_list);
-			
+
 			// No adapter? Set one :D
-			if ( mListView.getAdapter() == null )
-			{
+			if (mListView.getAdapter() == null) {
 				setupViews();
 			}
 		}
-		
+
 		// Restore app state if any
 		restoreState();
 
@@ -290,6 +310,7 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onRestart()");
+		this.setupViews();
 		super.onRestart();
 	}
 
@@ -302,10 +323,11 @@ abstract public class FeedActivity extends ListActivity implements
 
 		TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
 		emptyTextView.setText("");
-		
+
 		// Unregister our ContentObserver
-		getContentResolver().unregisterContentObserver(mRequestFeedTaskObserver);
-		
+		getContentResolver()
+				.unregisterContentObserver(mRequestFeedTaskObserver);
+
 		// Clean the handler
 		mHandler = null;
 
@@ -435,7 +457,8 @@ abstract public class FeedActivity extends ListActivity implements
 	public boolean deleteFeedCache() {
 		final String[] arguments2 = new String[2];
 		arguments2[0] = arguments2[1] = String.valueOf(getFeedID());
-		final String where = FeedItemElement.FEEDID+"=? OR "+FeedItemElement.PARENT_FEEDID+"=?";
+		final String where = FeedItemElement.FEEDID + "=? OR "
+				+ FeedItemElement.PARENT_FEEDID + "=?";
 		int count = getContentResolver().delete(FeedItemElement.CONTENT_URI,
 				where, arguments2);
 		return count > 0;
@@ -468,10 +491,15 @@ abstract public class FeedActivity extends ListActivity implements
 	 * Set a cursor adapter for our list
 	 */
 	protected void setCursorAdapter() {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this.getBaseContext());
+		String value = prefs.getString("pref_style_size", "Default");
+		boolean tiny = value.compareTo("Tiny") == 0;
+
 		// TODO: Use: setFilterText(queryString); to set the filter.
 		mListView.setAdapter(new FeedItemAdapter(this, FeedItemElement.FEEDID
 				+ "=?", new String[] { String.valueOf(getFeedID()) },
-				getFeedItemType(), this.shouldStackFromBottom()));
+				getFeedItemType(), this.shouldStackFromBottom(), tiny));
 	}
 
 	/**
@@ -495,67 +523,65 @@ abstract public class FeedActivity extends ListActivity implements
 					.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
 						public void onCreateContextMenu(ContextMenu menu,
 								View view, ContextMenu.ContextMenuInfo menuInfo) {
-							onCreateContextMenuFeedList(menu,view,menuInfo);
+							onCreateContextMenuFeedList(menu, view, menuInfo);
 						}
 					});
 		} else {
 			ApplicationMNM.warnCat(TAG, "No ListView found in layout for "
 					+ this.toString());
 		}
-		
+
 		// Set the imamge button callback
-		mLogoButton = (ImageButton)findViewById(R.id.applogo);
-		if ( mLogoButton != null )
-		{
+		mLogoButton = (ImageButton) findViewById(R.id.applogo);
+		if (mLogoButton != null) {
 			mLogoButton.setOnTouchListener(new ImageButton.OnTouchListener() {
 
 				public boolean onTouch(View v, MotionEvent event) {
 					// TODO Auto-generated method stub
-					return onAppLogoTouch(v,event);
+					return onAppLogoTouch(v, event);
 				}
 			});
 		}
 	}
-	
+
 	/**
 	 * Create the context menu for our feed list
+	 * 
 	 * @param menu
 	 * @param view
 	 * @param menuInfo
 	 */
-	protected void onCreateContextMenuFeedList(ContextMenu menu,
-			View view, ContextMenu.ContextMenuInfo menuInfo) {
-		if (getFeedItemType() == FeedItemElement.TYPE_ARTICLE ) {
+	protected void onCreateContextMenuFeedList(ContextMenu menu, View view,
+			ContextMenu.ContextMenuInfo menuInfo) {
+		if (getFeedItemType() == FeedItemElement.TYPE_ARTICLE) {
 			// Open detailed view
-			menu.add(0, CONTEXT_MENU_OPEN, 0,
-					R.string.meneo_item_open);
-			
+			menu.add(0, CONTEXT_MENU_OPEN, 0, R.string.meneo_item_open);
+
 			// Open meneame
 			menu.add(0, CONTEXT_MENU_OPEN_MENEAME, 0,
 					R.string.meneo_item_open_meneame);
 		}
-		
+
 		// Open source or comment in meneame
 		menu.add(0, CONTEXT_MENU_OPEN_SOURCE, 0,
-				R.string.meneo_item_open_source);	
-		
-		if (getFeedItemType() == FeedItemElement.TYPE_ARTICLE ) {
+				R.string.meneo_item_open_source);
+
+		if (getFeedItemType() == FeedItemElement.TYPE_ARTICLE) {
 			// Vote it
-			menu.add(0, CONTEXT_MENU_VOTE, 0,
-					R.string.meneo_item_vote);
+			menu.add(0, CONTEXT_MENU_VOTE, 0, R.string.meneo_item_vote);
 		}
 		// Share action
-		menu.add(0, CONTEXT_MENU_SHARE, 0,
-				R.string.meneo_item_share);
+		menu.add(0, CONTEXT_MENU_SHARE, 0, R.string.meneo_item_share);
 	}
-	
+
 	/**
 	 * Called when our app logo image button receives a touch event
+	 * 
 	 * @param v
 	 * @param event
 	 * @return
 	 */
-	protected boolean onAppLogoTouch( View v, MotionEvent event ) {
+	protected boolean onAppLogoTouch(View v, MotionEvent event) {
 		// By default we do nothing
 		return true;
 	}
@@ -623,18 +649,22 @@ abstract public class FeedActivity extends ListActivity implements
 	public int getFeedItemType() {
 		return FeedItemElement.TYPE_ARTICLE;
 	}
-	
+
 	/**
 	 * Checks if a feed request is currently executed
+	 * 
 	 * @return true if if a request is active, otherwise false
 	 */
 	public boolean isRequestingFeed() {
-		RESTfulMethod method = RESTfulManager.getRESTMethod(this, this.getFeedURL());
-		return method != null && method.getStatus() == RESTfulMethod.STATUS_TRANSACTION;
+		RESTfulMethod method = RESTfulManager.getRESTMethod(this, this
+				.getFeedURL());
+		return method != null
+				&& method.getStatus() == RESTfulMethod.STATUS_TRANSACTION;
 	}
-	
+
 	/**
 	 * Build the param list for our feed request
+	 * 
 	 * @return
 	 */
 	protected RequestFeedTaskParams getTaskParams() {
@@ -643,7 +673,7 @@ abstract public class FeedActivity extends ListActivity implements
 		taskParams.mItemClass = "com.dcg.rss.ArticleFeedItem";
 		taskParams.mURL = mFeedURL;
 		taskParams.mParserClass = "com.dcg.rss.FeedParser";
-		taskParams.mItemType = getFeedItemType();		
+		taskParams.mItemType = getFeedItemType();
 		return taskParams;
 	}
 
@@ -653,8 +683,8 @@ abstract public class FeedActivity extends ListActivity implements
 	public void refreshFeed(boolean bUseCache) {
 		// Start thread if not started or not alive
 		// If we are loading a cached feed to we are pause we can not start!
-		if (!mbIsPaused && !isRequestingFeed() ) {
-			mbIsLoadingCachedFeed = bUseCache;			
+		if (!mbIsPaused && !isRequestingFeed()) {
+			mbIsLoadingCachedFeed = bUseCache;
 
 			// Create task and run it
 			new RequestFeedTask(this).execute(getTaskParams());
@@ -682,14 +712,17 @@ abstract public class FeedActivity extends ListActivity implements
 			emptyTextView.setText(R.string.empty_list);
 		}
 	}
-	
+
 	/**
-	 * Called form the ContentResolver to notify us that we finsihed requesting a feed
+	 * Called form the ContentResolver to notify us that we finsihed requesting
+	 * a feed
+	 * 
 	 * @param msg
 	 */
 	public void onFinsihedContentObserver(Message msg) {
-		// We always pass a seuccess, the CursorAdapter wull set the right list text and items
-		onFeedFinished( ApplicationMNM.ERROR_SUCCESSFULL );
+		// We always pass a seuccess, the CursorAdapter wull set the right list
+		// text and items
+		onFeedFinished(ApplicationMNM.ERROR_SUCCESSFULL);
 	}
 
 	/**
@@ -711,7 +744,7 @@ abstract public class FeedActivity extends ListActivity implements
 				.getDefaultSharedPreferences(getBaseContext());
 		return prefs.getString("pref_app_storage", "SDCard");
 	}
-	
+
 	/**
 	 * Return the maximum items the wants to parse from a feed
 	 * 
@@ -720,7 +753,7 @@ abstract public class FeedActivity extends ListActivity implements
 	public int getMaxItems() {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getBaseContext());
-		return Integer.parseInt( prefs.getString("pref_app_maxarticles", "-1"));
+		return Integer.parseInt(prefs.getString("pref_app_maxarticles", "-1"));
 	}
 
 	/**
@@ -818,21 +851,21 @@ abstract public class FeedActivity extends ListActivity implements
 			return true;
 		case CONTEXT_MENU_SHARE:
 			// Get link
-			shareArticleLink((String) holder.url.getText(),(String) holder.title.getText());
+			shareArticleLink((String) holder.url.getText(),
+					(String) holder.title.getText());
 			break;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Starts the share process for a specific articel
 	 */
-	public void shareArticleLink( String url, String title ) {
+	public void shareArticleLink(String url, String title) {
 		// send intent
 		Intent sendMailIntent = new Intent(Intent.ACTION_SEND);
-		sendMailIntent.putExtra(Intent.EXTRA_SUBJECT, getResources()
-				.getString(R.string.share_option_subject).replace(
-						"SUBJECT", title));
+		sendMailIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(
+				R.string.share_option_subject).replace("SUBJECT", title));
 		sendMailIntent.putExtra(Intent.EXTRA_TEXT, url);
 		sendMailIntent.setType("text/plain");
 

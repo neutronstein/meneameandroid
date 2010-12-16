@@ -21,6 +21,8 @@ public final class R {
         public static final int pref_app_maxarticles_values=0x7f060001;
         public static final int pref_style_mainanimation_entries=0x7f060002;
         public static final int pref_style_mainanimation_values=0x7f060003;
+        public static final int pref_style_size_entries=0x7f060004;
+        public static final int pref_style_size_values=0x7f060005;
     }
     public static final class attr {
     }
@@ -49,24 +51,25 @@ public final class R {
         public static final int title_bar_shadow=0x7f02000c;
     }
     public static final class id {
-        public static final int LinearLayout01=0x7f0a001a;
+        public static final int LinearLayout01=0x7f0a001b;
         public static final int about_faq_a1=0x7f0a0005;
         public static final int about_faq_q1=0x7f0a0004;
         public static final int applogo=0x7f0a000c;
         public static final int article_details=0x7f0a000d;
         public static final int body_app=0x7f0a0007;
         public static final int body_meneame=0x7f0a0009;
-        public static final int btnBack=0x7f0a001c;
+        public static final int btnBack=0x7f0a001d;
         public static final int btnOk=0x7f0a000b;
-        public static final int btnSend=0x7f0a001b;
+        public static final int btnSend=0x7f0a001c;
         public static final int cover=0x7f0a0018;
         public static final int description=0x7f0a0013;
         public static final int icon=0x7f0a000e;
         public static final int linlayoutBase=0x7f0a0000;
         public static final int linlayoutButtons=0x7f0a000a;
         public static final int message=0x7f0a0017;
-        public static final int notame_text=0x7f0a0019;
+        public static final int notame_text=0x7f0a001a;
         public static final int pubDate=0x7f0a0012;
+        public static final int relative=0x7f0a0019;
         public static final int scrollview=0x7f0a0001;
         public static final int source=0x7f0a0010;
         public static final int tags=0x7f0a0014;
@@ -76,7 +79,7 @@ public final class R {
         public static final int tilte_meneame=0x7f0a0008;
         public static final int title=0x7f0a000f;
         public static final int user=0x7f0a0011;
-        public static final int version_change_content=0x7f0a001d;
+        public static final int version_change_content=0x7f0a001e;
         public static final int votes=0x7f0a0016;
         public static final int widget30=0x7f0a0002;
     }
@@ -85,11 +88,14 @@ public final class R {
         public static final int detailed_article=0x7f030001;
         public static final int image_toast_notification=0x7f030002;
         public static final int main=0x7f030003;
-        public static final int meneo_list=0x7f030004;
-        public static final int meneo_listitem=0x7f030005;
-        public static final int meneo_listitem_comments=0x7f030006;
-        public static final int notame=0x7f030007;
-        public static final int version_change_dialog=0x7f030008;
+        public static final int main_tiny=0x7f030004;
+        public static final int meneo_list=0x7f030005;
+        public static final int meneo_listitem=0x7f030006;
+        public static final int meneo_listitem_comments=0x7f030007;
+        public static final int meneo_listitem_comments_tiny=0x7f030008;
+        public static final int meneo_listitem_tiny=0x7f030009;
+        public static final int notame=0x7f03000a;
+        public static final int version_change_dialog=0x7f03000b;
     }
     public static final class string {
         public static final int about_body_app=0x7f08003e;
@@ -233,6 +239,10 @@ public final class R {
         public static final int pref_style_mainanimation_none=0x7f08005e;
         public static final int pref_style_mainanimation_slidein=0x7f080060;
         public static final int pref_style_mainanimation_summary=0x7f08005d;
+        public static final int pref_style_size=0x7f080070;
+        public static final int pref_style_size_default=0x7f080072;
+        public static final int pref_style_size_summary=0x7f080071;
+        public static final int pref_style_size_tiny=0x7f080073;
         public static final int refreshing_failed=0x7f080048;
         /**  Messages and Info 
  Messages and Info 

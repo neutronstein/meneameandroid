@@ -203,4 +203,8 @@
 	<string name="pref_app_maxarticles_20">20</string>
 	<string name="pref_app_maxarticles_40">40</string>
 	<string name="pref_app_maxarticles_ALL">All</string>
+<string name="pref_style_size">App size</string>
+<string name="pref_style_size_summary">Size style of the application</string>
+<string name="pref_style_size_default">Default</string>
+<string name="pref_style_size_tiny">Tiny</string>
 </resources>

@@ -23,5 +23,13 @@
 		<item>Fade-in</item>
 		<item>Slide-in</item>
 	</string-array>
+	<array name="pref_style_size_entries">
+		<item>@string/pref_style_size_default</item>
+		<item>@string/pref_style_size_tiny</item>
+	</array>
+	<string-array name="pref_style_size_values">
+		<item>Default</item>
+		<item>Tiny</item>
+	</string-array>
 
 </resources>
