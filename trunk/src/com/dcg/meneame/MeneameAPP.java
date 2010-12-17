@@ -38,6 +38,9 @@ public class MeneameAPP extends TabActivity {
 
 	/** Class tag used for it's logs */
 	private static final String TAG = "MeneameAPP";
+	
+	/** Size of the text indicator of the tab */
+	private static final float SIZE_OF_TABTEXT = 15.0f;
 
 	/** Main app TabHost */
 	private TabHost mTabHost;
@@ -46,7 +49,7 @@ public class MeneameAPP extends TabActivity {
 	private Animation mMainAnimation = null;
 
 	// Get some global stuff
-
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -109,23 +112,29 @@ public class MeneameAPP extends TabActivity {
 		mTabHost = getTabHost();
 
 		// Load the colour lists.
-		XmlResourceParser[] parser = new XmlResourceParser[3];
-		ColorStateList text = null;
+		
+		
 
-		Drawable[] background = new StateListDrawable[3];
+		
 
-		this.createTabs(mTabHost, parser, text, background, 15.0f);
+		this.createTabs(mTabHost,SIZE_OF_TABTEXT);
 
 		// Set news tab as visible one
 		mTabHost.setCurrentTab(0);
 	}
 
-	private void createTabs(TabHost mTabHost, XmlResourceParser[] parser,
-			ColorStateList text, Drawable[] background, float textSize) {
+	private void createTabs(TabHost mTabHost, float textSize) {
+		TabSpec[] tabSpecs= new TabSpec[3];
+		String[] texts = new String[3];
+		Class<? extends FeedActivity>[] classes = new Class[3];
+		ColorStateList colorList = null;
+		XmlResourceParser[] parser = new XmlResourceParser[3];
+		Drawable[] background = new StateListDrawable[3];
+		
 		try {
 			parser[0] = getResources().getXml(
 					R.color.color_state_definition_tab);
-			text = ColorStateList.createFromXml(getResources(), parser[0]);
+			colorList = ColorStateList.createFromXml(getResources(), parser[0]);
 			parser[0] = getResources().getXml(R.drawable.tab_indicator);
 			parser[1] = getResources().getXml(R.drawable.tab_indicator);
 			parser[2] = getResources().getXml(R.drawable.tab_indicator);
@@ -135,6 +144,22 @@ public class MeneameAPP extends TabActivity {
 					parser[1]);
 			background[2] = StateListDrawable.createFromXml(getResources(),
 					parser[2]);
+			tabSpecs[0] = mTabHost.newTabSpec(NewsActivity
+					.static_getTabActivityTag());
+			tabSpecs[1] =mTabHost.newTabSpec(QueueActivity
+					.static_getTabActivityTag());
+			tabSpecs[2] = mTabHost.newTabSpec(CommentsActivity
+					.static_getTabActivityTag());
+			texts[0] = getResources().getString(
+						NewsActivity.static_getIndicatorStringID());
+			texts[1] = getResources().getString(
+					QueueActivity.static_getIndicatorStringID());
+			texts[2] = getResources().getString(
+					CommentsActivity.static_getIndicatorStringID());
+			classes[0] = NewsActivity.class;
+			classes[1] = QueueActivity.class;
+			classes[2] = CommentsActivity.class;
+		
 		} catch (XmlPullParserException e) {
 
 			e.printStackTrace();
@@ -142,36 +167,14 @@ public class MeneameAPP extends TabActivity {
 
 			e.printStackTrace();
 		}
-
-		// Add news tab
-
-		TabSpec newsTab = mTabHost.newTabSpec(NewsActivity
-				.static_getTabActivityTag());
-
-		configureTab(text, background[0], textSize, newsTab,
-				NewsActivity.class, getResources().getString(
-						NewsActivity.static_getIndicatorStringID()));
-
-		mTabHost.addTab(newsTab);
-
-		// Add queue tab
-		TabSpec queueTab = mTabHost.newTabSpec(QueueActivity
-				.static_getTabActivityTag());
-
-		configureTab(text, background[1], textSize, queueTab,
-				QueueActivity.class, getResources().getString(
-						QueueActivity.static_getIndicatorStringID()));
-
-		mTabHost.addTab(queueTab);
-
-		// Add comments tab
-		TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity
-				.static_getTabActivityTag());
-
-		configureTab(text, background[2], textSize, commentsTab,
-				CommentsActivity.class, getResources().getString(
-						CommentsActivity.static_getIndicatorStringID()));
-		mTabHost.addTab(commentsTab);
+	
+      for(int i=0;i<3;i++){
+    	  
+    	  configureTab(colorList, background[0], textSize,tabSpecs[i],
+  				classes[i], texts[i]);
+    	  mTabHost.addTab(tabSpecs[i]);
+      }
+	
 	}
 
 	private void configureTab(ColorStateList text, Drawable background,
