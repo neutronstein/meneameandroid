@@ -72,6 +72,7 @@ public final class R {
         public static final int relative=0x7f0a0019;
         public static final int scrollview=0x7f0a0001;
         public static final int source=0x7f0a0010;
+        public static final int tab_indicator=0x7f0a001e;
         public static final int tags=0x7f0a0014;
         public static final int tags_content=0x7f0a0015;
         public static final int tilte_app=0x7f0a0006;
@@ -79,7 +80,7 @@ public final class R {
         public static final int tilte_meneame=0x7f0a0008;
         public static final int title=0x7f0a000f;
         public static final int user=0x7f0a0011;
-        public static final int version_change_content=0x7f0a001e;
+        public static final int version_change_content=0x7f0a001f;
         public static final int votes=0x7f0a0016;
         public static final int widget30=0x7f0a0002;
     }
@@ -95,7 +96,8 @@ public final class R {
         public static final int meneo_listitem_comments_tiny=0x7f030008;
         public static final int meneo_listitem_tiny=0x7f030009;
         public static final int notame=0x7f03000a;
-        public static final int version_change_dialog=0x7f03000b;
+        public static final int tab_indicator=0x7f03000b;
+        public static final int version_change_dialog=0x7f03000c;
     }
     public static final class string {
         public static final int about_body_app=0x7f08003e;
