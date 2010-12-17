@@ -1,11 +1,13 @@
 package com.dcg.meneame;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,8 +17,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
@@ -179,7 +184,19 @@ public class MeneameAPP extends TabActivity {
 		textView.setTextSize(textSize);
 		textView.setTextColor(text);
 		textView.setBackgroundDrawable(background);
-		tab.setIndicator(textView);
+		this.setIndicator(tab,indicatorStringId,textView);
+	}
+	
+	private void setIndicator(TabHost.TabSpec tabSpec, String label, View view) {
+	   //This is because setIndicator(View v) does not exist in andrid <1.6
+	    try {
+	        Method m = tabSpec.getClass().getMethod("setIndicator", View.class);
+	        m.invoke(tabSpec, view);
+	    } catch (Exception e) {
+	        //in case if platform 1.5 or via other problems indicator cannot be set as view
+	        //we have to set as just simple label.
+	        tabSpec.setIndicator(label);
+	    }
 	}
 
 	@Override
