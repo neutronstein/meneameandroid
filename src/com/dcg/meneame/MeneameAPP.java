@@ -192,28 +192,30 @@ public class MeneameAPP extends TabActivity {
 
 			e.printStackTrace();
 		}
-	
-      for(int i=0;i<3;i++){
-    	  
-    	  configureTab(colorList, background[0], textSize,tabSpecs[i],
-  				classes[i], texts[i]);
-    	  mTabHost.addTab(tabSpecs[i]);
-      }
-	
+		LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		for(int i=0;i<3;i++){
+			configureTab(inflater,colorList, background[0], textSize,tabSpecs[i],
+				classes[i], texts[i]);
+			mTabHost.addTab(tabSpecs[i]);
+		}
 	}
 
-	private void configureTab(ColorStateList text, Drawable background,
+	private void configureTab(LayoutInflater inflater, ColorStateList text, Drawable background,
 			float textSize, TabSpec tab, Class<? extends FeedActivity> clazz,
 			String indicatorStringId) {
 		tab.setContent(new Intent(this, clazz));
-		TextView textView = new TextView(this);
 
-		textView.setText(indicatorStringId);
-		textView.setTextSize(textSize);
+		// Create the tab indicator from a layout file
+	    View TabIndicator = inflater.inflate(R.layout.tab_indicator, null);
+	    
+	    // Add text to the text view and all the over stuff
+	    TextView textView = (TextView) TabIndicator.findViewById(R.id.tab_title);
+	    textView.setText(indicatorStringId);
+	    textView.setTextSize(textSize);
 		textView.setTextColor(text);
-		textView.setGravity(Gravity.CENTER);
-		textView.setBackgroundDrawable(background);
-		this.setIndicator(tab,indicatorStringId,textView);
+	    
+	    // Now add the indicator view
+		this.setIndicator(tab,indicatorStringId,TabIndicator);
 	}
 	
 	private void setIndicator(TabHost.TabSpec tabSpec, String label, View view) {
