@@ -13,13 +13,17 @@
 			android:title="@string/pref_account_apikey" android:key="pref_account_apikey"
 			android:summary="@string/pref_account_apikey_summary"
 			android:defaultValue="" />
-3
 
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/pref_app">
 		<Preference android:enabled="true" android:key="pref_app_version_number"
 			android:title="@string/pref_app_version_number" android:summary="@string/pref_app_version_number_summary">
 		</Preference>
+		<ListPreference android:key="pref_app_onitemclick"
+			android:summary="@string/pref_app_onitemclick_summary" android:title="@string/pref_app_onitemclick"
+			android:entries="@array/pref_app_onitemclick_entries"
+			android:entryValues="@array/pref_app_onitemclick_values"
+			android:defaultValue="Default" />
 		<ListPreference android:key="pref_app_maxarticles"
 			android:summary="@string/pref_app_maxarticles_summary" android:title="@string/pref_app_maxarticles"
 			android:entries="@array/pref_app_maxarticles_entries"
@@ -41,10 +45,10 @@
 			android:title="@string/pref_style_mainanimation" android:entries="@array/pref_style_mainanimation_entries"
 			android:entryValues="@array/pref_style_mainanimation_values"
 			android:defaultValue="None" />
-			<ListPreference android:key="pref_style_size"
-			android:summary="@string/pref_style_size_summary"
-			android:title="@string/pref_style_size" android:entries="@array/pref_style_size_entries"
-			android:entryValues="@array/pref_style_size_values"
+		<ListPreference android:key="pref_style_theme"
+			android:summary="@string/pref_style_theme_summary"
+			android:title="@string/pref_style_theme" android:entries="@array/pref_style_theme_entries"
+			android:entryValues="@array/pref_style_theme_values"
 			android:defaultValue="Default" />
 	</PreferenceCategory>
 </PreferenceScreen>

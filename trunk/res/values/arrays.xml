@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	<array name="pref_app_onitemclick_entries">
+		<item>@string/pref_app_onitemclick_default</item>
+		<item>@string/pref_app_onitemclick_detailed</item>
+		<item>@string/pref_app_onitemclick_open_meneame</item>
+		<item>@string/pref_app_onitemclick_open_source</item>
+		<item>@string/pref_app_onitemclick_vote</item>
+		<item>@string/pref_app_onitemclick_share</item>
+	</array>
+	<string-array name="pref_app_onitemclick_values">
+		<item>Default</item>
+		<item>Detailed</item>
+		<item>Meneame</item>
+		<item>Source</item>
+		<item>Vote</item>
+		<item>Share</item>
+	</string-array>
 	<array name="pref_app_maxarticles_entries">
 		<item>@string/pref_app_maxarticles_10</item>
 		<item>@string/pref_app_maxarticles_20</item>
@@ -23,11 +38,11 @@
 		<item>Fade-in</item>
 		<item>Slide-in</item>
 	</string-array>
-	<array name="pref_style_size_entries">
-		<item>@string/pref_style_size_default</item>
-		<item>@string/pref_style_size_tiny</item>
+	<array name="pref_style_theme_entries">
+		<item>@string/pref_style_theme_default</item>
+		<item>@string/pref_style_theme_tiny</item>
 	</array>
-	<string-array name="pref_style_size_values">
+	<string-array name="pref_style_theme_values">
 		<item>Default</item>
 		<item>Tiny</item>
 	</string-array>

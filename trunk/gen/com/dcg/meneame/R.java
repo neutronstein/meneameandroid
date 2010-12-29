@@ -15,14 +15,16 @@ public final class R {
         public static final int slide_right=0x7f040003;
     }
     public static final class array {
-        public static final int pref_app_maxarticles_entries=0x7f060000;
+        public static final int pref_app_maxarticles_entries=0x7f060002;
         /**  -1 means all 
          */
-        public static final int pref_app_maxarticles_values=0x7f060001;
-        public static final int pref_style_mainanimation_entries=0x7f060002;
-        public static final int pref_style_mainanimation_values=0x7f060003;
-        public static final int pref_style_size_entries=0x7f060004;
-        public static final int pref_style_size_values=0x7f060005;
+        public static final int pref_app_maxarticles_values=0x7f060003;
+        public static final int pref_app_onitemclick_entries=0x7f060000;
+        public static final int pref_app_onitemclick_values=0x7f060001;
+        public static final int pref_style_mainanimation_entries=0x7f060004;
+        public static final int pref_style_mainanimation_values=0x7f060005;
+        public static final int pref_style_theme_entries=0x7f060006;
+        public static final int pref_style_theme_values=0x7f060007;
     }
     public static final class attr {
     }
@@ -72,7 +74,6 @@ public final class R {
         public static final int relative=0x7f0a0019;
         public static final int scrollview=0x7f0a0001;
         public static final int source=0x7f0a0010;
-        public static final int tab_indicator=0x7f0a001e;
         public static final int tags=0x7f0a0014;
         public static final int tags_content=0x7f0a0015;
         public static final int tilte_app=0x7f0a0006;
@@ -80,7 +81,7 @@ public final class R {
         public static final int tilte_meneame=0x7f0a0008;
         public static final int title=0x7f0a000f;
         public static final int user=0x7f0a0011;
-        public static final int version_change_content=0x7f0a001f;
+        public static final int version_change_content=0x7f0a001e;
         public static final int votes=0x7f0a0016;
         public static final int widget30=0x7f0a0002;
     }
@@ -96,8 +97,7 @@ public final class R {
         public static final int meneo_listitem_comments_tiny=0x7f030008;
         public static final int meneo_listitem_tiny=0x7f030009;
         public static final int notame=0x7f03000a;
-        public static final int tab_indicator=0x7f03000b;
-        public static final int version_change_dialog=0x7f03000c;
+        public static final int version_change_dialog=0x7f03000b;
     }
     public static final class string {
         public static final int about_body_app=0x7f08003e;
@@ -217,21 +217,29 @@ public final class R {
         /**  Application settings 
  Application settings 
          */
-        public static final int pref_app=0x7f080061;
-        public static final int pref_app_clearcache=0x7f080068;
-        public static final int pref_app_clearcache_summary=0x7f080069;
-        public static final int pref_app_maxarticles=0x7f08006a;
-        public static final int pref_app_maxarticles_10=0x7f08006c;
-        public static final int pref_app_maxarticles_20=0x7f08006d;
-        public static final int pref_app_maxarticles_40=0x7f08006e;
-        public static final int pref_app_maxarticles_ALL=0x7f08006f;
-        public static final int pref_app_maxarticles_summary=0x7f08006b;
-        public static final int pref_app_refreshonlaunch=0x7f080066;
-        public static final int pref_app_refreshonlaunch_summary=0x7f080067;
-        public static final int pref_app_stack_from_buttom=0x7f080064;
-        public static final int pref_app_stack_from_buttom_summary=0x7f080065;
-        public static final int pref_app_version_number=0x7f080062;
-        public static final int pref_app_version_number_summary=0x7f080063;
+        public static final int pref_app=0x7f080065;
+        public static final int pref_app_clearcache=0x7f08006c;
+        public static final int pref_app_clearcache_summary=0x7f08006d;
+        public static final int pref_app_maxarticles=0x7f08006e;
+        public static final int pref_app_maxarticles_10=0x7f080070;
+        public static final int pref_app_maxarticles_20=0x7f080071;
+        public static final int pref_app_maxarticles_40=0x7f080072;
+        public static final int pref_app_maxarticles_ALL=0x7f080073;
+        public static final int pref_app_maxarticles_summary=0x7f08006f;
+        public static final int pref_app_onitemclick=0x7f080074;
+        public static final int pref_app_onitemclick_default=0x7f080076;
+        public static final int pref_app_onitemclick_detailed=0x7f080077;
+        public static final int pref_app_onitemclick_open_meneame=0x7f080078;
+        public static final int pref_app_onitemclick_open_source=0x7f080079;
+        public static final int pref_app_onitemclick_share=0x7f08007b;
+        public static final int pref_app_onitemclick_summary=0x7f080075;
+        public static final int pref_app_onitemclick_vote=0x7f08007a;
+        public static final int pref_app_refreshonlaunch=0x7f08006a;
+        public static final int pref_app_refreshonlaunch_summary=0x7f08006b;
+        public static final int pref_app_stack_from_buttom=0x7f080068;
+        public static final int pref_app_stack_from_buttom_summary=0x7f080069;
+        public static final int pref_app_version_number=0x7f080066;
+        public static final int pref_app_version_number_summary=0x7f080067;
         /**  Style customizations 
  Style customizations 
          */
@@ -241,10 +249,10 @@ public final class R {
         public static final int pref_style_mainanimation_none=0x7f08005e;
         public static final int pref_style_mainanimation_slidein=0x7f080060;
         public static final int pref_style_mainanimation_summary=0x7f08005d;
-        public static final int pref_style_size=0x7f080070;
-        public static final int pref_style_size_default=0x7f080072;
-        public static final int pref_style_size_summary=0x7f080071;
-        public static final int pref_style_size_tiny=0x7f080073;
+        public static final int pref_style_theme=0x7f080061;
+        public static final int pref_style_theme_default=0x7f080063;
+        public static final int pref_style_theme_summary=0x7f080062;
+        public static final int pref_style_theme_tiny=0x7f080064;
         public static final int refreshing_failed=0x7f080048;
         /**  Messages and Info 
  Messages and Info 

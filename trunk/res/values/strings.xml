@@ -15,7 +15,7 @@
 
 	<string name="main_tab_news">News</string>
 	<string name="main_tab_queue">Queue</string>
-	<string name="main_tab_comments">All Comments</string>
+	<string name="main_tab_comments">Comments</string>
 
 	<!-- UI Lsts -->
 
@@ -111,7 +111,7 @@
 	<string name="about_title_faq">FAQ</string>
 	<string name="about_faq_q1">Is this app fully free of charge?</string>
 	<string name="about_faq_a1">Yes! If you would like to support us search for the
-		dontaion app which will be soon in the Android Marker!</string>
+		dontaion app which will be soon in the Android Market!</string>
 	<string name="about_title_app">App license</string>
 	<string name="about_body_app">menéame for Android is made by Moritz Wundke
 		(www.DarkCultureGames.com) and licensed under GNU General Public
@@ -164,7 +164,7 @@
 		personal key)</string>
 	<string name="pref_account_apikey">API key</string>
 
-	<string name="pref_account_user_id_summary">menèame user ID (can be found in your profile)
+	<string name="pref_account_user_id_summary">menéame user ID (can be found in your profile)
 	</string>
 	<string name="pref_account_user_id">User ID</string>
 
@@ -175,11 +175,16 @@
 
 	<string name="pref_style">Style</string>
 
-	<string name="pref_style_mainanimation">App animation</string>
+	<string name="pref_style_mainanimation">Animation</string>
 	<string name="pref_style_mainanimation_summary">Animation used by the appliction</string>
 	<string name="pref_style_mainanimation_none">None</string>
 	<string name="pref_style_mainanimation_fadein">Fade-In</string>
 	<string name="pref_style_mainanimation_slidein">Slide-In</string>
+	
+	<string name="pref_style_theme">Theme</string>
+	<string name="pref_style_theme_summary">Application theme</string>
+	<string name="pref_style_theme_default">Default</string>
+	<string name="pref_style_theme_tiny">Tiny</string>
 
 	<!-- Application settings -->
 
@@ -203,8 +208,13 @@
 	<string name="pref_app_maxarticles_20">20</string>
 	<string name="pref_app_maxarticles_40">40</string>
 	<string name="pref_app_maxarticles_ALL">All</string>
-<string name="pref_style_size">App size</string>
-<string name="pref_style_size_summary">Size style of the application</string>
-<string name="pref_style_size_default">Default</string>
-<string name="pref_style_size_tiny">Tiny</string>
+	
+	<string name="pref_app_onitemclick">Article selection</string>
+	<string name="pref_app_onitemclick_summary">What should be performed when clicking on an article</string>
+	<string name="pref_app_onitemclick_default">Noting</string>
+	<string name="pref_app_onitemclick_detailed">Detailed view</string>
+	<string name="pref_app_onitemclick_open_meneame">Open (menéame)</string>
+	<string name="pref_app_onitemclick_open_source">Open (source)</string>
+	<string name="pref_app_onitemclick_vote">Vote</string>
+	<string name="pref_app_onitemclick_share">Share</string>
 </resources>
