@@ -33,6 +33,11 @@ public class Preferences extends PreferenceActivity {
 	 */
 	public static final int RESULT_CODE_REFRESH_LIST_VIEW = 0x0001;
 
+	/**
+	 * Returned when we need to refres our views once we leave the prefernces
+	 */
+	public static final int RESULT_CODE_SETUP_VIEWS = 0x0002;
+	
 	/** resuklt code holder */
 	private int mResultCode = RESULT_CODE_DEFAULT;
 
@@ -73,7 +78,7 @@ public class Preferences extends PreferenceActivity {
 	 * @param result
 	 */
 	private void updateResult(int result) {
-		mResultCode |= RESULT_CODE_REFRESH_LIST_VIEW;
+		mResultCode |= result;
 		setResult(mResultCode);
 	}
 
@@ -120,6 +125,8 @@ public class Preferences extends PreferenceActivity {
 			clearCacheDialog.show();
 		} else if (preference.getKey().compareTo("pref_app_stack_from_buttom") == 0) {
 			updateResult(RESULT_CODE_REFRESH_LIST_VIEW);
+		} else if (preference.getKey().compareTo("pref_style_theme") == 0) {
+			updateResult(RESULT_CODE_SETUP_VIEWS);
 		}
 		// TODO Auto-generated method stub
 		return super.onPreferenceTreeClick(preferenceScreen, preference);

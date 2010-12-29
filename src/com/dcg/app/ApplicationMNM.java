@@ -116,7 +116,7 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RequestFeedTask");
-		addIgnoreCat("FeedActivity");
+		//addIgnoreCat("FeedActivity");
 		addIgnoreCat("SecurityKeyManager");
 		addIgnoreCat("ClientFormLogin");
 		addIgnoreCat("RESTfulManager");

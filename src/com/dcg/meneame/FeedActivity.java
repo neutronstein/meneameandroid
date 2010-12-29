@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -310,7 +311,6 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onRestart()");
-		this.setupViews();
 		super.onRestart();
 	}
 
@@ -358,6 +358,39 @@ abstract public class FeedActivity extends ListActivity implements
 
 		// Finish destroy
 		super.onDestroy();
+	}
+	
+	/**
+	 * Performs the selected action that should be done when clicking on an article
+	 */
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {	
+		SharedPreferences prefs = PreferenceManager
+			.getDefaultSharedPreferences(getBaseContext());
+		String value = prefs.getString("pref_app_onitemclick", "Default");
+		final FeedItemViewHolder holder = (FeedItemViewHolder) v.getTag();
+		
+		if ( value.compareTo("Default") != 0 ) {
+			// Perform actions
+			if ( value.compareTo("Detailed") == 0 ) {
+				openDetailedView(holder.link_id);
+			} else if ( value.compareTo("Meneame") == 0 ) {
+				openBrowser(holder.link);
+				ApplicationMNM.showToast(getResources().getString(
+						R.string.context_menu_open));
+			} else if ( value.compareTo("Source") == 0 ) {
+				openBrowser((String) holder.url.getText());
+				ApplicationMNM.showToast(getResources().getString(
+						R.string.context_menu_open_source));
+			} else if ( value.compareTo("Vote") == 0 ) {
+				new MenealoTask(this).execute(holder.link_id);
+			} else if ( value.compareTo("Share") == 0 ) {
+				shareArticleLink((String) holder.url.getText(),
+						(String) holder.title.getText());
+			}
+		}
+
+		super.onListItemClick(l, v, position, id);
 	}
 
 	public String getFirstVisiblePositionSystemKey() {
@@ -493,7 +526,7 @@ abstract public class FeedActivity extends ListActivity implements
 	protected void setCursorAdapter() {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this.getBaseContext());
-		String value = prefs.getString("pref_style_size", "Default");
+		String value = prefs.getString("pref_style_theme", "Default");
 		boolean tiny = value.compareTo("Tiny") == 0;
 
 		// TODO: Use: setFilterText(queryString); to set the filter.
@@ -507,6 +540,8 @@ abstract public class FeedActivity extends ListActivity implements
 	 */
 	protected void setupViews() {
 		mListView = getListView();
+		
+		Log.d("setupViews", "Creating views");
 
 		if (mListView != null) {
 			// Stack from bottom or from top?
@@ -811,6 +846,26 @@ abstract public class FeedActivity extends ListActivity implements
 		}
 		return false;
 	}
+	
+	/**
+	 * Open the detailed view of an article
+	 * @param articleID integer id of the article
+	 */
+	protected void openDetailedView( int articleID) {
+		Intent i = new Intent(this, DetailedArticleActivity.class);
+		i.putExtra(EXTRA_KEY_ARTICLE_ID, String.valueOf(articleID));
+		i.putExtra(EXTRA_KEY_PARENT_FEEDID, String.valueOf(getFeedID()));
+		startActivityForResult(i, SUB_ACT_DETAILED_ID);
+	}
+	
+	protected void openBrowser( String url ) {
+		try {
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+		} catch (Exception e) {
+			ApplicationMNM.warnCat(TAG, "Can not open URI in browser: "
+					+ e.toString());
+		}
+	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -823,28 +878,17 @@ abstract public class FeedActivity extends ListActivity implements
 		switch (item.getItemId()) {
 		case CONTEXT_MENU_OPEN:
 			// Open detailed view for article
-			Intent i = new Intent(this, DetailedArticleActivity.class);
-			i.putExtra(EXTRA_KEY_ARTICLE_ID, String.valueOf(holder.link_id));
-			i.putExtra(EXTRA_KEY_PARENT_FEEDID, String.valueOf(getFeedID()));
-			startActivityForResult(i, SUB_ACT_DETAILED_ID);
+			openDetailedView(holder.link_id);
 			break;
 		case CONTEXT_MENU_OPEN_MENEAME:
+			openBrowser(holder.link);
+			ApplicationMNM.showToast(getResources().getString(
+					R.string.context_menu_open));
+			break;
 		case CONTEXT_MENU_OPEN_SOURCE:
-			if (item.getItemId() == CONTEXT_MENU_OPEN_MENEAME) {
-				url = holder.link;
-				ApplicationMNM.showToast(getResources().getString(
-						R.string.context_menu_open));
-			} else {
-				url = (String) holder.url.getText();
-				ApplicationMNM.showToast(getResources().getString(
-						R.string.context_menu_open_source));
-			}
-			try {
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-			} catch (Exception e) {
-				ApplicationMNM.warnCat(TAG, "Can not open URI in browser: "
-						+ e.toString());
-			}
+			openBrowser((String) holder.url.getText());
+			ApplicationMNM.showToast(getResources().getString(
+					R.string.context_menu_open_source));
 			return true;
 		case CONTEXT_MENU_VOTE:
 			new MenealoTask(this).execute(holder.link_id);
@@ -887,11 +931,13 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		
 		switch (requestCode) {
 		case SUB_ACT_SETTINGS_ID:
-			if ((resultCode & Preferences.RESULT_CODE_REFRESH_LIST_VIEW) == 1) {
-				// the preference screen forces us to setup our list view again
+			if ((resultCode & Preferences.RESULT_CODE_REFRESH_LIST_VIEW) == Preferences.RESULT_CODE_REFRESH_LIST_VIEW) {
+				setupViews();
+			}
+			if ((resultCode & Preferences.RESULT_CODE_SETUP_VIEWS) == Preferences.RESULT_CODE_SETUP_VIEWS) {
 				setupViews();
 			}
 			break;

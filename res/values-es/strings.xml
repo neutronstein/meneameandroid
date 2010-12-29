@@ -195,6 +195,11 @@
 	<string name="pref_style_mainanimation_none">Ninguna</string>
 	<string name="pref_style_mainanimation_fadein">Gradual</string>
 	<string name="pref_style_mainanimation_slidein">Flotante</string>
+	
+	<string name="pref_style_theme">Tema</string>
+	<string name="pref_style_theme_summary">Tema usado por la applicación</string>
+	<string name="pref_style_theme_default">Normal</string>
+	<string name="pref_style_theme_tiny">Pequeño</string>
 
 	<!-- Application settings -->
 

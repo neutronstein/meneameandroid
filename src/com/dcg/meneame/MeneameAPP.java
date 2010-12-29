@@ -13,10 +13,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -104,20 +107,42 @@ public class MeneameAPP extends TabActivity {
 	}
 
 	private void createContent() {
-		if (isTiny())
+		if (isTiny()) {
 			setContentView(R.layout.main_tiny);
-		else
+			mTabHost = getTabHost();
+			
+			// @Moss: Create tiny tabs. There is an issue with the styles and selection
+			// seams to be a bit broken. In the tiny version it's not so hard to see but in the normal
+			// it quite obvious. So for the normal theme I'll just use the old way.
+			this.createTabs(mTabHost,SIZE_OF_TABTEXT);
+		} else {
 			setContentView(R.layout.main);
-
-		mTabHost = getTabHost();
-
-		// Load the colour lists.
-		
-		
-
-		
-
-		this.createTabs(mTabHost,SIZE_OF_TABTEXT);
+			mTabHost = getTabHost();
+			
+			// Add news tab
+			TabSpec newsTab = mTabHost.newTabSpec(NewsActivity
+					.static_getTabActivityTag());
+			newsTab.setContent(new Intent(this, NewsActivity.class));
+			newsTab.setIndicator(getResources().getString(
+					NewsActivity.static_getIndicatorStringID()));
+			mTabHost.addTab(newsTab);
+			
+			// Add queue tab
+			TabSpec queueTab = mTabHost.newTabSpec(QueueActivity
+					.static_getTabActivityTag());
+			queueTab.setContent(new Intent(this, QueueActivity.class));
+			queueTab.setIndicator(getResources().getString(
+					QueueActivity.static_getIndicatorStringID()));
+			mTabHost.addTab(queueTab);
+			
+			// Add comments tab
+			TabSpec commentsTab = mTabHost.newTabSpec(CommentsActivity
+					.static_getTabActivityTag());
+			commentsTab.setContent(new Intent(this, CommentsActivity.class));
+			commentsTab.setIndicator(getResources().getString(
+					CommentsActivity.static_getIndicatorStringID()));
+			mTabHost.addTab(commentsTab);
+		}		
 
 		// Set news tab as visible one
 		mTabHost.setCurrentTab(0);
@@ -186,6 +211,7 @@ public class MeneameAPP extends TabActivity {
 		textView.setText(indicatorStringId);
 		textView.setTextSize(textSize);
 		textView.setTextColor(text);
+		textView.setGravity(Gravity.CENTER);
 		textView.setBackgroundDrawable(background);
 		this.setIndicator(tab,indicatorStringId,textView);
 	}
@@ -259,12 +285,7 @@ public class MeneameAPP extends TabActivity {
 	}
 
 	/**
-	 * Refresh the animation we will use
-	 * 
-	 * 
-	 * 
-	 * 
-	 * for the tab page
+	 * Refresh the animation we will use for the tab page
 	 */
 	private void initAnim() {
 		mMainAnimation = null;
@@ -280,11 +301,15 @@ public class MeneameAPP extends TabActivity {
 		}
 	}
 
+	/**
+	 * Checks if we are using the tiny theme.
+	 * @return TRUE if tiny theme should be used, FALSE otherwise.
+	 */
 	private boolean isTiny() {
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getBaseContext());
-		String value = prefs.getString("pref_style_size", "Default");
+		String value = prefs.getString("pref_style_theme", "Default");
 		return value.compareTo("Tiny") == 0;
 
 	}
