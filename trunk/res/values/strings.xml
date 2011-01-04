@@ -67,7 +67,7 @@
 	<string name="version_change_title">Version Changes</string>
 	
 	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
-	<string name="version_change_v10">- TODO</string>
+	<string name="version_change_v10">- Styles revised.\n- A new theme has been added, just have a look into the preferences.\n- Added option to choose which action should be performed when a user touches an article. By default the source will be opened in the browser.\n- Minor fixes.</string>
 	
 	<string name="version_change_v9_title">Version 9 (0.2.3)</string>
 	<string name="version_change_v9">- First version of the \'send story\' system! The system is just a first step, once we got authentication running it will be seamless!</string>
@@ -114,9 +114,8 @@
 		dontaion app which will be soon in the Android Market!</string>
 	<string name="about_title_app">App license</string>
 	<string name="about_body_app">menéame for Android is made by Moritz Wundke
-		(www.DarkCultureGames.com) and licensed under GNU General Public
-		License (http://www.gnu.org/licenses/gpl.html)\nThe source code is
-		available here: http://code.google.com/p/meneameandroid/\nGraphics are
+		(www.DarkCultureGames.com) and pakore. Licensed under GNU General Public
+		License (http://www.gnu.org/licenses/gpl.html)more info: http://code.google.com/p/meneameandroid/\nGraphics are
 		made by Menéame Comunicacions, SL and licensed under Creative Commons
 		(http://creativecommons.org/licenses/by-sa/2.5/)</string>
 	<string name="about_title_meneame">Menéame license</string>
@@ -209,7 +208,7 @@
 	<string name="pref_app_maxarticles_40">40</string>
 	<string name="pref_app_maxarticles_ALL">All</string>
 	
-	<string name="pref_app_onitemclick">Article selection</string>
+	<string name="pref_app_onitemclick">On Click Action</string>
 	<string name="pref_app_onitemclick_summary">What should be performed when clicking on an article</string>
 	<string name="pref_app_onitemclick_default">Noting</string>
 	<string name="pref_app_onitemclick_detailed">Detailed view</string>

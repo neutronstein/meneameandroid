@@ -23,7 +23,7 @@
 			android:summary="@string/pref_app_onitemclick_summary" android:title="@string/pref_app_onitemclick"
 			android:entries="@array/pref_app_onitemclick_entries"
 			android:entryValues="@array/pref_app_onitemclick_values"
-			android:defaultValue="Default" />
+			android:defaultValue="Source" />
 		<ListPreference android:key="pref_app_maxarticles"
 			android:summary="@string/pref_app_maxarticles_summary" android:title="@string/pref_app_maxarticles"
 			android:entries="@array/pref_app_maxarticles_entries"

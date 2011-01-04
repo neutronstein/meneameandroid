@@ -9,7 +9,11 @@
 		<LinearLayout android:orientation="vertical"
 			android:layout_width="fill_parent" android:layout_height="fill_parent">
 			<TabWidget android:id="@android:id/tabs"
-				android:layout_width="fill_parent" android:layout_height="31px" />
+				android:layout_width="fill_parent"
+				android:layout_height="32dip"
+				android:tabStripEnabled="true"
+				android:tabStripLeft="@drawable/tab_bottom_left"
+				android:tabStripRight="@drawable/tab_bottom_right"/>
 			<FrameLayout android:id="@android:id/tabcontent"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
 				style="@style/Style.main_framelayout_style">
