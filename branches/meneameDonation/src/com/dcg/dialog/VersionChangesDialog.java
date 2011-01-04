@@ -1,7 +1,7 @@
 package com.dcg.dialog;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.meneame.R;
+import com.dcg.meneamedonation.R;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -61,7 +61,7 @@ public class VersionChangesDialog extends Dialog {
 			// Set text
 			int resID = getContext().getResources().getIdentifier(
 					"version_change_v" + i + "_title", "string",
-					"com.dcg.meneame");
+					"com.dcg.meneamedonation");
 			title.setText(resID);
 
 			// Add view
@@ -85,7 +85,7 @@ public class VersionChangesDialog extends Dialog {
 
 			// Set text
 			resID = getContext().getResources().getIdentifier(
-					"version_change_v" + i, "string", "com.dcg.meneame");
+					"version_change_v" + i, "string", "com.dcg.meneamedonation");
 			body.setText(resID);
 
 			// Add view

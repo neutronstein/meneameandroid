@@ -14,7 +14,7 @@ public class FeedItemElement implements BaseColumns {
 	/** Define content provider connections */
 	public static final String ELEMENT_AUTHORITY = "items";
 	public static final Uri CONTENT_URI = Uri
-			.parse("content://com.dcg.meneame/" + ELEMENT_AUTHORITY);
+			.parse("content://com.dcg.meneamedonation/" + ELEMENT_AUTHORITY);
 	public static final String DEFAULT_SORT_ORDER = "_id ASC";
 
 	/** Order types */

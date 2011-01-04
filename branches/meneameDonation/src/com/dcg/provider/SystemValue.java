@@ -9,7 +9,7 @@ public class SystemValue implements BaseColumns {
 	/** Define content provider connections */
 	public static final String ELEMENT_AUTHORITY = "systemvalues";
 	public static final Uri CONTENT_URI = Uri
-			.parse("content://com.dcg.meneame/" + ELEMENT_AUTHORITY);
+			.parse("content://com.dcg.meneamedonation/" + ELEMENT_AUTHORITY);
 
 	/** DB table name */
 	public static final String TABLE = "system";

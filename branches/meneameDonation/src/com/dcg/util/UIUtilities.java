@@ -1,6 +1,6 @@
 package com.dcg.util;
 
-import com.dcg.meneame.R;
+import com.dcg.meneamedonation.R;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

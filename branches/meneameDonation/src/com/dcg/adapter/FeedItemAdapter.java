@@ -1,5 +1,6 @@
 package com.dcg.adapter;
 
+import junit.framework.Assert;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,7 +14,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.meneame.R;
+import com.dcg.meneamedonation.R;
 import com.dcg.provider.FeedItemElement;
 
 public class FeedItemAdapter extends CursorAdapter {
@@ -53,6 +54,7 @@ public class FeedItemAdapter extends CursorAdapter {
 		ApplicationMNM.addLogCat(TAG);
 
 		final Cursor c = getCursor();
+		Assert.assertNotNull("Can not create adapter because cursor failed! Check your log file!", c);
 
 		mActivity = activity;
 		mInflater = LayoutInflater.from(activity);

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dcg.meneame.MeneameAPP;
+import com.dcg.meneamedonation.MeneameAPP;
 
 import android.app.Application;
 import android.content.Context;
@@ -188,7 +188,7 @@ public class ApplicationMNM extends Application {
 		if (mAppContext != null) {
 			try {
 				return mAppContext.getPackageManager().getPackageInfo(
-						"com.dcg.meneame", 0).versionCode;
+						"com.dcg.meneamedonation", 0).versionCode;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -206,7 +206,7 @@ public class ApplicationMNM extends Application {
 		if (mAppContext != null) {
 			try {
 				return mAppContext.getPackageManager().getPackageInfo(
-						"com.dcg.meneame", 0).versionName;
+						"com.dcg.meneamedonation", 0).versionName;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,7 +318,7 @@ public class ApplicationMNM extends Application {
 	public static String getRootSDcardFolder() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
 				+ "Android" + File.separator + "data"
-				+ File.separator + "com.dcg.meneame" + File.separator;
+				+ File.separator + "com.dcg.meneamedonation" + File.separator;
 	}
 
 	/**
