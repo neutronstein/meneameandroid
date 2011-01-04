@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dcg.meneame.MeneameAPP;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -78,6 +80,9 @@ public class ApplicationMNM extends Application {
 	/** Some global definitions */
 	public static final String MENEAME_BASE_URL = "http://www.meneame.net";
 	
+	/** Reference to the main activity which holds the tabs */
+	private static MeneameAPP mMeneameApp = null;
+	
 	/** The REST method manager, this is a singleton */
 
 	@Override
@@ -116,10 +121,25 @@ public class ApplicationMNM extends Application {
 		addIgnoreCat("MeneameAPP");
 		addIgnoreCat("ApplicationMNM");
 		addIgnoreCat("RequestFeedTask");
-		//addIgnoreCat("FeedActivity");
+		addIgnoreCat("FeedActivity");
 		addIgnoreCat("SecurityKeyManager");
 		addIgnoreCat("ClientFormLogin");
 		addIgnoreCat("RESTfulManager");
+		addIgnoreCat("SystemValueManager");
+	}
+	
+	/**
+	 * Register the main activity
+	 */
+	public static void registerMainActivity( MeneameAPP activity ) {
+		mMeneameApp = activity;
+	}
+	
+	/**
+	 * Return the main activity
+	 */
+	public static MeneameAPP getMainActivity() {
+		return mMeneameApp;
 	}
 
 	/**
@@ -297,6 +317,7 @@ public class ApplicationMNM extends Application {
 	 */
 	public static String getRootSDcardFolder() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
+				+ "Android" + File.separator + "data"
 				+ File.separator + "com.dcg.meneame" + File.separator;
 	}
 

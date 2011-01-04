@@ -67,7 +67,7 @@
 	<string name="version_change_title">Cambios de Versiones</string>
 	
 	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
-	<string name="version_change_v10">- TODO</string>
+	<string name="version_change_v10">- Revisión de estilos.\n- Añadido nuevo tema, podéis verlo en las preferencias.\n- Opción añadida para seleccionar la acción que se deba realizar al tocar un artículo. Por defeco se abre la fuente.\n- Arreglos menores.</string>
 	
 	<string name="version_change_v9_title">Version 9 (0.2.3)</string>
 	<string name="version_change_v9">- Primera version del sistema de envio de noticias! Es el primer paso, cuando la autentificación este integrada será mucho más potente!</string>
@@ -129,9 +129,8 @@
 		Android!</string>
 	<string name="about_title_app">App license</string>
 	<string name="about_body_app">menéame for Android is made by Moritz Wundke
-		(www.DarkCultureGames.com) and licensed under GNU General Public
-		License (http://www.gnu.org/licenses/gpl.html)\nThe source code is
-		available here: http://code.google.com/p/meneameandroid/\nGraphics are
+		(www.DarkCultureGames.com) and pakore. Licensed under GNU General Public
+		License (http://www.gnu.org/licenses/gpl.html)more info: http://code.google.com/p/meneameandroid/\nGraphics are
 		made by Menéame Comunicacions, SL and licensed under Creative Commons
 		(http://creativecommons.org/licenses/by-sa/2.5/)</string>
 	<string name="about_title_meneame">Menéame license</string>
@@ -225,4 +224,13 @@
 	<string name="pref_app_maxarticles_20">20</string>
 	<string name="pref_app_maxarticles_40">40</string>
 	<string name="pref_app_maxarticles_ALL">Todos</string>
+	
+	<string name="pref_app_onitemclick">Selección</string>
+	<string name="pref_app_onitemclick_summary">Acción que se realizará al tocar una noticia</string>
+	<string name="pref_app_onitemclick_default">Nada</string>
+	<string name="pref_app_onitemclick_detailed">Vista detallada</string>
+	<string name="pref_app_onitemclick_open_meneame">Abrir (menéame)</string>
+	<string name="pref_app_onitemclick_open_source">Abrir (fuente)</string>
+	<string name="pref_app_onitemclick_vote">Menéalo</string>
+	<string name="pref_app_onitemclick_share">Compartir</string>
 </resources>

@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +28,7 @@ import com.dcg.app.ApplicationMNM;
 import com.dcg.app.RESTfulManager;
 import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.AboutDialog;
+import com.dcg.meneame.MeneameAPP.RestartAppListener;
 import com.dcg.provider.FeedItemElement;
 import com.dcg.provider.RESTfulMethod;
 import com.dcg.provider.SystemValue;
@@ -44,7 +44,7 @@ import com.dcg.task.RequestFeedTask.RequestFeedListener;
  * @author Moritz Wundke (b.thax.dcg@gmail.com)
  */
 abstract public class FeedActivity extends ListActivity implements
-		RequestFeedListener {
+		RequestFeedListener, RestartAppListener {
 
 	/** Log tags */
 	private static final String TAG = "FeedActivity";
@@ -95,7 +95,13 @@ abstract public class FeedActivity extends ListActivity implements
 	/** Definitions used by the detailed view */
 	public static final String EXTRA_KEY_ARTICLE_ID = "extra.article.id";
 	public static final String EXTRA_KEY_PARENT_FEEDID = "extra.parentfeed.id";
+	
+	/** Flag used to force a reload of the views on restart */
+	public static final String ON_RESTART_SETUP_VIEWS = "on.restart.setup.views";
 
+	/** Flag used to save the last viewed item */
+	public static final String LAST_VIEWD_ITEM = "last.viewd.item";
+	
 	/** Used to debug, will print some data from the DB on start */
 	public static final boolean mbPrintDBContentOnStart = false;
 
@@ -155,12 +161,14 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["
-							+ rowID
-							+ "] FeedItemElement:\n"
-							+ " LINK_ID: "
-							+ cur.getString(cur
-									.getColumnIndex(FeedItemElement.LINK_ID)));
+					ApplicationMNM
+							.logCat(TAG,
+									"["
+											+ rowID
+											+ "] FeedItemElement:\n"
+											+ " LINK_ID: "
+											+ cur.getString(cur
+													.getColumnIndex(FeedItemElement.LINK_ID)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -182,17 +190,18 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["
-							+ rowID
-							+ "] SystemValue:\n"
-							+ "   KEY: "
-							+ cur
-									.getString(cur
-											.getColumnIndex(SystemValue.KEY))
-							+ "\n"
-							+ " VALUE: "
-							+ cur.getString(cur
-									.getColumnIndex(SystemValue.VALUE)));
+					ApplicationMNM
+							.logCat(TAG,
+									"["
+											+ rowID
+											+ "] SystemValue:\n"
+											+ "   KEY: "
+											+ cur.getString(cur
+													.getColumnIndex(SystemValue.KEY))
+											+ "\n"
+											+ " VALUE: "
+											+ cur.getString(cur
+													.getColumnIndex(SystemValue.VALUE)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -216,28 +225,30 @@ abstract public class FeedActivity extends ListActivity implements
 			if (cur != null && cur.moveToFirst()) {
 				int rowID = 0;
 				do {
-					ApplicationMNM.logCat(TAG, "["
-							+ rowID
-							+ "] RESTfulMethod:\n"
-							+ "    NAME: "
-							+ cur.getString(cur
-									.getColumnIndex(RESTfulMethod.NAME))
-							+ "\n"
-							+ " REQUEST: "
-							+ cur.getString(cur
-									.getColumnIndex(RESTfulMethod.REQUEST))
-							+ "\n"
-							+ "  STATUS: "
-							+ cur.getInt(cur
-									.getColumnIndex(RESTfulMethod.STATUS))
-							+ "\n"
-							+ "  METHOD: "
-							+ cur.getInt(cur
-									.getColumnIndex(RESTfulMethod.METHOD))
-							+ "\n"
-							+ "  RESULT: "
-							+ cur.getInt(cur
-									.getColumnIndex(RESTfulMethod.RESULT)));
+					ApplicationMNM
+							.logCat(TAG,
+									"["
+											+ rowID
+											+ "] RESTfulMethod:\n"
+											+ "    NAME: "
+											+ cur.getString(cur
+													.getColumnIndex(RESTfulMethod.NAME))
+											+ "\n"
+											+ " REQUEST: "
+											+ cur.getString(cur
+													.getColumnIndex(RESTfulMethod.REQUEST))
+											+ "\n"
+											+ "  STATUS: "
+											+ cur.getInt(cur
+													.getColumnIndex(RESTfulMethod.STATUS))
+											+ "\n"
+											+ "  METHOD: "
+											+ cur.getInt(cur
+													.getColumnIndex(RESTfulMethod.METHOD))
+											+ "\n"
+											+ "  RESULT: "
+											+ cur.getInt(cur
+													.getColumnIndex(RESTfulMethod.RESULT)));
 					rowID++;
 				} while (cur.moveToNext());
 			}
@@ -260,6 +271,15 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onStart() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onStart()");
+		
+		// Add us as a restart listener
+		/* @Moss: Not needed right nw so just commented out
+		if ( ApplicationMNM.getMainActivity() != null ) {
+			ApplicationMNM.getMainActivity().removeAppRestartListener(this);
+			ApplicationMNM.getMainActivity().addAppRestartListener(this);
+		}
+		/**/
+		
 		super.onStart();
 	}
 
@@ -311,6 +331,12 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		ApplicationMNM.logCat(TAG, getTabActivityTag() + "::onRestart()");
+		
+		// Check if we need to setup the view again
+		if ( getSystemValue(this.getTabActivityTag()+"."+ON_RESTART_SETUP_VIEWS, true) ) {
+			setupViews();
+		}
+		
 		super.onRestart();
 	}
 
@@ -359,32 +385,33 @@ abstract public class FeedActivity extends ListActivity implements
 		// Finish destroy
 		super.onDestroy();
 	}
-	
+
 	/**
-	 * Performs the selected action that should be done when clicking on an article
+	 * Performs the selected action that should be done when clicking on an
+	 * article
 	 */
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {	
+	protected void onListItemClick(ListView l, View v, int position, long id) {
 		SharedPreferences prefs = PreferenceManager
-			.getDefaultSharedPreferences(getBaseContext());
+				.getDefaultSharedPreferences(getBaseContext());
 		String value = prefs.getString("pref_app_onitemclick", "Default");
 		final FeedItemViewHolder holder = (FeedItemViewHolder) v.getTag();
-		
-		if ( value.compareTo("Default") != 0 ) {
+
+		if (value.compareTo("Nothing") != 0) {
 			// Perform actions
-			if ( value.compareTo("Detailed") == 0 ) {
+			if (value.compareTo("Detailed") == 0) {
 				openDetailedView(holder.link_id);
-			} else if ( value.compareTo("Meneame") == 0 ) {
+			} else if (value.compareTo("Meneame") == 0) {
 				openBrowser(holder.link);
 				ApplicationMNM.showToast(getResources().getString(
 						R.string.context_menu_open));
-			} else if ( value.compareTo("Source") == 0 ) {
+			} else if (value.compareTo("Source") == 0) {
 				openBrowser((String) holder.url.getText());
 				ApplicationMNM.showToast(getResources().getString(
 						R.string.context_menu_open_source));
-			} else if ( value.compareTo("Vote") == 0 ) {
+			} else if (value.compareTo("Vote") == 0) {
 				new MenealoTask(this).execute(holder.link_id);
-			} else if ( value.compareTo("Share") == 0 ) {
+			} else if (value.compareTo("Share") == 0) {
 				shareArticleLink((String) holder.url.getText(),
 						(String) holder.title.getText());
 			}
@@ -396,6 +423,28 @@ abstract public class FeedActivity extends ListActivity implements
 	public String getFirstVisiblePositionSystemKey() {
 		return "FeedActivity." + getFeedID() + ".FirstVisiblePosKey";
 	}
+	
+	/**
+	 * Set a persistent system value
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	private void setSystemValue(String key,
+			int value) {
+		setSystemValue( key, String.valueOf(value));
+	}
+	
+	/**
+	 * Set a persistent system value
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	private void setSystemValue(String key,
+			boolean value) {
+		setSystemValue( key, String.valueOf(value));
+	}
 
 	/**
 	 * Set a persistent system value
@@ -406,6 +455,28 @@ abstract public class FeedActivity extends ListActivity implements
 	public void setSystemValue(String key, String value) {
 		SystemValueManager.setSystemValue(this, key, value);
 	}
+	
+	/**
+	 * Get a persistent system value
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public int getSystemValue(String key, int defaultValue) {
+		return Integer.parseInt(getSystemValue(key,String.valueOf(defaultValue)));
+	}
+	
+	/**
+	 * Get a persistent system value
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public boolean getSystemValue(String key, boolean defaultValue) {
+		return Boolean.parseBoolean(getSystemValue(key,String.valueOf(defaultValue)));
+	}
 
 	/**
 	 * Get a persistent system value
@@ -414,8 +485,9 @@ abstract public class FeedActivity extends ListActivity implements
 	 * @param defaultValue
 	 * @return
 	 */
-	public SystemValue getSystemValue(String key, String defaultValue) {
-		return SystemValueManager.getSystemValue(this, key);
+	public String getSystemValue(String key, String defaultValue) {
+		SystemValue value = SystemValueManager.getSystemValue(this, key);
+		return (value != null)?value.getValue():defaultValue;
 	}
 
 	/**
@@ -434,6 +506,36 @@ abstract public class FeedActivity extends ListActivity implements
 		ApplicationMNM.logCat(TAG, getTabActivityTag()
 				+ "::onRestoreInstanceState()");
 	}
+	
+	/**
+	 * Save the last viewed item in our system db
+	 */
+	public void setLastViewedItem() {
+		if ( mListView != null ) {
+			setSystemValue(this.getTabActivityTag()+"."+LAST_VIEWD_ITEM, mListView.getFirstVisiblePosition());
+		}
+	}
+	
+	/**
+	 * Force an index to be saved as the last viewed item
+	 */
+	public void setLastViewedItem(int index) {
+		if ( mListView != null ) {
+			setSystemValue(this.getTabActivityTag()+"."+LAST_VIEWD_ITEM, index);
+		}
+	}
+	
+	/**
+	 * get the last viewed item index from our db
+	 * @return
+	 */
+	public int getLastViewedItem() {
+		// Save state
+		if ( mListView != null ) {
+			return getSystemValue(this.getTabActivityTag()+"."+LAST_VIEWD_ITEM, 0);
+		}
+		return 0;
+	}
 
 	/**
 	 * Save the apps state into the database to be able to recover it again
@@ -444,10 +546,10 @@ abstract public class FeedActivity extends ListActivity implements
 		try {
 			ApplicationMNM.logCat(TAG, " - First visible position: "
 					+ mListView.getFirstVisiblePosition());
-			// Save state
+			setLastViewedItem();
 		} catch (Exception e) {
-			ApplicationMNM.warnCat(TAG, "Failed to save app state: "
-					+ e.toString());
+			ApplicationMNM.warnCat(TAG,
+					"Failed to save app state: " + e.toString());
 		}
 	}
 
@@ -460,8 +562,8 @@ abstract public class FeedActivity extends ListActivity implements
 		try {
 			// Restore state
 		} catch (Exception e) {
-			ApplicationMNM.warnCat(TAG, "Failed to restore app state: "
-					+ e.toString());
+			ApplicationMNM.warnCat(TAG,
+					"Failed to restore app state: " + e.toString());
 		}
 	}
 
@@ -488,6 +590,9 @@ abstract public class FeedActivity extends ListActivity implements
 	 * Delete an entire feed cache used by us
 	 */
 	public boolean deleteFeedCache() {
+		// Get rid of the last item too
+		setLastViewedItem(0);
+		
 		final String[] arguments2 = new String[2];
 		arguments2[0] = arguments2[1] = String.valueOf(getFeedID());
 		final String where = FeedItemElement.FEEDID + "=? OR "
@@ -540,8 +645,6 @@ abstract public class FeedActivity extends ListActivity implements
 	 */
 	protected void setupViews() {
 		mListView = getListView();
-		
-		Log.d("setupViews", "Creating views");
 
 		if (mListView != null) {
 			// Stack from bottom or from top?
@@ -561,6 +664,9 @@ abstract public class FeedActivity extends ListActivity implements
 							onCreateContextMenuFeedList(menu, view, menuInfo);
 						}
 					});
+			
+			// Set the last viewed item index
+			mListView.setSelection(getSystemValue(this.getTabActivityTag()+"."+LAST_VIEWD_ITEM,0));
 		} else {
 			ApplicationMNM.warnCat(TAG, "No ListView found in layout for "
 					+ this.toString());
@@ -691,8 +797,8 @@ abstract public class FeedActivity extends ListActivity implements
 	 * @return true if if a request is active, otherwise false
 	 */
 	public boolean isRequestingFeed() {
-		RESTfulMethod method = RESTfulManager.getRESTMethod(this, this
-				.getFeedURL());
+		RESTfulMethod method = RESTfulManager.getRESTMethod(this,
+				this.getFeedURL());
 		return method != null
 				&& method.getStatus() == RESTfulMethod.STATUS_TRANSACTION;
 	}
@@ -720,6 +826,9 @@ abstract public class FeedActivity extends ListActivity implements
 		// If we are loading a cached feed to we are pause we can not start!
 		if (!mbIsPaused && !isRequestingFeed()) {
 			mbIsLoadingCachedFeed = bUseCache;
+			
+			// Get rid of the last viewed item
+			setLastViewedItem(0);
 
 			// Create task and run it
 			new RequestFeedTask(this).execute(getTaskParams());
@@ -755,9 +864,16 @@ abstract public class FeedActivity extends ListActivity implements
 	 * @param msg
 	 */
 	public void onFinsihedContentObserver(Message msg) {
-		// We always pass a seuccess, the CursorAdapter wull set the right list
+		// We always pass a success, the CursorAdapter will set the right list
 		// text and items
 		onFeedFinished(ApplicationMNM.ERROR_SUCCESSFULL);
+	}
+	
+	/**
+	 * Iinvoked when the main app gets restarted
+	 */
+	public void onAppRestart() {
+		// Nothing to be done right now
 	}
 
 	/**
@@ -846,24 +962,26 @@ abstract public class FeedActivity extends ListActivity implements
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Open the detailed view of an article
-	 * @param articleID integer id of the article
+	 * 
+	 * @param articleID
+	 *            integer id of the article
 	 */
-	protected void openDetailedView( int articleID) {
+	protected void openDetailedView(int articleID) {
 		Intent i = new Intent(this, DetailedArticleActivity.class);
 		i.putExtra(EXTRA_KEY_ARTICLE_ID, String.valueOf(articleID));
 		i.putExtra(EXTRA_KEY_PARENT_FEEDID, String.valueOf(getFeedID()));
 		startActivityForResult(i, SUB_ACT_DETAILED_ID);
 	}
-	
-	protected void openBrowser( String url ) {
+
+	protected void openBrowser(String url) {
 		try {
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 		} catch (Exception e) {
-			ApplicationMNM.warnCat(TAG, "Can not open URI in browser: "
-					+ e.toString());
+			ApplicationMNM.warnCat(TAG,
+					"Can not open URI in browser: " + e.toString());
 		}
 	}
 
@@ -873,8 +991,6 @@ abstract public class FeedActivity extends ListActivity implements
 				.getMenuInfo();
 		final FeedItemViewHolder holder = (FeedItemViewHolder) info.targetView
 				.getTag();
-
-		String url = "";
 		switch (item.getItemId()) {
 		case CONTEXT_MENU_OPEN:
 			// Open detailed view for article
@@ -908,8 +1024,9 @@ abstract public class FeedActivity extends ListActivity implements
 	public void shareArticleLink(String url, String title) {
 		// send intent
 		Intent sendMailIntent = new Intent(Intent.ACTION_SEND);
-		sendMailIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(
-				R.string.share_option_subject).replace("SUBJECT", title));
+		sendMailIntent.putExtra(Intent.EXTRA_SUBJECT,
+				getResources().getString(R.string.share_option_subject)
+						.replace("SUBJECT", title));
 		sendMailIntent.putExtra(Intent.EXTRA_TEXT, url);
 		sendMailIntent.setType("text/plain");
 
@@ -931,19 +1048,32 @@ abstract public class FeedActivity extends ListActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+		boolean bRefreshView =  false;
 		switch (requestCode) {
 		case SUB_ACT_SETTINGS_ID:
 			if ((resultCode & Preferences.RESULT_CODE_REFRESH_LIST_VIEW) == Preferences.RESULT_CODE_REFRESH_LIST_VIEW) {
-				setupViews();
+				bRefreshView = true;
 			}
 			if ((resultCode & Preferences.RESULT_CODE_SETUP_VIEWS) == Preferences.RESULT_CODE_SETUP_VIEWS) {
-				setupViews();
+				// Set flag so that ur tabs will reload it's views on the next restart call
+				if (this.getTabActivityTag().equals(NewsActivity.static_getIndicatorStringID()) ) {
+					setSystemValue(NewsActivity.static_getIndicatorStringID()+"."+ON_RESTART_SETUP_VIEWS, true);
+				}
+				else if (this.getTabActivityTag().equals(QueueActivity.static_getIndicatorStringID()) ) {
+					setSystemValue(QueueActivity.static_getIndicatorStringID()+"."+ON_RESTART_SETUP_VIEWS, true);
+				}
+				else if (this.getTabActivityTag().equals(CommentsActivity.static_getIndicatorStringID()) ) {
+					setSystemValue(CommentsActivity.static_getIndicatorStringID()+"."+ON_RESTART_SETUP_VIEWS, true);
+				}				
+				bRefreshView = true;
 			}
 			break;
 		}
+		
+		// Refresh view
+		if (bRefreshView) setupViews();
 	}
-
+	
 	/**
 	 * Open notame activity
 	 */
@@ -953,7 +1083,8 @@ abstract public class FeedActivity extends ListActivity implements
 			startActivityForResult(notameActivity, SUB_ACT_NOTAME_ID);
 		} else {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.notame_setup_data).setCancelable(false)
+			builder.setMessage(R.string.notame_setup_data)
+					.setCancelable(false)
 					.setTitle(R.string.notame_setup_data_tilte)
 					.setPositiveButton(R.string.generic_ok,
 							new DialogInterface.OnClickListener() {
@@ -962,7 +1093,8 @@ abstract public class FeedActivity extends ListActivity implements
 									openSettingsScreen();
 									dialog.dismiss();
 								}
-							}).setNegativeButton(R.string.generic_no,
+							})
+					.setNegativeButton(R.string.generic_no,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {

@@ -9,7 +9,7 @@
 		<item>@string/pref_app_onitemclick_share</item>
 	</array>
 	<string-array name="pref_app_onitemclick_values">
-		<item>Default</item>
+		<item>Nothing</item>
 		<item>Detailed</item>
 		<item>Meneame</item>
 		<item>Source</item>
