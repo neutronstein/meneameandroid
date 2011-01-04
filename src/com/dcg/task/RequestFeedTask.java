@@ -19,7 +19,7 @@ import android.util.Log;
 
 import com.dcg.app.ApplicationMNM;
 import com.dcg.app.RESTfulManager;
-import com.dcg.meneame.FeedActivity;
+import com.dcg.meneamedonation.FeedActivity;
 import com.dcg.provider.FeedItemElement;
 import com.dcg.provider.RESTfulMethod;
 import com.dcg.rss.RSSParser;
@@ -42,7 +42,7 @@ public class RequestFeedTask extends
 	
 	/** The observer URI, used to catch any finish event */
 	public static final Uri CONTENT_URI = Uri
-	.parse("content://com.dcg.meneame/" + ELEMENT_AUTHORITY);
+	.parse("content://com.dcg.meneamedonation/" + ELEMENT_AUTHORITY);
 
 	/** Error keys used as return types by the task */
 	public static final int ERROR_COULD_NOT_CREATE_RSS_HANDLER = ApplicationMNM.ERROR_FAILED + 1;

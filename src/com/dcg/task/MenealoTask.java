@@ -18,8 +18,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.dcg.app.ApplicationMNM;
-import com.dcg.meneame.FeedActivity;
-import com.dcg.meneame.R;
+import com.dcg.meneamedonation.R;
+import com.dcg.meneamedonation.FeedActivity;
 import com.dcg.util.HttpManager;
 import com.dcg.util.IOUtilities;
 import com.dcg.util.UserTask;
