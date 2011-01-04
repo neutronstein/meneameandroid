@@ -8,7 +8,7 @@
 
 	<!-- Main Activity -->
 
-	<string name="app_name">men\u00E9ame</string>
+	<string name="app_name">men\u00E9ame (Donation)</string>
 	<string name="hello">Welcome to menéame!</string>
 
 	<!-- Tab Pages -->
@@ -63,55 +63,17 @@
 		log file to the developer?</string>
 
 	<!-- Version changeset -->
-	<string name="version_title">Version NUMBER (LABLE)</string>
+	<string name="version_title">Version (Donation) NUMBER (LABLE)</string>
 	<string name="version_change_title">Version Changes</string>
 	
-	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
-	<string name="version_change_v10">- Styles revised.\n- A new theme has been added, just have a look into the preferences.\n- Added option to choose which action should be performed when a user touches an article. By default the source will be opened in the browser.\n- Minor fixes.</string>
-	
-	<string name="version_change_v9_title">Version 9 (0.2.3)</string>
-	<string name="version_change_v9">- First version of the \'send story\' system! The system is just a first step, once we got authentication running it will be seamless!</string>
-	
-	<string name="version_change_v8_title">Version 8 (0.2.2)</string>
-	<string name="version_change_v8">- Share option from within an article (long
-		click)\n- Detailed view for articles (long click option)\n- Menéame logo acts as a back button.\n- Added option to invert the
-		list, so that the first item will be located at the bottom of the
-		list\n- Added new data to articles: \'User\' and \'Date\'\n- General stabilization of the app.</string>
-	
-	<string name="version_change_v7_title">Version 7 (0.2.1)</string>
-	<string name="version_change_v7">- Compatible with Android 1.5 (CupCake)\n- Fixed
-		\'Refresh on launch\' orientation bug</string>
-		
-	<string name="version_change_v6_title">Version 6 (0.2.0)</string>
-	<string name="version_change_v6">- General speed-up! No lagging anymore!\n- Caché is
-		now pure DB based to speed-up the app.\n- Beta-Voting system
-		added!\nStill no 1.5 (Cupcake) support, but I\'m on it!</string>
-		
-	<string name="version_change_v5_title">Version 5 (0.1.5)</string>
-	<string name="version_change_v5">- Minor bug fixes</string>
-	
-	<string name="version_change_v4_title">Version 4 (0.1.4)</string>
-	<string name="version_change_v4">- Added DB caching and general speed-up\n-
-		Stability fixes\n- First crash reporting functionality tests</string>
-		
-	<string name="version_change_v3_title">Version 3 (0.1.3)</string>
-	<string name="version_change_v3">- SD-Card cache implemented\n- Added Nótame page to
-		add notes to Nótame</string>
-		
-	<string name="version_change_v2_title">Version 2 (0.1.2)</string>
-	<string name="version_change_v2">- Fixing some memory issues\n- Releasing list
-		content when switching pages, needs a cache process to be seamless
-	</string>
-	
 	<string name="version_change_v1_title">Version 1 (0.1.1)</string>
-	<string name="version_change_v1">- First beta release</string>
+	<string name="version_change_v1">- Initial version. Based on version 10 (0.2.4) of the free app.</string>
 
 	<!-- About info -->
 	<string name="about_title">menéame for Android</string>
 	<string name="about_title_faq">FAQ</string>
 	<string name="about_faq_q1">Is this app fully free of charge?</string>
-	<string name="about_faq_a1">Yes! If you would like to support us search for the
-		dontaion app which will be soon in the Android Market!</string>
+	<string name="about_faq_a1">You are using the donation app so you just supported us. There is a regular version on the market which has no cost.</string>
 	<string name="about_title_app">App license</string>
 	<string name="about_body_app">menéame for Android is made by Moritz Wundke
 		(www.DarkCultureGames.com) and pakore. Licensed under GNU General Public
