@@ -66,6 +66,9 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Version Changes</string>
 	
+	<string name="version_change_v11_title">Version 11 (0.2.5)</string>
+	<string name="version_change_v11">- Fixed force close for Android versions 1.5 and 1.6.</string>
+	
 	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
 	<string name="version_change_v10">- Styles revised.\n- A new theme has been added, just have a look into the preferences.\n- Added option to choose which action should be performed when a user touches an article. By default the source will be opened in the browser.\n- Minor fixes.</string>
 	

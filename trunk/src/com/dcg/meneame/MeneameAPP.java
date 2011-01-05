@@ -36,6 +36,7 @@ import com.dcg.app.ApplicationMNM;
 import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.VersionChangesDialog;
 import com.dcg.provider.SystemValue;
+import com.dcg.util.TabHostConfigurator;
 
 /**
  * Main activity, basically holds the main tab widget
@@ -132,24 +133,30 @@ public class MeneameAPP extends TabActivity {
 		//Log.d("AAAA", ">>>>>>>>>>>>>>>> 2x");
 	}
 	
-	public void configureTabWidget( TabWidget tabWidget ) {
-		
+	public void configureTabHost( TabHost tabHost ) {
+		String tabHostConfiguratorClass = "";
 		switch(Build.VERSION.SDK_INT) {
-		case 3:
-			configureTabWidgetAnd1x(tabWidget);
-			break;
-		case 4:
-			configureTabWidgetAnd1x(tabWidget);
-			break;
 		case 7:
-			configureTabWidgetAnd2x(tabWidget);
+			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
 		case 8:
-			configureTabWidgetAnd2x(tabWidget);
+			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
 		case 9:
-			configureTabWidgetAnd2x(tabWidget);
+			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
+		}
+		
+		// If no configuratoir has been found do nothing
+		if ( tabHostConfiguratorClass.equals("") ) return;
+		
+		try {
+			TabHostConfigurator configurator = (TabHostConfigurator) Class.forName(tabHostConfiguratorClass).newInstance();
+			
+			// Configure it
+			configurator.configuraeTabHost(tabHost);
+		} catch(Exception e) {
+			ApplicationMNM.warnCat("TabConfigurator", "Failed to create configurator: " + e.toString());
 		}
 	}
 
@@ -164,7 +171,8 @@ public class MeneameAPP extends TabActivity {
 		this.createTabs(mTabHost, SIZE_OF_TABTEXT);
 		
 		// Enable strips for our layout. We always want this to be true!
-		TabWidget tabWidget = mTabHost.getTabWidget();
+		//TabWidget tabWidget = mTabHost.getTabWidget();
+		configureTabHost(mTabHost);
 		
 		try {
 			//tabWidget.setStripEnabled(true);

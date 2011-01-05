@@ -66,6 +66,9 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
 	
+	<string name="version_change_v11_title">Version 11 (0.2.5)</string>
+	<string name="version_change_v11">- Forzar cierre arregaldo para vesiones Android 1.5 y 1.6.</string>
+	
 	<string name="version_change_v10_title">Version 10 (0.2.4)</string>
 	<string name="version_change_v10">- Revisión de estilos.\n- Añadido nuevo tema, podéis verlo en las preferencias.\n- Opción añadida para seleccionar la acción que se deba realizar al tocar un artículo. Por defeco se abre la fuente.\n- Arreglos menores.</string>
 	

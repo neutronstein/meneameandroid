@@ -60,7 +60,7 @@ public class Preferences extends PreferenceActivity {
 				if (versionPrefernce != null) {
 					String versionTitle = getResources().getString(
 							getResources().getIdentifier("version_title",
-									"string", "com.dcg.meneame"));
+									"string", ApplicationMNM.static_getPackageName()));
 					versionTitle = versionTitle.replaceAll("NUMBER", String
 							.valueOf(ApplicationMNM.getVersionNumber()));
 					versionTitle = versionTitle.replaceAll("LABLE",

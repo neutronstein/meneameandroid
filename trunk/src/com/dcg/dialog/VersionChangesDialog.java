@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -59,9 +60,12 @@ public class VersionChangesDialog extends Dialog {
 			title.setPadding(10, 2, 20, 2);
 
 			// Set text
+			String resIDText = "version_change_v" + i + "_title";
 			int resID = getContext().getResources().getIdentifier(
-					"version_change_v" + i + "_title", "string",
-					"com.dcg.meneame");
+					resIDText, "string", ApplicationMNM.static_getPackageName());
+			if ( resID == 0 ) {
+				ApplicationMNM.warnCat("VersionChangesetError", "No resources found for current version ("+i+")");
+			}
 			title.setText(resID);
 
 			// Add view
@@ -85,7 +89,7 @@ public class VersionChangesDialog extends Dialog {
 
 			// Set text
 			resID = getContext().getResources().getIdentifier(
-					"version_change_v" + i, "string", "com.dcg.meneame");
+					"version_change_v" + i, "string", ApplicationMNM.static_getPackageName());
 			body.setText(resID);
 
 			// Add view
