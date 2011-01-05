@@ -18,8 +18,10 @@ import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,6 +121,37 @@ public class MeneameAPP extends TabActivity {
 			alert.show();
 		}
 	}
+	
+	protected void configureTabWidgetAnd1x( TabWidget tabWidget ) {
+		// 
+	}
+	
+	protected void configureTabWidgetAnd2x( TabWidget tabWidget ) {
+		//
+		//tabWidget.setStripEnabled(true);
+		//Log.d("AAAA", ">>>>>>>>>>>>>>>> 2x");
+	}
+	
+	public void configureTabWidget( TabWidget tabWidget ) {
+		
+		switch(Build.VERSION.SDK_INT) {
+		case 3:
+			configureTabWidgetAnd1x(tabWidget);
+			break;
+		case 4:
+			configureTabWidgetAnd1x(tabWidget);
+			break;
+		case 7:
+			configureTabWidgetAnd2x(tabWidget);
+			break;
+		case 8:
+			configureTabWidgetAnd2x(tabWidget);
+			break;
+		case 9:
+			configureTabWidgetAnd2x(tabWidget);
+			break;
+		}
+	}
 
 	private void createContent() {
 		if( isTiny() ) {
@@ -132,7 +165,16 @@ public class MeneameAPP extends TabActivity {
 		
 		// Enable strips for our layout. We always want this to be true!
 		TabWidget tabWidget = mTabHost.getTabWidget();
-		tabWidget.setStripEnabled(true);
+		
+		try {
+			//tabWidget.setStripEnabled(true);
+			
+			//android:tabStripEnabled="true"
+			//android:tabStripLeft="@drawable/tab_bottom_left"
+			//android:tabStripRight="@drawable/tab_bottom_right"
+		} catch (Exception e) {
+			// Nothing to be done
+		}
 
 		// Set news tab as visible one
 		mTabHost.setCurrentTab(getSystemValue(LAST_ACTIVE_TAB, 0));
