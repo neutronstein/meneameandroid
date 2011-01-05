@@ -18,6 +18,7 @@ import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -34,6 +35,7 @@ import com.dcg.app.ApplicationMNM;
 import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.VersionChangesDialog;
 import com.dcg.provider.SystemValue;
+import com.dcg.util.TabHostConfigurator;
 
 /**
  * Main activity, basically holds the main tab widget
@@ -119,6 +121,34 @@ public class MeneameAPP extends TabActivity {
 			alert.show();
 		}
 	}
+	
+	public void configureTabHost( TabHost tabHost ) {
+			String tabHostConfiguratorClass = "";
+	 		switch(Build.VERSION.SDK_INT) {
+	 		case 7:
+				tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
+	 			break;
+	 		case 8:
+			 tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
+	 			break;
+	 		case 9:
+				tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
+				break;
+	 		}
+			
+			// If no configuratoir has been found do nothing
+			if ( tabHostConfiguratorClass.equals("") ) return;
+			
+			try {
+				TabHostConfigurator configurator = (TabHostConfigurator) Class.forName(tabHostConfiguratorClass).newInstance();
+				
+				// Configure it
+				configurator.configuraeTabHost(tabHost);
+			} catch(Exception e) {
+				ApplicationMNM.warnCat("TabConfigurator", "Failed to create configurator: " + e.toString());
+			}
+	 	}
+
 
 	private void createContent() {
 		if( isTiny() ) {
@@ -131,8 +161,7 @@ public class MeneameAPP extends TabActivity {
 		this.createTabs(mTabHost, SIZE_OF_TABTEXT);
 		
 		// Enable strips for our layout. We always want this to be true!
-		TabWidget tabWidget = mTabHost.getTabWidget();
-		tabWidget.setStripEnabled(true);
+		configureTabHost(mTabHost);
 
 		// Set news tab as visible one
 		mTabHost.setCurrentTab(getSystemValue(LAST_ACTIVE_TAB, 0));

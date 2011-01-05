@@ -3,6 +3,7 @@ package com.dcg.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dcg.app.ApplicationMNM;
 import com.dcg.util.TextUtilities;
 
 import android.content.ContentValues;
@@ -14,7 +15,7 @@ public class FeedItemElement implements BaseColumns {
 	/** Define content provider connections */
 	public static final String ELEMENT_AUTHORITY = "items";
 	public static final Uri CONTENT_URI = Uri
-			.parse("content://com.dcg.meneamedonation/" + ELEMENT_AUTHORITY);
+			.parse("content://"+ApplicationMNM.static_getPackageName()+"/" + ELEMENT_AUTHORITY);
 	public static final String DEFAULT_SORT_ORDER = "_id ASC";
 
 	/** Order types */

@@ -59,9 +59,12 @@ public class VersionChangesDialog extends Dialog {
 			title.setPadding(10, 2, 20, 2);
 
 			// Set text
+			String resIDText = "version_change_v" + i + "_title";
 			int resID = getContext().getResources().getIdentifier(
-					"version_change_v" + i + "_title", "string",
-					"com.dcg.meneamedonation");
+					resIDText, "string", ApplicationMNM.static_getPackageName());
+			if ( resID == 0 ) {
+				ApplicationMNM.warnCat("VersionChangesetError", "No resources found for current version ("+i+")");
+			}
 			title.setText(resID);
 
 			// Add view
@@ -85,7 +88,7 @@ public class VersionChangesDialog extends Dialog {
 
 			// Set text
 			resID = getContext().getResources().getIdentifier(
-					"version_change_v" + i, "string", "com.dcg.meneamedonation");
+					"version_change_v" + i, "string", ApplicationMNM.static_getPackageName());
 			body.setText(resID);
 
 			// Add view
