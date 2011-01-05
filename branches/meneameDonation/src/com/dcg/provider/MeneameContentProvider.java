@@ -33,7 +33,7 @@ public class MeneameContentProvider extends ContentProvider {
 	private static final int RESTFUL_VALUE = 5;
 	private static final int RESTFUL_VALUE_ID = 6;
 	
-	private static final String AUTHORITY = "com.dcg.meneamedonation";
+	private static final String AUTHORITY = ApplicationMNM.static_getPackageName();
 
 	private static final UriMatcher URI_MATCHER;
 	static {
@@ -113,17 +113,17 @@ public class MeneameContentProvider extends ContentProvider {
 	public String getType(Uri uri) {
 		switch (URI_MATCHER.match(uri)) {
 		case ITEMS:
-			return "vnd.android.cursor.dir/vnd.com.dcg.meneamedonation.provider.feeditems";
+			return "vnd.android.cursor.dir/vnd."+ApplicationMNM.static_getPackageName()+".provider.feeditems";
 		case ITEM_ID:
-			return "vnd.android.cursor.item/vnd.com.dcg.meneamedonationprovider.feeditems";
+			return "vnd.android.cursor.item/vnd."+ApplicationMNM.static_getPackageName()+".provider.feeditems";
 		case SYSTEM_VALUE:
-			return "vnd.android.cursor.dir/vnd.ccom.dcg.meneamedonation.provider.systemvalue";
+			return "vnd.android.cursor.dir/vnd."+ApplicationMNM.static_getPackageName()+".provider.systemvalue";
 		case SYSTEM_VALUE_ID:
-			return "vnd.android.cursor.item/vnd.com.dcg.meneamedonation.provider.systemvalue";
+			return "vnd.android.cursor.item/vnd."+ApplicationMNM.static_getPackageName()+".provider.systemvalue";
 		case RESTFUL_VALUE:
-			return "vnd.android.cursor.dir/vnd.com.dcg.meneamedonation.provider.systemvalue";
+			return "vnd.android.cursor.dir/vnd."+ApplicationMNM.static_getPackageName()+".provider.systemvalue";
 		case RESTFUL_VALUE_ID:
-			return "vnd.android.cursor.item/vnd.com.dcg.meneamedonation.provider.systemvalue";
+			return "vnd.android.cursor.item/vnd."+ApplicationMNM.static_getPackageName()+".provider.systemvalue";
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}

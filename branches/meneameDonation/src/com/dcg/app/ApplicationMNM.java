@@ -182,13 +182,24 @@ public class ApplicationMNM extends Application {
 	}
 
 	/**
+	 * returns a string representing our package name
+	 * @return
+	 */
+	public static String static_getPackageName() {
+		if (mAppContext != null) {
+			return mAppContext.getPackageName();
+		}
+		return "com.dcg.meneamedonation";
+	}
+
+	/**
 	 * Returns the version number we are currently in
 	 */
 	public static int getVersionNumber() {
 		if (mAppContext != null) {
 			try {
 				return mAppContext.getPackageManager().getPackageInfo(
-						"com.dcg.meneamedonation", 0).versionCode;
+						static_getPackageName(), 0).versionCode;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -206,7 +217,7 @@ public class ApplicationMNM extends Application {
 		if (mAppContext != null) {
 			try {
 				return mAppContext.getPackageManager().getPackageInfo(
-						"com.dcg.meneamedonation", 0).versionName;
+						static_getPackageName(), 0).versionName;
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,7 +329,7 @@ public class ApplicationMNM extends Application {
 	public static String getRootSDcardFolder() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
 				+ "Android" + File.separator + "data"
-				+ File.separator + "com.dcg.meneamedonation" + File.separator;
+				+ File.separator + ApplicationMNM.static_getPackageName() + File.separator;
 	}
 
 	/**

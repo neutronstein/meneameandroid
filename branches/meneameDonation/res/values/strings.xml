@@ -66,6 +66,9 @@
 	<string name="version_title">Version (Donation) NUMBER (LABLE)</string>
 	<string name="version_change_title">Version Changes</string>
 	
+	<string name="version_change_v2_title">Version 2 (0.1.2)</string>
+	<string name="version_change_v2">- Fixed force close for Android versions 1.5 and 1.6.</string>
+	
 	<string name="version_change_v1_title">Version 1 (0.1.1)</string>
 	<string name="version_change_v1">- Initial version. Based on version 10 (0.2.4) of the free app.</string>
 

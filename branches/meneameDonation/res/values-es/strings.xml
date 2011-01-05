@@ -65,7 +65,10 @@
 	<!-- Version changeset -->
 	<string name="version_title">Version (Donación) NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
-		
+	
+	<string name="version_change_v2_title">Version 2 (0.1.2)</string>
+	<string name="version_change_v2">- Forzar cierre arregaldo para vesiones Android 1.5 y 1.6.</string>
+	
 	<string name="version_change_v1_title">Version 1 (0.1.1)</string>
 	<string name="version_change_v1">- Versión inicial. Creada apartir de la versión 10 (0.2.4) de la version corriente.</string>
 
