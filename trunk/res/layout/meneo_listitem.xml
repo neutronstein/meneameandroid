@@ -45,7 +45,7 @@
 		android:layout_alignParentRight="true" android:layout_below="@+id/user"
 
 		android:text="Description" android:textColor="@color/Color.black"
-		android:singleLine="false" android:autoLink="web" />
+		android:singleLine="false" />
 
 	<TextView android:id="@+id/tags" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_toRightOf="@id/icon"

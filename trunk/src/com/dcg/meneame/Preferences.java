@@ -14,6 +14,7 @@ import android.preference.PreferenceScreen;
 import com.dcg.app.ApplicationMNM;
 import com.dcg.dialog.VersionChangesDialog;
 import com.dcg.provider.FeedItemElement;
+import com.dcg.util.BuildInterface;
 
 /**
  * Our preference activity
@@ -66,6 +67,19 @@ public class Preferences extends PreferenceActivity {
 					versionTitle = versionTitle.replaceAll("LABLE",
 							ApplicationMNM.getVersionLable());
 					versionPrefernce.setTitle(versionTitle);
+				}
+			}
+			
+			// Disable theme selection for versions that are not 1.6 or more
+			if ( BuildInterface.isAPILevelUnder(BuildInterface.API_LEVEL_4) ) {
+				appPrefernce = (PreferenceGroup) prefScreen
+					.getPreference(2);
+				if (appPrefernce != null) {
+					Preference themePrefernce = appPrefernce.getPreference(1);
+					if (themePrefernce != null) {
+						themePrefernce.setEnabled(false);
+						themePrefernce.setSummary(R.string.themes_not_available_sdk_version);
+					}
 				}
 			}
 		}

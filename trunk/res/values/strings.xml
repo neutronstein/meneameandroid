@@ -61,13 +61,14 @@
 	<string name="menealo_send">Vote has been send!</string>
 	<string name="crash_report_question">The app detected a crash! Do you want to send the
 		log file to the developer?</string>
+	<string name="themes_not_available_sdk_version">Themes are only available for devices with Android 1.6 or higher!</string>
 
 	<!-- Version changeset -->
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Version Changes</string>
 	
 	<string name="version_change_v12_title">Version 12 (0.2.6)</string>
-	<string name="version_change_v12">- Minor fixes for version 0.2.5.\nADVICE: Once you detect a rash please send us the current device log. This can be achieved with any \'Log Collector\' app found in the market.</string>
+	<string name="version_change_v12">- Minor fixes for version 0.2.5.\nADVICE: Once you detect a crash please send us the current device log. This can be achieved with any \'Log Collector\' app found in the market.</string>
 	
 	<string name="version_change_v11_title">Version 11 (0.2.5)</string>
 	<string name="version_change_v11">- Fixed force close for Android versions 1.5 and 1.6.</string>
