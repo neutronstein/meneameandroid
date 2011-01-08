@@ -36,6 +36,7 @@ import com.dcg.app.ApplicationMNM;
 import com.dcg.app.SystemValueManager;
 import com.dcg.dialog.VersionChangesDialog;
 import com.dcg.provider.SystemValue;
+import com.dcg.util.BuildInterface;
 import com.dcg.util.TabHostConfigurator;
 
 /**
@@ -69,6 +70,8 @@ public class MeneameAPP extends TabActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Log.d("Meneame For Android","Build Version: "+Build.VERSION.RELEASE);
 
 		ApplicationMNM.addLogCat(TAG);
 		ApplicationMNM.logCat(TAG, "onCreate()");
@@ -135,14 +138,14 @@ public class MeneameAPP extends TabActivity {
 	
 	public void configureTabHost( TabHost tabHost ) {
 		String tabHostConfiguratorClass = "";
-		switch(Build.VERSION.SDK_INT) {
-		case 7:
+		switch(BuildInterface.getAPILevel()) {
+		case BuildInterface.API_LEVEL_7:
 			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
-		case 8:
+		case BuildInterface.API_LEVEL_8:
 			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
-		case 9:
+		case BuildInterface.API_LEVEL_9:
 			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
 		}
@@ -390,12 +393,14 @@ public class MeneameAPP extends TabActivity {
 	 * @return TRUE if tiny theme should be used, FALSE otherwise.
 	 */
 	private boolean isTiny() {
-
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(getBaseContext());
-		String value = prefs.getString("pref_style_theme", "Default");
-		return value.compareTo("Tiny") == 0;
-
+		// TODO: Tiny stile only available in API level 4 or above
+		if ( BuildInterface.isAPILevelAbove(BuildInterface.API_LEVEL_3) ) {
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(getBaseContext());
+			String value = prefs.getString("pref_style_theme", "Default");
+			return value.compareTo("Tiny") == 0;
+		}
+		return false;
 	}
 
 	@Override

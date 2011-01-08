@@ -61,6 +61,7 @@
 	<string name="menealo_send">¡Tu voto ha sido enviado!</string>
 	<string name="crash_report_question">The app detected a crash! Do you want to send the
 		log file to the developer?</string>
+	<string name="themes_not_available_sdk_version">¡Temas solo disponibles para versiones de Android 1.6 o mayores!</string>
 
 	<!-- Version changeset -->
 	<string name="version_title">Version NUMBER (LABLE)</string>

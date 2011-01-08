@@ -37,6 +37,7 @@ import com.dcg.task.RequestFeedTask;
 import com.dcg.task.RequestFeedTaskObserver;
 import com.dcg.task.RequestFeedTaskParams;
 import com.dcg.task.RequestFeedTask.RequestFeedListener;
+import com.dcg.util.BuildInterface;
 
 /**
  * Basic activity that handles feed parsing and stuff like that
@@ -629,9 +630,12 @@ abstract public class FeedActivity extends ListActivity implements
 	 * Set a cursor adapter for our list
 	 */
 	protected void setCursorAdapter() {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this.getBaseContext());
-		String value = prefs.getString("pref_style_theme", "Default");
+		String value = "Default";
+		if ( BuildInterface.isAPILevelAbove(BuildInterface.API_LEVEL_3) ) {
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(this.getBaseContext());
+			value = prefs.getString("pref_style_theme", "Default");
+		}
 		boolean tiny = value.compareTo("Tiny") == 0;
 
 		// TODO: Use: setFilterText(queryString); to set the filter.
