@@ -67,7 +67,7 @@
 	<string name="version_change_title">Cambios de Versiones</string>
 	
 	<string name="version_change_v12_title">Version 12 (0.2.6)</string>
-	<string name="version_change_v12">- Arreglos menores para la versión 0.2.5</string>
+	<string name="version_change_v12">- Arreglos menores para la versión 0.2.5.\nAVISO: Cuándo detectéis un \'forzar cierre\' enviadnos el log usándo cualquier app tipo \'Log Collector\' del market.</string>
 	
 	<string name="version_change_v11_title">Version 11 (0.2.5)</string>
 	<string name="version_change_v11">- Forzar cierre arregaldo para vesiones Android 1.5 y 1.6.</string>
