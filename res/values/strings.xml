@@ -67,7 +67,7 @@
 	<string name="version_change_title">Version Changes</string>
 	
 	<string name="version_change_v12_title">Version 12 (0.2.6)</string>
-	<string name="version_change_v12">- Minor fixes for version 0.2.5</string>
+	<string name="version_change_v12">- Minor fixes for version 0.2.5.\nADVICE: Once you detect a rash please send us the current device log. This can be achieved with any \'Log Collector\' app found in the market.</string>
 	
 	<string name="version_change_v11_title">Version 11 (0.2.5)</string>
 	<string name="version_change_v11">- Fixed force close for Android versions 1.5 and 1.6.</string>
