@@ -139,9 +139,6 @@ public class MeneameAPP extends TabActivity {
 	public void configureTabHost( TabHost tabHost ) {
 		String tabHostConfiguratorClass = "";
 		switch(BuildInterface.getAPILevel()) {
-		case BuildInterface.API_LEVEL_7:
-			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
-			break;
 		case BuildInterface.API_LEVEL_8:
 			tabHostConfiguratorClass = "com.dcg.util.TabHostConfigurator_2x";
 			break;
