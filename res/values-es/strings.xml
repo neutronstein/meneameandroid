@@ -67,8 +67,11 @@
 	<string name="version_title">Version NUMBER (LABLE)</string>
 	<string name="version_change_title">Cambios de Versiones</string>
 	
+	<string name="version_change_v14_title">Version 14 (0.3.1)</string>
+	<string name="version_change_v14">- TODO</string>	
+	
 	<string name="version_change_v13_title">Version 13 (0.3.0)</string>
-	<string name="version_change_v13">- TODO</string>
+	<string name="version_change_v13">- Android 2.1 hotfix</string>	
 	
 	<string name="version_change_v12_title">Version 12 (0.2.6)</string>
 	<string name="version_change_v12">- Arreglos menores para la versión 0.2.5.\nAVISO: Cuándo detectéis un \'forzar cierre\' enviadnos el log usándo cualquier app tipo \'Log Collector\' del market.</string>
